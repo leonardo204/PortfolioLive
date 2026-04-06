@@ -33,6 +33,8 @@
 **프로젝트 문서**
 - [서비스 계획서](docs/service-plan.md) — 아키텍처, 기술 스택, 구현 단계, DB 스키마
 - [서비스 시나리오](docs/scenarios.md) — 8개 시나리오, UI 컴포넌트 매핑, 멀티턴 흐름
+- [UI 화면 설계](docs/ui-design.md) — Google Stitch 프롬프트 + 확정 디자인 파일 매핑
+- [화면 디자인 파일](docs/screen-design/) — Stitch HTML/PNG (5개 화면 + 디자인 시스템)
 
 **시스템 문서**
 - [Context DB](ref-docs/context-db.md) — SQLite 기반 세션/태스크/결정 저장소
@@ -49,6 +51,7 @@
 - 대상 사용자: 인사담당자, 스카우터
 - DB: PostgreSQL 단일 인스턴스 (pgvector, 체크포인터, 캐시 전부 포함)
 - 배포: Docker Compose, private port (기존 서비스 공존)
+- 언어: 한국어(메인) + English(서브). Stitch 디자인의 영문은 참고용
 
 ---
 

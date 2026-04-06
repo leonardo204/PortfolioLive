@@ -38,6 +38,7 @@
 | **스타일링** | Tailwind CSS | 반응형, 모바일 우선 |
 | **배포** | Docker Compose | private port, Linux PC |
 | **Markdown 렌더링** | MDX + react-markdown | 채팅 내 마크다운 지원 |
+| **i18n** | next-intl | 메인: 한국어, 서브: English |
 
 ---
 
