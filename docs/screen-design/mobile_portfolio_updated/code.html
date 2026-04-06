@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=375, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error-container": "#752121",
+            "tertiary-container": "#d9dff5",
+            "primary-fixed": "#dbe1ff",
+            "on-surface-variant": "#586065",
+            "on-secondary-fixed": "#36404d",
+            "secondary-container": "#d9e3f4",
+            "on-secondary-container": "#485260",
+            "on-primary": "#f8f7ff",
+            "surface-container-highest": "#dbe4ea",
+            "inverse-surface": "#0c0f10",
+            "surface-container": "#eaeef2",
+            "secondary-fixed": "#d9e3f4",
+            "secondary-dim": "#4a5462",
+            "on-tertiary-container": "#495061",
+            "on-error": "#fff7f6",
+            "inverse-primary": "#618bff",
+            "secondary-fixed-dim": "#cbd5e6",
+            "on-tertiary-fixed": "#373d4e",
+            "error-dim": "#4e0309",
+            "inverse-on-surface": "#9b9d9f",
+            "on-surface": "#2b3438",
+            "tertiary-fixed-dim": "#cbd1e6",
+            "on-primary-container": "#0048bf",
+            "primary": "#0053db",
+            "tertiary": "#585f71",
+            "tertiary-dim": "#4c5364",
+            "surface-tint": "#0053db",
+            "on-primary-fixed-variant": "#0050d4",
+            "surface-container-low": "#f1f4f7",
+            "surface-bright": "#f8f9fb",
+            "outline": "#737c81",
+            "on-secondary-fixed-variant": "#525c6a",
+            "on-secondary": "#f7f9ff",
+            "surface": "#f8f9fb",
+            "primary-container": "#dbe1ff",
+            "on-background": "#2b3438",
+            "secondary": "#56606e",
+            "primary-dim": "#0048c1",
+            "on-primary-fixed": "#003798",
+            "error": "#9f403d",
+            "background": "#f8f9fb",
+            "outline-variant": "#abb3b9",
+            "surface-dim": "#d1dce2",
+            "on-tertiary-fixed-variant": "#535a6b",
+            "surface-container-lowest": "#ffffff",
+            "error-container": "#fe8983",
+            "surface-variant": "#dbe4ea",
+            "on-tertiary": "#f9f8ff",
+            "tertiary-fixed": "#d9dff5",
+            "primary-fixed-dim": "#c7d3ff",
+            "surface-container-high": "#e2e9ee"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "fontFamily": {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    .material-symbols-outlined { font-size: 20px; }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-6 h-16 w-full">
+<div class="text-lg font-bold tracking-tighter text-slate-900 dark:text-slate-50 uppercase">YONGSUB LEE</div>
+<div class="flex items-center text-slate-500">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="pt-32 pb-16 px-6 bg-surface">
+<div class="max-w-md">
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">Software Engineer</h1>
+<p class="text-primary font-semibold tracking-wide uppercase text-xs mb-6">Embedded · Cross-Platform · AI Services</p>
+<div class="space-y-4">
+<p class="text-on-surface-variant text-sm leading-relaxed max-w-[320px]">
+          16 years of experience building mission-critical architectures for global telecommunications and smart services.
+        </p>
+</div>
+</div>
+</header>
+<!-- Career Section -->
+<section class="bg-surface-container-low py-16 px-6">
+<div class="flex items-center gap-2 mb-8">
+<span class="text-[10px] font-bold tracking-[0.2em] text-outline uppercase">CAREER</span>
+</div>
+<div class="relative border-l border-outline-variant/30 ml-2 pl-6 space-y-12">
+<!-- Experience Item 1 -->
+<div class="relative">
+<div class="absolute -left-[31px] top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-surface-container-low"></div>
+<div class="space-y-1 mb-3">
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider">2019.12 — Present <span class="ml-2 bg-primary/10 text-primary px-1.5 py-0.5 rounded-sm">6+ YEARS</span></span>
+<h3 class="text-lg font-bold leading-tight">KT Altimedia</h3>
+<p class="text-xs text-primary font-medium uppercase tracking-tighter">Media Tech Team · Researcher · Seoul</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm">
+<p class="text-sm text-on-surface-variant mb-4 leading-relaxed">STB Cloud → Cross-platform Players → AI Agents</p>
+</div>
+</div>
+<!-- Experience Item 2 -->
+<div class="relative">
+<div class="absolute -left-[31px] top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-surface-container-low"></div>
+<div class="space-y-1 mb-3">
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider">2012.09 — 2019.12 <span class="ml-2 bg-primary/10 text-primary px-1.5 py-0.5 rounded-sm">7y 2m</span></span>
+<h3 class="text-lg font-bold leading-tight">Alticast</h3>
+<p class="text-xs text-primary font-medium uppercase tracking-tighter">Media Tech Team · Researcher · Seoul</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm">
+<p class="text-sm text-on-surface-variant mb-4 leading-relaxed">STB UI/UX Development · Windmill Framework</p>
+</div>
+</div>
+<!-- Experience Item 3 -->
+<div class="relative">
+<div class="absolute -left-[31px] top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-surface-container-low"></div>
+<div class="space-y-1 mb-3">
+<span class="font-mono text-[10px] text-outline uppercase tracking-wider">2010.03 — 2012.07 <span class="ml-2 bg-primary/10 text-primary px-1.5 py-0.5 rounded-sm">2y 4m</span></span>
+<h3 class="text-lg font-bold leading-tight">P&amp;I Solution</h3>
+<p class="text-xs text-primary font-medium uppercase tracking-tighter">CAD/CAE · Assistant Manager · Suwon</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm">
+<p class="text-sm text-on-surface-variant mb-4 leading-relaxed">Core development of embedded surveillance systems and network monitoring software.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Portfolio Section -->
+<section class="bg-surface py-16 px-6 pb-32">
+<div class="flex flex-col gap-6">
+<div>
+<span class="text-[10px] font-bold tracking-[0.2em] text-outline uppercase">Selected Work</span>
+<h2 class="text-2xl font-bold mt-2">Projects</h2>
+</div>
+<!-- Filter Tabs -->
+<div class="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 no-scrollbar">
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-primary text-on-primary text-[11px] font-bold">All</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold">AI &amp; Voice</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold">STB</button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold">Side Project</button>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 gap-6 mt-4">
+<!-- Project 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-mono text-primary font-bold tracking-widest uppercase">Embedded / AI</span>
+<span class="material-symbols-outlined text-outline" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<h4 class="text-lg font-bold mb-2">Genie TV Voice Assistant</h4>
+<p class="text-sm text-on-surface-variant leading-relaxed">Scalable voice command integration for millions of IPTV subscribers in Korea.</p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="text-[9px] uppercase tracking-tighter bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">C++</span>
+<span class="text-[9px] uppercase tracking-tighter bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">gRPC</span>
+</div>
+</div>
+<!-- Project 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-mono text-primary font-bold tracking-widest uppercase">Middleware</span>
+<span class="material-symbols-outlined text-outline" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<h4 class="text-lg font-bold mb-2">Ultra-Thin Middleware</h4>
+<p class="text-sm text-on-surface-variant leading-relaxed">Optimized RDK-based middleware for low-memory footprint set-top devices.</p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="text-[9px] uppercase tracking-tighter bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">Linux</span>
+<span class="text-[9px] uppercase tracking-tighter bg-surface-container px-2 py-0.5 rounded text-on-surface-variant">Embedded</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- BottomNavBar (Chat Trigger) -->
+<div class="fixed bottom-0 left-0 w-full z-50 bg-white dark:bg-slate-900 shadow-xl flex justify-around items-center px-4 py-3 pb-safe border-t border-slate-100 dark:border-slate-800">
+<div class="w-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200 rounded-xl p-4 flex items-center justify-between transition-transform scale-95 active:scale-90">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-sans uppercase text-[10px] tracking-[0.05em] font-bold">HAVE ANY QUESTIONS?</span>
+</div>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full py-12 px-6 bg-slate-50 dark:bg-slate-950 flex flex-col items-center text-center space-y-6 w-full mb-20">
+<div class="flex flex-col space-y-3">
+<a class="text-slate-400 dark:text-slate-500 font-sans text-xs uppercase tracking-widest hover:text-blue-600 underline-offset-4 hover:underline" href="#">LinkedIn</a>
+<a class="text-slate-400 dark:text-slate-500 font-sans text-xs uppercase tracking-widest hover:text-blue-600 underline-offset-4 hover:underline" href="#">GitHub</a>
+<a class="text-slate-400 dark:text-slate-500 font-sans text-xs uppercase tracking-widest hover:text-blue-600 underline-offset-4 hover:underline" href="#">Email</a>
+</div>
+<div class="pt-4 border-t border-outline-variant/10 w-16 mx-auto"></div>
+<p class="text-slate-400 dark:text-slate-500 font-sans text-xs uppercase tracking-widest leading-loose max-w-[240px]">© 2026 YONGSUB LEE. ENGINEERED FOR PRECISION.</p>
+</footer>
+</body></html>

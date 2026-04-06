@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=375, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d1dce2",
+                        "surface-tint": "#0053db",
+                        "secondary-dim": "#4a5462",
+                        "surface": "#f8f9fb",
+                        "secondary-container": "#d9e3f4",
+                        "surface-container-low": "#f1f4f7",
+                        "tertiary-dim": "#4c5364",
+                        "on-primary": "#f8f7ff",
+                        "error": "#9f403d",
+                        "on-secondary-fixed": "#36404d",
+                        "on-primary-container": "#0048bf",
+                        "on-surface-variant": "#586065",
+                        "tertiary-fixed-dim": "#cbd1e6",
+                        "primary-container": "#dbe1ff",
+                        "on-tertiary-container": "#495061",
+                        "on-tertiary": "#f9f8ff",
+                        "secondary-fixed-dim": "#cbd5e6",
+                        "surface-variant": "#dbe4ea",
+                        "on-error-container": "#752121",
+                        "inverse-primary": "#618bff",
+                        "on-secondary-fixed-variant": "#525c6a",
+                        "on-background": "#2b3438",
+                        "surface-container-highest": "#dbe4ea",
+                        "on-tertiary-fixed-variant": "#535a6b",
+                        "surface-container": "#eaeef2",
+                        "tertiary-container": "#d9dff5",
+                        "secondary": "#56606e",
+                        "primary-fixed": "#dbe1ff",
+                        "inverse-surface": "#0c0f10",
+                        "tertiary": "#585f71",
+                        "surface-bright": "#f8f9fb",
+                        "on-tertiary-fixed": "#373d4e",
+                        "on-secondary-container": "#485260",
+                        "error-dim": "#4e0309",
+                        "on-surface": "#2b3438",
+                        "secondary-fixed": "#d9e3f4",
+                        "on-primary-fixed": "#003798",
+                        "on-error": "#fff7f6",
+                        "outline": "#737c81",
+                        "background": "#f8f9fb",
+                        "outline-variant": "#abb3b9",
+                        "tertiary-fixed": "#d9dff5",
+                        "on-secondary": "#f7f9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#c7d3ff",
+                        "primary-dim": "#0048c1",
+                        "on-primary-fixed-variant": "#0050d4",
+                        "error-container": "#fe8983",
+                        "surface-container-high": "#e2e9ee",
+                        "primary": "#0053db",
+                        "inverse-on-surface": "#9b9d9f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bottom-sheet {
+            height: 85vh;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
+        }
+        .drag-handle {
+            width: 36px;
+            height: 5px;
+            border-radius: 2.5px;
+        }
+        .chat-content-area {
+            height: calc(85vh - 140px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<!-- MAIN PAGE CONTENT (DIMMED) -->
+<div class="fixed inset-0 z-0 bg-on-background/20 backdrop-blur-sm">
+<!-- Header -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4 bg-surface/80 backdrop-blur-md">
+<span class="font-inter tracking-tight text-lg font-bold text-on-surface">Yongsub Lee</span>
+<span class="material-symbols-outlined text-on-surface">menu</span>
+</header>
+<!-- Main Canvas -->
+<main class="pt-24 px-6 pb-20 space-y-12">
+<!-- Hero -->
+<section>
+<h1 class="text-4xl font-extrabold tracking-tight text-on-background leading-tight mb-2">Software Engineer</h1>
+<p class="text-sm font-medium tracking-widest uppercase text-on-surface-variant flex items-center gap-2">
+                    Embedded <span class="text-outline-variant/30">•</span> Cross-Platform <span class="text-outline-variant/30">•</span> AI Services
+                </p>
+</section>
+<!-- Career Timeline -->
+<section class="space-y-6">
+<h2 class="label-md font-bold text-[10px] uppercase tracking-widest text-outline">Career Experience</h2>
+<div class="relative space-y-8 pl-4">
+<div class="absolute left-0 top-2 bottom-2 w-px bg-outline-variant/20"></div>
+<!-- KT Altimedia -->
+<div class="relative group">
+<div class="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-surface"></div>
+<div class="space-y-1">
+<span class="text-[10px] font-mono text-outline uppercase">2021 — Present</span>
+<div class="bg-surface-container-lowest p-5 rounded-xl">
+<h3 class="font-bold text-on-background">KT Altimedia</h3>
+<p class="text-sm text-on-surface-variant">Lead Engineer, Media Platforms</p>
+</div>
+</div>
+</div>
+<!-- Alticast -->
+<div class="relative">
+<div class="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-outline-variant ring-4 ring-surface"></div>
+<div class="space-y-1">
+<span class="text-[10px] font-mono text-outline uppercase">2016 — 2021</span>
+<div class="bg-surface-container-lowest p-5 rounded-xl">
+<h3 class="font-bold text-on-background">Alticast</h3>
+<p class="text-sm text-on-surface-variant">Senior Embedded Dev</p>
+</div>
+</div>
+</div>
+<!-- P&I Solution -->
+<div class="relative">
+<div class="absolute -left-[19px] top-1.5 w-2 h-2 rounded-full bg-outline-variant ring-4 ring-surface"></div>
+<div class="space-y-1">
+<span class="text-[10px] font-mono text-outline uppercase">2013 — 2016</span>
+<div class="bg-surface-container-lowest p-5 rounded-xl">
+<h3 class="font-bold text-on-background">P&amp;I Solution</h3>
+<p class="text-sm text-on-surface-variant">Software Engineer</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- BOTTOM SHEET OVERLAY -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[20px] bottom-sheet flex flex-col">
+<!-- Drag Indicator -->
+<div class="w-full flex justify-center py-3">
+<div class="drag-handle bg-outline-variant/30"></div>
+</div>
+<!-- Chat Header -->
+<div class="flex items-center justify-between px-6 pb-4 border-b border-surface-container">
+<h2 class="text-lg font-bold text-on-surface">Chat</h2>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low">
+<span class="material-symbols-outlined text-sm text-on-surface-variant">close</span>
+</button>
+</div>
+<!-- Scrollable Chat Flow -->
+<div class="flex-1 overflow-y-auto px-6 py-6 space-y-6 chat-content-area">
+<!-- Agent Intro -->
+<div class="flex flex-col gap-2 max-w-[85%]">
+<div class="bg-surface-container-low text-on-surface p-4 rounded-2xl rounded-tl-none text-[14px] leading-relaxed">
+                    안녕하세요! 이용섭님의 포트폴리오 에이전트입니다. 경력, 기술, 프로젝트에 대해 자유롭게 질문해주세요.
+                </div>
+</div>
+<!-- Suggestion Chips -->
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 bg-primary-container/30 text-on-primary-container text-xs font-medium rounded-full border border-primary-container">
+                    어떤 기술을 주로 사용하나요?
+                </button>
+<button class="px-4 py-2 bg-primary-container/30 text-on-primary-container text-xs font-medium rounded-full border border-primary-container">
+                    AI 프로젝트 경험을 알려주세요
+                </button>
+<button class="px-4 py-2 bg-primary-container/30 text-on-primary-container text-xs font-medium rounded-full border border-primary-container">
+                    최근 프로젝트는 무엇인가요?
+                </button>
+</div>
+<!-- User Question -->
+<div class="flex flex-col items-end gap-2">
+<div class="bg-primary text-on-primary p-4 rounded-2xl rounded-tr-none text-[14px] max-w-[85%]">
+                    AI 관련 경험이 어떻게 되나요?
+                </div>
+</div>
+<!-- Agent Detailed Answer -->
+<div class="flex flex-col gap-2 max-w-[85%]">
+<div class="bg-surface-container-low text-on-surface p-4 rounded-2xl rounded-tl-none text-[14px] leading-relaxed">
+                    2023년부터 AI/음성 서비스 개발에 집중하고 있습니다.
+                    <ul class="mt-2 space-y-1 list-disc list-inside opacity-90">
+<li>STT/TTS 기반 음성 인식 서비스</li>
+<li>LLM 기반 멀티에이전트 시스템</li>
+<li>Electron 기반 데스크톱 도구</li>
+</ul>
+</div>
+</div>
+<!-- Project Cards Stack -->
+<div class="space-y-3 w-full">
+<!-- Project 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-sm">
+<div class="w-12 h-12 rounded-lg bg-primary/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">deployed_code</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-[14px]">MyTammi</h4>
+<p class="text-[12px] text-on-surface-variant">NestJS, Vue 3, Gemini</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-lg">chevron_right</span>
+</div>
+<!-- Project 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-4 flex items-center gap-4 shadow-sm">
+<div class="w-12 h-12 rounded-lg bg-primary/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">monitoring</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-[14px]">SUMMA v2</h4>
+<p class="text-[12px] text-on-surface-variant">Tauri, Rust, Whisper</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-lg">chevron_right</span>
+</div>
+</div>
+<!-- Final Agent Thought -->
+<div class="flex flex-col gap-2 max-w-[85%]">
+<div class="bg-surface-container-low text-on-surface p-4 rounded-2xl rounded-tl-none text-[14px] leading-relaxed">
+                    특히 LangGraph를 활용한 멀티에이전트 시스템도 구축했는데, 이 부분이 더 궁금하시면 말씀해주세요.
+                </div>
+</div>
+<!-- Extra space for input -->
+<div class="h-12"></div>
+</div>
+<!-- Chat Input Fixed at Bottom -->
+<div class="absolute bottom-0 left-0 right-0 bg-white px-4 pb-8 pt-4 border-t border-surface-container">
+<div class="flex items-center gap-3 bg-surface-container-low rounded-full px-5 py-3 border border-outline-variant/10">
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-sm text-on-surface placeholder:text-outline-variant" placeholder="메시지를 입력하세요..." type="text"/>
+<button class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[18px]">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Navigation (Suppressed/Hidden as per sheet overlay focus) -->
+<nav class="hidden">
+<!-- BottomNavBar Logic suppressed for focused bottom sheet state -->
+</nav>
+</body></html>

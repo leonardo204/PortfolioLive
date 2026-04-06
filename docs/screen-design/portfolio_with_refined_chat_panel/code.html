@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for chat */
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #e2e9ee; border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#495061",
+                        "on-error-container": "#752121",
+                        "surface-container-highest": "#dbe4ea",
+                        "background": "#f8f9fb",
+                        "tertiary-fixed": "#d9dff5",
+                        "tertiary-dim": "#4c5364",
+                        "inverse-surface": "#0c0f10",
+                        "on-surface": "#2b3438",
+                        "on-background": "#2b3438",
+                        "outline": "#737c81",
+                        "secondary": "#56606e",
+                        "on-secondary-container": "#485260",
+                        "primary-fixed-dim": "#c7d3ff",
+                        "surface-bright": "#f8f9fb",
+                        "on-tertiary": "#f9f8ff",
+                        "error": "#9f403d",
+                        "error-dim": "#4e0309",
+                        "secondary-container": "#d9e3f4",
+                        "surface-dim": "#d1dce2",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#0048bf",
+                        "tertiary-container": "#d9dff5",
+                        "surface-container-high": "#e2e9ee",
+                        "primary-container": "#dbe1ff",
+                        "on-error": "#fff7f6",
+                        "surface-container": "#eaeef2",
+                        "inverse-on-surface": "#9b9d9f",
+                        "inverse-primary": "#618bff",
+                        "primary-dim": "#0048c1",
+                        "primary": "#0053db",
+                        "secondary-fixed": "#d9e3f4",
+                        "on-secondary": "#f7f9ff",
+                        "surface-variant": "#dbe4ea",
+                        "on-secondary-fixed-variant": "#525c6a",
+                        "tertiary-fixed-dim": "#cbd1e6",
+                        "surface-tint": "#0053db",
+                        "on-tertiary-fixed": "#373d4e",
+                        "on-primary-fixed-variant": "#0050d4",
+                        "error-container": "#fe8983",
+                        "outline-variant": "#abb3b9",
+                        "on-surface-variant": "#586065",
+                        "on-primary-fixed": "#003798",
+                        "tertiary": "#585f71",
+                        "surface": "#f8f9fb",
+                        "surface-container-low": "#f1f4f7",
+                        "secondary-fixed-dim": "#cbd5e6",
+                        "on-primary": "#f8f7ff",
+                        "secondary-dim": "#4a5462",
+                        "on-tertiary-fixed-variant": "#535a6b",
+                        "on-secondary-fixed": "#36404d",
+                        "primary-fixed": "#dbe1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar Implementation -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800/50 flex justify-between items-center h-16 px-8 max-w-full">
+<div class="flex items-center gap-8">
+<span class="text-lg font-semibold tracking-tighter text-slate-900 dark:text-slate-50">Yongsub Lee</span>
+<nav class="hidden md:flex gap-6 font-sans text-sm tracking-tight">
+<a class="text-blue-700 dark:text-blue-400 font-medium border-b-2 border-blue-700" href="#experience">Career</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#portfolio">Portfolio</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#contact">Contact</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="terminal">terminal</span>
+</div>
+</header>
+<main class="flex flex-1 pt-16">
+<!-- Left Side: Main Content (Slightly dimmed bg) -->
+<section class="flex-1 bg-surface-container-low min-h-full pb-24 pr-[400px]">
+<div class="max-w-4xl mx-auto px-12 py-20">
+<!-- Hero Section -->
+<div class="mb-32">
+<p class="text-primary font-mono text-sm tracking-widest uppercase mb-4">Senior Software Engineer</p>
+<h1 class="text-6xl font-extrabold text-on-surface tracking-tight mb-6">Software Engineer</h1>
+<p class="text-2xl text-on-surface-variant font-light tracking-wide">
+                        Embedded <span class="text-outline-variant mx-2">·</span> 
+                        Cross-Platform <span class="text-outline-variant mx-2">·</span> 
+                        Core Engineering
+                    </p>
+</div>
+<!-- Career Timeline -->
+<div class="mb-32" id="experience">
+<h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-12">Professional Experience</h2>
+<div class="relative pl-8 border-l border-outline-variant/20 space-y-16">
+<!-- Timeline Item 1 -->
+<div class="relative">
+<div class="absolute -left-[37px] top-1.5 w-4 h-4 rounded-full bg-primary ring-4 ring-surface-container-low"></div>
+<div class="flex flex-col md:flex-row md:items-baseline gap-4 mb-2">
+<span class="font-mono text-xs text-secondary-dim bg-secondary-container/50 px-2 py-1 rounded">2021 — PRESENT</span>
+<h3 class="text-xl font-bold text-on-surface">KT Altimedia</h3>
+</div>
+<p class="text-on-surface-variant max-w-2xl leading-relaxed">Lead technical architect focusing on set-top box middleware and cloud-native service integration for major telecommunication providers.</p>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative">
+<div class="absolute -left-[37px] top-1.5 w-4 h-4 rounded-full bg-outline-variant ring-4 ring-surface-container-low"></div>
+<div class="flex flex-col md:flex-row md:items-baseline gap-4 mb-2">
+<span class="font-mono text-xs text-secondary-dim bg-secondary-container/50 px-2 py-1 rounded">2016 — 2021</span>
+<h3 class="text-xl font-bold text-on-surface">Alticast</h3>
+</div>
+<p class="text-on-surface-variant max-w-2xl leading-relaxed">Developing embedded software systems and global broadcasting solutions. Specialized in cross-platform application frameworks.</p>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative">
+<div class="absolute -left-[37px] top-1.5 w-4 h-4 rounded-full bg-outline-variant ring-4 ring-surface-container-low"></div>
+<div class="flex flex-col md:flex-row md:items-baseline gap-4 mb-2">
+<span class="font-mono text-xs text-secondary-dim bg-secondary-container/50 px-2 py-1 rounded">2014 — 2016</span>
+<h3 class="text-xl font-bold text-on-surface">P&amp;I Solution</h3>
+</div>
+<p class="text-on-surface-variant max-w-2xl leading-relaxed">Junior software engineer focusing on manufacturing execution systems (MES) and industrial automation software.</p>
+</div>
+</div>
+</div>
+<!-- Portfolio Section -->
+<div class="mb-32" id="portfolio">
+<h2 class="text-xs font-bold uppercase tracking-widest text-secondary mb-12">Selected Projects</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Project Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-8 hover:shadow-[0px_12px_32px_rgba(43,52,56,0.04)] hover:ring-1 hover:ring-primary-fixed-dim transition-all group">
+<h4 class="text-lg font-bold text-on-surface mb-2">MyTammi Agent</h4>
+<p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Next-generation companion built with NestJS and Vue 3, leveraging cloud computing for complex reasoning.</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-surface-container-high text-[10px] font-bold uppercase tracking-tighter rounded">NestJS</span>
+<span class="px-2 py-1 bg-surface-container-high text-[10px] font-bold uppercase tracking-tighter rounded">Vue 3</span>
+<span class="px-2 py-1 bg-surface-container-high text-[10px] font-bold uppercase tracking-tighter rounded">Cloud Services</span>
+</div>
+</div>
+<!-- Project Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-8 hover:shadow-[0px_12px_32px_rgba(43,52,56,0.04)] hover:ring-1 hover:ring-primary-fixed-dim transition-all group">
+<h4 class="text-lg font-bold text-on-surface mb-2">SUMMA v2</h4>
+<p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Native desktop transcription tool built with Tauri and Rust, utilizing optimized local processing engines.</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-surface-container-high text-[10px] font-bold uppercase tracking-tighter rounded">Tauri</span>
+<span class="px-2 py-1 bg-surface-container-high text-[10px] font-bold uppercase tracking-tighter rounded">Rust</span>
+<span class="px-2 py-1 bg-surface-container-high text-[10px] font-bold uppercase tracking-tighter rounded">Signal Processing</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Component -->
+<footer class="w-full py-8 mt-auto border-t border-slate-50 dark:border-slate-900 bg-white dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 max-w-7xl mx-auto">
+<span class="text-[10px] font-mono text-slate-400 uppercase">© 2026 YONGSUB LEE. Built for Performance.</span>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="text-[10px] font-mono text-slate-400 hover:text-blue-600 underline underline-offset-4 transition-all" href="#">Github</a>
+<a class="text-[10px] font-mono text-slate-400 hover:text-blue-600 underline underline-offset-4 transition-all" href="#">LinkedIn</a>
+<a class="text-[10px] font-mono text-slate-400 hover:text-blue-600 underline underline-offset-4 transition-all" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+</section>
+<!-- Right Side: SideNavBar Integrated Chat Panel -->
+<aside class="fixed right-0 top-16 w-[400px] h-[calc(100vh-64px)] bg-white border-l border-slate-200 flex flex-col shadow-[-4px_0_24px_rgba(0,0,0,0.02)] z-40">
+<!-- Chat Header -->
+<div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+<div>
+<h3 class="text-sm font-bold text-on-surface uppercase tracking-widest">Chat</h3>
+</div>
+<button class="p-2 hover:bg-slate-50 rounded-full transition-colors">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="close">close</span>
+</button>
+</div>
+<!-- Chat Messages Container -->
+<div class="flex-1 overflow-y-auto p-6 space-y-8 chat-scroll">
+<!-- Message 1 (System) -->
+<div class="flex flex-col items-start gap-2 max-w-[85%]">
+<div class="bg-slate-50 text-on-surface p-4 rounded-xl rounded-tl-none border border-slate-100 text-sm leading-relaxed">
+                        안녕하세요! 이용섭님의 포트폴리오 메신저입니다. 경력, 기술, 프로젝트에 대해 자유롭게 질문해주세요.
+                    </div>
+<!-- Suggestion Chips -->
+<div class="flex flex-col gap-2 mt-2 w-full">
+<button class="text-xs text-left px-3 py-2 border border-slate-200 rounded-full hover:border-primary hover:text-primary transition-all bg-white text-slate-600">
+                            어떤 기술을 주로 사용하나요?
+                        </button>
+<button class="text-xs text-left px-3 py-2 border border-slate-200 rounded-full hover:border-primary hover:text-primary transition-all bg-white text-slate-600">
+                            프로젝트 경험을 알려주세요
+                        </button>
+<button class="text-xs text-left px-3 py-2 border border-slate-200 rounded-full hover:border-primary hover:text-primary transition-all bg-white text-slate-600">
+                            최근 프로젝트는 무엇인가요?
+                        </button>
+</div>
+</div>
+<!-- Message 2 (User) -->
+<div class="flex flex-col items-end gap-2 ml-auto max-w-[85%]">
+<div class="bg-primary text-white p-4 rounded-xl rounded-tr-none text-sm shadow-sm">
+                        최근 개발 경험이 어떻게 되나요?
+                    </div>
+</div>
+<!-- Message 3 (Agent) -->
+<div class="flex flex-col items-start gap-4 max-w-[90%]">
+<div class="bg-slate-50 text-on-surface p-4 rounded-xl rounded-tl-none border border-slate-100 text-sm leading-relaxed">
+<p class="mb-3">2023년부터 서비스 아키텍처 및 고성능 도구 개발에 집중하고 있습니다.</p>
+<ul class="space-y-1 text-on-surface-variant font-medium">
+<li class="flex items-center gap-2"><span class="w-1 h-1 bg-primary rounded-full"></span> 실시간 음성 처리 서비스</li>
+<li class="flex items-center gap-2"><span class="w-1 h-1 bg-primary rounded-full"></span> 분산 시스템 기반 멀티에이전트 설계</li>
+<li class="flex items-center gap-2"><span class="w-1 h-1 bg-primary rounded-full"></span> Electron 기반 데스크톱 생산성 도구</li>
+</ul>
+</div>
+<!-- Inline Project Cards -->
+<div class="grid grid-cols-1 gap-3 w-full">
+<div class="p-3 bg-white border border-slate-100 rounded-lg flex items-center gap-3 hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+</div>
+<div>
+<h4 class="text-xs font-bold text-on-surface">MyTammi</h4>
+<p class="text-[10px] text-on-surface-variant">NestJS, Vue 3, Cloud</p>
+</div>
+</div>
+<div class="p-3 bg-white border border-slate-100 rounded-lg flex items-center gap-3 hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-10 h-10 bg-secondary-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="settings_voice">settings_voice</span>
+</div>
+<div>
+<h4 class="text-xs font-bold text-on-surface">SUMMA v2</h4>
+<p class="text-[10px] text-on-surface-variant">Tauri, Rust, Audio Processing</p>
+</div>
+</div>
+</div>
+<div class="bg-slate-50 text-on-surface p-4 rounded-xl rounded-tl-none border border-slate-100 text-sm leading-relaxed">
+                        특히 복잡한 시스템의 워크플로우를 최적화하는 데 관심이 많습니다. 궁금한 점이 있으시면 편하게 물어보세요.
+                    </div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-4 bg-white border-t border-slate-100">
+<div class="relative group">
+<input class="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all placeholder:text-slate-400" placeholder="메시지를 입력하세요..." type="text"/>
+<button class="absolute right-2 top-1.5 p-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-lg" data-icon="arrow_upward">arrow_upward</span>
+</button>
+</div>
+<div class="flex justify-end items-center mt-3 px-1">
+<span class="text-[10px] text-slate-400 font-mono">2026 YONGSUB LEE</span>
+</div>
+</div>
+</aside>
+</main>
+</body></html>
