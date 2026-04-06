@@ -3,18 +3,19 @@
 import { useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { useCopilotChatHeadless_c } from '@copilotkit/react-core'
+import { type ChatMessage } from '@/lib/chat-client'
 import { ThinkingIndicator } from './thinking-indicator'
 import { WelcomeMessage } from './welcome-message'
 import { PreSuggestion } from './pre-suggestion'
 
 interface ChatMessagesProps {
+  messages: ChatMessage[]
+  isLoading: boolean
   onSuggestionSelect: (text: string) => void
   sessionEnded?: boolean
 }
 
-export function ChatMessages({ onSuggestionSelect, sessionEnded }: ChatMessagesProps) {
-  const { messages, isLoading } = useCopilotChatHeadless_c()
+export function ChatMessages({ messages, isLoading, onSuggestionSelect, sessionEnded }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -34,35 +35,25 @@ export function ChatMessages({ onSuggestionSelect, sessionEnded }: ChatMessagesP
       )}
 
       {/* 메시지 목록 */}
-      {messages.map((message, index) => {
+      {messages.map((message) => {
         if (message.role === 'user') {
-          const content = typeof message.content === 'string'
-            ? message.content
-            : Array.isArray(message.content)
-            ? message.content
-                .filter((c: { type: string }) => c.type === 'text')
-                .map((c: { type: string; text?: string }) => c.text ?? '')
-                .join('')
-            : ''
-
           return (
-            <div key={index} className="flex flex-col items-end gap-1 ml-auto max-w-[85%]">
+            <div key={message.id} className="flex flex-col items-end gap-1 ml-auto max-w-[85%]">
               <div className="bg-[#0053db] text-white p-4 rounded-2xl rounded-tr-none text-sm leading-relaxed shadow-sm">
-                {content}
+                {message.content}
               </div>
             </div>
           )
         }
 
         if (message.role === 'assistant') {
-          const content = message.content
-          if (!content) return null
+          if (!message.content) return null
 
           return (
-            <div key={index} className="flex flex-col items-start gap-1 max-w-[90%]">
+            <div key={message.id} className="flex flex-col items-start gap-1 max-w-[90%]">
               <div className="bg-[#f1f4f7] text-[#2b3438] p-4 rounded-2xl rounded-tl-none text-sm leading-relaxed border border-[#eaeef2] prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-strong:text-[#2b3438] prose-a:text-[#0053db]">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {content}
+                  {message.content}
                 </ReactMarkdown>
               </div>
             </div>

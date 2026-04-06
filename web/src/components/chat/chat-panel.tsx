@@ -1,11 +1,11 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { useCopilotChatHeadless_c } from '@copilotkit/react-core'
 import { ChatMessages } from './chat-messages'
 import { ChatInput } from './chat-input'
+import { sendChatMessage, type ChatMessage } from '@/lib/chat-client'
 
 interface ChatPanelProps {
   isOpen: boolean
@@ -13,19 +13,55 @@ interface ChatPanelProps {
 }
 
 export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
-  const { sendMessage, isLoading } = useCopilotChatHeadless_c()
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const threadId = useRef(crypto.randomUUID())
 
-  const handleSuggestion = useCallback(
-    async (text: string) => {
-      if (isLoading) return
-      await sendMessage({
-        id: crypto.randomUUID(),
-        role: 'user',
-        content: text,
-      })
-    },
-    [sendMessage, isLoading],
-  )
+  const handleSend = useCallback(async (text: string) => {
+    if (!text.trim() || isLoading) return
+
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: 'user',
+      content: text.trim(),
+    }
+
+    const assistantId = crypto.randomUUID()
+    const assistantMessage: ChatMessage = {
+      id: assistantId,
+      role: 'assistant',
+      content: '',
+    }
+
+    setMessages((prev) => [...prev, userMessage, assistantMessage])
+    setIsLoading(true)
+
+    await sendChatMessage(
+      [...messages, userMessage],
+      threadId.current,
+      // onToken: assistant 메시지에 토큰 누적
+      (token) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: m.content + token } : m,
+          ),
+        )
+      },
+      // onThinking: 현재는 별도 처리 없음
+      () => {},
+      // onDone
+      () => setIsLoading(false),
+      // onError
+      (error) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: `오류: ${error}` } : m,
+          ),
+        )
+        setIsLoading(false)
+      },
+    )
+  }, [isLoading, messages])
 
   return (
     <AnimatePresence>
@@ -65,10 +101,14 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
             </div>
 
             {/* 메시지 영역 */}
-            <ChatMessages onSuggestionSelect={handleSuggestion} />
+            <ChatMessages
+              messages={messages}
+              isLoading={isLoading}
+              onSuggestionSelect={handleSend}
+            />
 
             {/* 입력 영역 */}
-            <ChatInput />
+            <ChatInput onSend={handleSend} isLoading={isLoading} />
           </motion.aside>
 
           {/* 모바일: 바텀 시트 */}
@@ -99,10 +139,14 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
             </div>
 
             {/* 메시지 영역 */}
-            <ChatMessages onSuggestionSelect={handleSuggestion} />
+            <ChatMessages
+              messages={messages}
+              isLoading={isLoading}
+              onSuggestionSelect={handleSend}
+            />
 
             {/* 입력 영역 */}
-            <ChatInput />
+            <ChatInput onSend={handleSend} isLoading={isLoading} />
           </motion.div>
         </>
       )}

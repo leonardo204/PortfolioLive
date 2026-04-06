@@ -22,8 +22,8 @@ export interface RateLimitResult {
  * 기본 설정 프리셋
  */
 export const RATE_LIMIT_PRESETS = {
-  /** 채팅: 분당 20회 */
-  chat: { windowSeconds: 60, maxRequests: 20 } satisfies RateLimitConfig,
+  /** 채팅: 분당 120회 (CopilotKit 내부 폴링 포함) */
+  chat: { windowSeconds: 60, maxRequests: 120 } satisfies RateLimitConfig,
   /** 연락 폼: 하루 3회 */
   contact_daily: { windowSeconds: 60 * 60 * 24, maxRequests: 3 } satisfies RateLimitConfig,
   /** 연락 폼: 세션 1회 (1시간) */

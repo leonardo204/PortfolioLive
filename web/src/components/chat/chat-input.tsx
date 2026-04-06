@@ -2,31 +2,27 @@
 
 import { useState, useRef, KeyboardEvent } from 'react'
 import { SendHorizonal } from 'lucide-react'
-import { useCopilotChatHeadless_c } from '@copilotkit/react-core'
 
 interface ChatInputProps {
+  onSend: (text: string) => void
+  isLoading?: boolean
   sessionEnded?: boolean
 }
 
-export function ChatInput({ sessionEnded }: ChatInputProps) {
-  const { sendMessage, isLoading } = useCopilotChatHeadless_c()
+export function ChatInput({ onSend, isLoading = false, sessionEnded }: ChatInputProps) {
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const isDisabled = isLoading || !!sessionEnded
 
-  const handleSend = async () => {
+  const handleSend = () => {
     const text = input.trim()
     if (!text || isDisabled) return
     setInput('')
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
     }
-    await sendMessage({
-      id: crypto.randomUUID(),
-      role: 'user',
-      content: text,
-    })
+    onSend(text)
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
