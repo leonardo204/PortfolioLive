@@ -53,3 +53,6 @@ pgdata/
 # Logs
 *.log
 npm-debug.log*
+
+# Playwright
+browser-state-*.json
