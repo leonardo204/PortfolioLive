@@ -6,7 +6,7 @@ from langchain_core.messages import AIMessage
 
 from ...llm.factory import call_llm
 from ...llm.prompts import TECHNICAL_SYSTEM_PROMPT, POST_SUGGESTION_PROMPT
-from ..tools.rag_tool import rag_search, format_rag_context
+from ..tools.rag_tool import rag_search, format_rag_context, rewrite_query_with_history
 from ..state import AgentState
 
 logger = logging.getLogger(__name__)
@@ -42,11 +42,17 @@ def _extract_last_user_message(state: AgentState) -> str:
     return ""
 
 
-def _build_rag_query(user_message: str, conversation_context: str) -> str:
-    """멀티턴 맥락을 반영한 RAG 쿼리 생성"""
-    if "첫 번째 질문" not in conversation_context and len(conversation_context) > 20:
-        return f"{conversation_context[-200:]}\n현재 질문: {user_message}"
-    return user_message
+def _build_conversation_history_for_rewrite(state: AgentState) -> list[dict]:
+    """대화 히스토리를 role/content 딕셔너리 형태로 변환 (쿼리 재작성용)"""
+    messages = state.get("messages", [])
+    result = []
+    for msg in messages:
+        if not hasattr(msg, "type"):
+            continue
+        role = "user" if msg.type == "human" else "assistant"
+        content = msg.content if isinstance(msg.content, str) else str(msg.content)
+        result.append({"role": role, "content": content[:300]})
+    return result
 
 
 async def technical_node(state: AgentState) -> AgentState:
@@ -67,8 +73,9 @@ async def technical_node(state: AgentState) -> AgentState:
         "needs_grounding": False,
     }
 
-    # 1. RAG 검색
-    rag_query = _build_rag_query(user_message, conversation_context)
+    # 1. 멀티턴 쿼리 재작성 후 RAG 검색
+    history_for_rewrite = _build_conversation_history_for_rewrite(state)
+    rag_query = await rewrite_query_with_history(user_message, history_for_rewrite)
     rag_results = await rag_search(rag_query, top_k=6)
     updates["rag_results"] = rag_results
 

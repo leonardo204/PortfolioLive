@@ -1,6 +1,9 @@
 """RAG 검색 Tool 래퍼"""
 
+import logging
 from ...rag.retriever import RAGRetriever
+
+logger = logging.getLogger(__name__)
 
 _retriever: RAGRetriever | None = None
 
@@ -10,6 +13,71 @@ def _get_retriever() -> RAGRetriever:
     if _retriever is None:
         _retriever = RAGRetriever()
     return _retriever
+
+
+async def rewrite_query_with_history(
+    query: str,
+    conversation_history: list[dict] | None = None,
+) -> str:
+    """멀티턴 대화 맥락을 반영하여 자체 포함적 검색 쿼리로 재작성
+
+    Args:
+        query: 현재 사용자 쿼리
+        conversation_history: 최근 대화 히스토리 (role/content 딕셔너리 리스트)
+
+    Returns:
+        재작성된 검색 쿼리
+    """
+    if not conversation_history or len(conversation_history) < 2:
+        return query
+
+    # 대화 히스토리가 충분히 짧으면 그냥 원본 사용
+    lower_q = query.lower().strip()
+    ambiguous_patterns = [
+        "그것", "그거", "거기", "이것", "이거", "저것", "저거",
+        "그", "이", "저", "더 알려", "자세히", "설명해",
+        "what about", "tell me more", "elaborate", "more details",
+    ]
+    is_ambiguous = any(p in lower_q for p in ambiguous_patterns) or len(query) < 15
+
+    if not is_ambiguous:
+        return query
+
+    try:
+        from ...llm.factory import call_llm
+
+        # 최근 5턴만 사용 (user + assistant 쌍)
+        recent = conversation_history[-10:]
+        history_text = "\n".join(
+            f"{'사용자' if m.get('role') == 'user' else '에이전트'}: {str(m.get('content', ''))[:200]}"
+            for m in recent
+        )
+
+        system_prompt = (
+            "당신은 검색 쿼리 재작성 전문가입니다. "
+            "대화 맥락을 분석하여 모호한 참조(그것, 이것 등)를 구체적인 명사로 대체하고, "
+            "독립적으로 이해 가능한 검색 쿼리를 생성합니다. "
+            "결과는 재작성된 쿼리 텍스트만 출력합니다. 설명 없이 쿼리만."
+        )
+        user_prompt = (
+            f"대화 히스토리:\n{history_text}\n\n"
+            f"현재 쿼리: {query}\n\n"
+            "위 대화 맥락을 고려하여 자체 포함적(self-contained) 검색 쿼리로 재작성해주세요."
+        )
+
+        rewritten = await call_llm(
+            model_name="flash",
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+        )
+        rewritten = rewritten.strip().strip('"').strip("'")
+        if rewritten:
+            logger.info(f"[RAGTool] Query rewritten: '{query}' → '{rewritten}'")
+            return rewritten
+    except Exception as e:
+        logger.warning(f"[RAGTool] Query rewrite failed: {e}")
+
+    return query
 
 
 async def rag_search(query: str, top_k: int = 5) -> list[dict]:

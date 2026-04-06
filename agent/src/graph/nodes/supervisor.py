@@ -91,8 +91,26 @@ async def supervisor_node(state: AgentState) -> AgentState:
             if kw in classification_result.upper():
                 intent = kw
                 break
+    except TimeoutError as e:
+        logger.error(f"[Supervisor] LLM timeout: {e}")
+        updates["thinking"] = ""
+        updates["intent"] = "OUT_OF_SCOPE"
+        updates["model_choice"] = "flash"
+        updates["messages"] = [
+            AIMessage(content="잠시 후 다시 시도해주세요. 현재 응답 생성에 시간이 걸리고 있습니다.")
+        ]
+        return updates
     except Exception as e:
+        err_str = str(e).lower()
         logger.error(f"[Supervisor] Classification failed: {e}")
+        if "quota" in err_str or "429" in err_str or "rate" in err_str:
+            updates["thinking"] = ""
+            updates["intent"] = "OUT_OF_SCOPE"
+            updates["model_choice"] = "flash"
+            updates["messages"] = [
+                AIMessage(content="현재 요청이 많습니다. 잠시 후 다시 시도해주세요.")
+            ]
+            return updates
         intent = "OUT_OF_SCOPE"
 
     # 가드레일 판정
