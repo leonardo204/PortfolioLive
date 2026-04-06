@@ -4,9 +4,12 @@ import { MessageSquare } from 'lucide-react'
 
 interface ChatTriggerProps {
   onClick?: () => void
+  isOpen?: boolean
 }
 
-export function ChatTrigger({ onClick }: ChatTriggerProps) {
+export function ChatTrigger({ onClick, isOpen }: ChatTriggerProps) {
+  if (isOpen) return null
+
   return (
     <div className="fixed bottom-0 left-0 w-full z-40">
       <button
