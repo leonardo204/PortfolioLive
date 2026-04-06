@@ -20,16 +20,21 @@
 
 ### 개요
 
-**프로젝트명** — 한 줄 설명
+**PortfolioLive** — 포트폴리오 웹 소개 + 자연어 대화형 Q&A 서비스
 
 | 항목 | 값 |
 |------|-----|
-| 기술 스택 | (예: iOS 17+, SwiftUI, SwiftData) |
-| 빌드 방법 | (예: `cd src && xcodegen generate`) |
-| 상태 | (예: 개발 중 / 출시) |
+| 기술 스택 | Next.js 15+, FastAPI, LangGraph, CopilotKit, Gemini, PostgreSQL, Docker |
+| 빌드 방법 | `docker-compose up` |
+| 상태 | 설계 단계 |
 
 ### 상세 문서
 
+**프로젝트 문서**
+- [서비스 계획서](docs/service-plan.md) — 아키텍처, 기술 스택, 구현 단계, DB 스키마
+- [서비스 시나리오](docs/scenarios.md) — 8개 시나리오, UI 컴포넌트 매핑, 멀티턴 흐름
+
+**시스템 문서**
 - [Context DB](ref-docs/context-db.md) — SQLite 기반 세션/태스크/결정 저장소
 - [Context Monitor](ref-docs/context-monitor.md) — HUD + compaction 감지/복구
 - [Hooks](ref-docs/hooks.md) — 5개 자동 실행 Hook 상세
@@ -37,12 +42,14 @@
 - [셋업](ref-docs/setup.md) — 새 환경 초기 설정
 - [Agent Delegation](ref-docs/agent-delegation.md) — 에이전트 위임/파이프라인 상세
 
-> 프로젝트별 문서를 추가하세요.
-
 ### 핵심 규칙
 
-- (프로젝트 고유의 코딩 규칙, 금지 사항 등)
+- API 키는 `.env`에만 저장, 절대 커밋 금지
+- 디자인: No AI feel, simple, tidy, 과도한 애니메이션 자제
+- 대상 사용자: 인사담당자, 스카우터
+- DB: PostgreSQL 단일 인스턴스 (pgvector, 체크포인터, 캐시 전부 포함)
+- 배포: Docker Compose, private port (기존 서비스 공존)
 
 ---
 
-*최종 업데이트: YYYY-MM-DD*
+*최종 업데이트: 2026-04-06*

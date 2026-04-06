@@ -1,4 +1,12 @@
 
+# Environment
+.env
+.env.local
+.env.production
+
+# 민감 데이터
+docs/career-data.md
+
 # Claude Code runtime
 .claude/db/context.db
 .claude/.ctx_state
@@ -8,3 +16,16 @@
 .claude/.hook_feedback
 .claude/.project_root
 .claude/.messenger_enabled
+
+# Node
+node_modules/
+.next/
+out/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Docker
+pgdata/
