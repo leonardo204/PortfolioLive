@@ -4,13 +4,12 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6 md:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         {/* Copyright */}
         <span className="text-xs tracking-widest uppercase text-[#586065]/70 font-medium">
-          &copy; 2026 이용섭. Built with precision.
+          &copy; 2026 Yongsub Lee
         </span>
 
         <div className="flex items-center gap-6">
-          {/* Social Links */}
           <a
-            href="https://github.com/leeyongsub7"
+            href="https://github.com/leonardo204"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs font-bold uppercase tracking-widest text-[#0053db] hover:text-[#0048c1] transition-colors"
@@ -18,15 +17,7 @@ export function Footer() {
             GitHub
           </a>
           <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-bold uppercase tracking-widest text-[#0053db] hover:text-[#0048c1] transition-colors"
-          >
-            LinkedIn
-          </a>
-          <a
-            href="mailto:leeyongsub7@gmail.com"
+            href="mailto:zerolive7@gmail.com"
             className="text-xs font-bold uppercase tracking-widest text-[#0053db] hover:text-[#0048c1] transition-colors"
           >
             Email

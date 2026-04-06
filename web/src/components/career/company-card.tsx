@@ -1,12 +1,19 @@
-'use client'
-
-import { useState } from 'react'
-import { ChevronDown, ChevronUp } from 'lucide-react'
 import { CompanyBadge } from './company-badge'
-import type { CareerWithProjects } from '@/lib/queries/career'
 
 interface CompanyCardProps {
-  career: CareerWithProjects
+  career: {
+    id: number
+    company: string
+    companyType: string
+    department: string
+    position: string
+    location: string
+    startedAt: Date
+    endedAt: Date | null
+    isCurrent: boolean
+    techTransition: string | null
+    summary: string | null
+  }
   isCurrent: boolean
 }
 
@@ -29,8 +36,6 @@ function formatDate(date: Date): string {
 }
 
 export function CompanyCard({ career, isCurrent }: CompanyCardProps) {
-  const [open, setOpen] = useState(false)
-
   const startDate = new Date(career.startedAt)
   const endDate = career.endedAt ? new Date(career.endedAt) : null
   const duration = calcDuration(startDate, endDate)
@@ -68,42 +73,9 @@ export function CompanyCard({ career, isCurrent }: CompanyCardProps) {
           <p className="text-base md:text-lg text-[#2b3438] mb-6">{career.techTransition}</p>
         )}
 
-        {/* Projects Accordion */}
-        {career.workProjects.length > 0 && (
-          <div>
-            <button
-              onClick={() => setOpen(!open)}
-              className="flex items-center gap-2 cursor-pointer text-xs font-bold uppercase tracking-widest text-[#586065] hover:text-[#0053db] transition-colors"
-            >
-              {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-              <span>{career.workProjects.length}개 프로젝트</span>
-            </button>
-
-            {open && (
-              <div className="mt-4 pl-4 border-l-2 border-[#dbe1ff] space-y-3">
-                {career.workProjects.map((project) => (
-                  <div key={project.id}>
-                    <div className="flex items-start gap-2">
-                      <span className="font-mono text-xs text-[#abb3b9] mt-0.5 flex-shrink-0">
-                        {project.year}
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold text-[#2b3438]">{project.title}</p>
-                        <p className="text-sm text-[#586065] leading-relaxed mt-0.5">
-                          {project.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Summary (프로젝트 없을 때) */}
-        {career.workProjects.length === 0 && career.summary && (
-          <p className="text-base text-[#2b3438]">{career.summary}</p>
+        {/* Summary */}
+        {career.summary && (
+          <p className="text-sm text-[#586065] mt-2">{career.summary}</p>
         )}
       </div>
     </div>

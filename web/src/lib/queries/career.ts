@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma'
 export async function getCareers() {
   try {
     return await prisma.career.findMany({
-      include: { workProjects: true },
       orderBy: { sortOrder: 'asc' }
     })
   } catch {

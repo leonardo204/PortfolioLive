@@ -1,4 +1,5 @@
 import { MobileNav } from './mobile-nav'
+import { LanguageSwitcher } from './language-switcher'
 
 const navItems = [
   { label: '경력', href: '#career' },
@@ -13,23 +14,28 @@ export function Header() {
         {/* Logo */}
         <a
           href="/"
-          className="text-lg font-semibold tracking-tight text-[#2b3438] hover:text-[#0053db] transition-colors"
+          className="font-mono font-bold tracking-tight text-[#2b3438] hover:text-[#0053db] transition-colors text-lg"
         >
-          이용섭
+          Leonardo204.
         </a>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="px-4 py-2 rounded-lg text-sm font-semibold text-[#586065] hover:text-[#0053db] hover:bg-[#f1f4f7] transition-colors"
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        {/* Desktop Nav + Language Switcher */}
+        <div className="hidden md:flex items-center gap-1">
+          <nav className="flex items-center gap-1">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-[#586065] hover:text-[#0053db] hover:bg-[#f1f4f7] transition-colors"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <div className="ml-2">
+            <LanguageSwitcher />
+          </div>
+        </div>
 
         {/* Mobile Nav */}
         <MobileNav />
