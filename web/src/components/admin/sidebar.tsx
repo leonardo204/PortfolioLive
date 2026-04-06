@@ -18,7 +18,7 @@ const menuItems = [
     href: '/admin/dashboard',
     icon: LayoutDashboard,
     label: '대시보드',
-    active: false,
+    active: true,
   },
   {
     href: '/admin/careers',
@@ -42,13 +42,13 @@ const menuItems = [
     href: '/admin/chat-logs',
     icon: MessageSquare,
     label: '채팅 로그',
-    active: false,
+    active: true,
   },
   {
-    href: '/admin/contact',
+    href: '/admin/contacts',
     icon: Mail,
     label: '연락요청',
-    active: false,
+    active: true,
   },
   {
     href: '/admin/settings',
@@ -87,7 +87,7 @@ export default function AdminSidebar() {
           const isCurrentPath =
             pathname === item.href || pathname.startsWith(item.href + '/')
 
-          if (!item.active && item.href !== '/admin/careers') {
+          if (!item.active) {
             // 비활성 메뉴 (coming soon)
             return (
               <div
