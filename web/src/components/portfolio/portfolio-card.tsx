@@ -1,4 +1,4 @@
-import { GitBranch } from 'lucide-react'
+import Link from 'next/link'
 import type { PortfolioProjectItem } from '@/lib/queries/portfolio'
 
 interface PortfolioCardProps {
@@ -7,7 +7,10 @@ interface PortfolioCardProps {
 
 export function PortfolioCard({ project }: PortfolioCardProps) {
   return (
-    <div className="group p-6 md:p-8 rounded-xl bg-white border border-[#abb3b9]/15 hover:shadow-[0px_12px_32px_rgba(43,52,56,0.04)] hover:border-[#c7d3ff]/40 transition-all duration-300">
+    <Link
+      href={`/portfolio/${project.slug}`}
+      className="group block p-6 md:p-8 rounded-xl bg-white border border-[#abb3b9]/15 hover:shadow-[0px_12px_32px_rgba(43,52,56,0.04)] hover:border-[#c7d3ff]/40 transition-all duration-300"
+    >
       {/* Category */}
       {project.category && (
         <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#abb3b9] mb-3 block">
@@ -46,27 +49,12 @@ export function PortfolioCard({ project }: PortfolioCardProps) {
         </div>
       )}
 
-      {/* Footer: Year + GitHub */}
-      <div className="flex items-center justify-between mt-auto pt-2">
-        {project.year && (
-          <span className="text-[10px] font-mono text-[#abb3b9] uppercase tracking-widest">
-            {project.year}
-          </span>
-        )}
-        {project.githubUrl && (
-          <a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub 저장소"
-            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#586065] hover:text-[#0053db] transition-colors"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <GitBranch size={12} />
-            <span>GitHub</span>
-          </a>
-        )}
-      </div>
-    </div>
+      {/* Year */}
+      {project.year && (
+        <span className="text-[10px] font-mono text-[#abb3b9] uppercase tracking-widest">
+          {project.year}
+        </span>
+      )}
+    </Link>
   )
 }
