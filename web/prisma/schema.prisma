@@ -1,0 +1,145 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Career {
+  id             Int       @id @default(autoincrement())
+  company        String
+  companyType    String    @map("company_type")
+  department     String
+  position       String
+  location       String
+  startedAt      DateTime  @map("started_at")
+  endedAt        DateTime? @map("ended_at")
+  isCurrent      Boolean   @default(false) @map("is_current")
+  techTransition String?   @map("tech_transition")
+  summary        String?
+  sortOrder      Int       @default(0) @map("sort_order")
+  workProjects   WorkProject[]
+
+  @@map("careers")
+}
+
+model WorkProject {
+  id          Int      @id @default(autoincrement())
+  careerId    Int      @map("career_id")
+  year        String
+  title       String
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+  career      Career   @relation(fields: [careerId], references: [id])
+
+  @@map("work_projects")
+}
+
+model PortfolioProject {
+  id           Int       @id @default(autoincrement())
+  slug         String    @unique
+  title        String
+  description  String?
+  category     String?
+  technologies String[]  @default([])
+  year         String?
+  githubUrl    String?   @map("github_url")
+  readmeRaw    String?   @map("readme_raw")
+  lastSyncedAt DateTime? @map("last_synced_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("portfolio_projects")
+}
+
+model ChatSession {
+  id           Int       @id @default(autoincrement())
+  visitorId    String    @map("visitor_id")
+  ipAddress    String?   @map("ip_address")
+  userAgent    String?   @map("user_agent")
+  referrer     String?
+  startedAt    DateTime  @default(now()) @map("started_at")
+  endedAt      DateTime? @map("ended_at")
+  messageCount Int       @default(0) @map("message_count")
+  messages     ChatMessage[]
+
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id         Int      @id @default(autoincrement())
+  sessionId  Int      @map("session_id")
+  role       String
+  content    String
+  modelUsed  String?  @map("model_used")
+  tokensUsed Int?     @map("tokens_used")
+  cost       Float?
+  latencyMs  Int?     @map("latency_ms")
+  createdAt  DateTime @default(now()) @map("created_at")
+  session    ChatSession @relation(fields: [sessionId], references: [id])
+
+  @@map("chat_messages")
+}
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  path      String
+  referrer  String?
+  visitorId String?  @map("visitor_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("page_views")
+}
+
+model ChatAnalytics {
+  id             Int      @id @default(autoincrement())
+  sessionId      Int      @map("session_id")
+  questionIntent String?  @map("question_intent")
+  satisfaction   String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("chat_analytics")
+}
+
+model GuardrailEvent {
+  id            Int      @id @default(autoincrement())
+  sessionId     Int?     @map("session_id")
+  ipAddress     String?  @map("ip_address")
+  violationType String   @map("violation_type")
+  message       String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("guardrail_events")
+}
+
+model ContactRequest {
+  id           Int      @id @default(autoincrement())
+  sessionId    Int?     @map("session_id")
+  name         String
+  organization String?
+  email        String
+  message      String
+  ipAddress    String?  @map("ip_address")
+  isRead       Boolean  @default(false) @map("is_read")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("contact_requests")
+}
+
+model AdminSetting {
+  key       String   @id
+  value     String
+  isPublic  Boolean  @default(false) @map("is_public")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_settings")
+}
+
+model CacheStore {
+  key       String    @id
+  value     Json
+  expiresAt DateTime? @map("expires_at")
+
+  @@map("cache_store")
+}
