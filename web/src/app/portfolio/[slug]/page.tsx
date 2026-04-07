@@ -1,10 +1,20 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { PortfolioContent } from '@/components/portfolio/portfolio-content'
+import { ChatWrapper } from '@/components/chat/chat-wrapper'
 
-export const revalidate = 3600 // ISR 1시간
+export const revalidate = 3600
+
+const getProject = unstable_cache(
+  async (slug: string) => {
+    return prisma.portfolioProject.findUnique({ where: { slug } })
+  },
+  ['portfolio-project'],
+  { revalidate: 3600 }
+)
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -43,9 +53,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
 
   let project
   try {
-    project = await prisma.portfolioProject.findUnique({
-      where: { slug },
-    })
+    project = await getProject(slug)
   } catch {
     notFound()
   }
@@ -53,6 +61,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
   if (!project) notFound()
 
   return (
+    <>
     <main className="min-h-screen bg-[#f8f9fb]">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-[#f8f9fb]/80 backdrop-blur-md border-b border-[#abb3b9]/10">
@@ -109,7 +118,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
 
         {/* README Content */}
         {project.readmeRaw ? (
-          <PortfolioContent markdown={project.readmeRaw} />
+          <PortfolioContent markdown={project.readmeRaw} slug={project.slug} />
         ) : (
           <div className="text-center py-20 text-[#abb3b9]">
             <p className="text-lg">상세 정보를 준비 중입니다.</p>
@@ -117,5 +126,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
         )}
       </article>
     </main>
+    <ChatWrapper />
+    </>
   )
 }
