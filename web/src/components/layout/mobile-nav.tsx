@@ -6,7 +6,6 @@ import { Menu, X } from 'lucide-react'
 const navItems = [
   { label: '경력', href: '#career' },
   { label: '포트폴리오', href: '#portfolio' },
-  { label: '연락처', href: '#contact' },
 ]
 
 export function MobileNav() {

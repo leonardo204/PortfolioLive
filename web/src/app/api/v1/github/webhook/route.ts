@@ -31,34 +31,24 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // push 이벤트 처리
+  // push 이벤트 처리 (fire-and-forget: 즉시 202 반환 후 백그라운드 sync)
   if (event === 'push') {
-    try {
-      // Agent 파이프라인 동기화 트리거
-      const syncRes = await fetch(`${AGENT_URL}/agent/pipeline/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(60_000),
+    fetch(`${AGENT_URL}/agent/pipeline/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          console.error(`[Webhook] Pipeline sync failed: ${res.status} ${await res.text()}`)
+        } else {
+          console.log('[Webhook] Pipeline sync completed successfully')
+        }
+        // sync 완료 후 ISR 캐시 갱신
+        try { revalidatePath('/') } catch { /* noop outside caching context */ }
       })
+      .catch((err) => console.error('[Webhook] Pipeline sync error:', err))
 
-      if (!syncRes.ok) {
-        const errText = await syncRes.text()
-        console.error(`[Webhook] Pipeline sync failed: ${syncRes.status} ${errText}`)
-      } else {
-        console.log('[Webhook] Pipeline sync triggered successfully')
-      }
-    } catch (err) {
-      console.error('[Webhook] Pipeline sync error:', err)
-    }
-
-    // ISR 캐시 갱신
-    try {
-      revalidatePath('/')
-    } catch {
-      // revalidatePath는 캐싱 컨텍스트 밖에서 noop
-    }
-
-    return NextResponse.json({ ok: true, message: 'Pipeline sync triggered' })
+    return NextResponse.json({ ok: true, message: 'Pipeline sync triggered' }, { status: 202 })
   }
 
   // 다른 이벤트는 무시

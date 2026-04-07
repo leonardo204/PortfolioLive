@@ -67,6 +67,16 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
     <AnimatePresence>
       {isOpen && (
         <>
+          {/* 데스크톱: 투명 오버레이 (클릭 시 닫기) */}
+          <motion.div
+            key="desktop-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="hidden md:block fixed inset-0 z-30"
+            onClick={onClose}
+          />
+
           {/* 모바일 딤 오버레이 */}
           <motion.div
             key="overlay"

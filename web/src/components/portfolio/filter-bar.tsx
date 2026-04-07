@@ -7,8 +7,8 @@ import type { PortfolioProjectItem } from '@/lib/queries/portfolio'
 const FILTERS = [
   { label: '전체', value: '' },
   { label: 'AI & Voice', value: 'AI & Voice' },
-  { label: 'STB', value: 'STB' },
-  { label: '사이드 프로젝트', value: '사이드 프로젝트' },
+  { label: 'STB', value: 'STB Middleware' },
+  { label: 'Side Projects', value: 'Side Projects' },
 ]
 
 interface FilterBarProps {
@@ -21,7 +21,7 @@ export function FilterBar({ projects }: FilterBarProps) {
   const filtered =
     activeFilter === ''
       ? projects
-      : projects.filter((p) => p.category === activeFilter)
+      : projects.filter((p) => p.category?.includes(activeFilter))
 
   return (
     <div>

@@ -1,10 +1,11 @@
+'use client'
+
 import { MobileNav } from './mobile-nav'
 import { LanguageSwitcher } from './language-switcher'
 
 const navItems = [
   { label: '경력', href: '#career' },
   { label: '포트폴리오', href: '#portfolio' },
-  { label: '연락처', href: '#contact' },
 ]
 
 export function Header() {
@@ -14,6 +15,7 @@ export function Header() {
         {/* Logo */}
         <a
           href="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="font-mono font-bold tracking-tight text-[#2b3438] hover:text-[#0053db] transition-colors text-lg"
         >
           Leonardo204.
