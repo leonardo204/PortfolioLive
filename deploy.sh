@@ -43,6 +43,12 @@ fi
 log "기존 컨테이너 중지..."
 docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
 
+# Step 1.5: pnpm-lock.yaml 자동 생성
+if [ ! -f "web/pnpm-lock.yaml" ]; then
+    log "web/pnpm-lock.yaml 없음 — 자동 생성 중..."
+    (cd web && npx pnpm install --lockfile-only) || err "pnpm-lock.yaml 생성 실패"
+fi
+
 # Step 2: Build
 log "이미지 빌드 중..."
 docker compose -f "$COMPOSE_FILE" build $BUILD_OPTS
