@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma'
 const HERO_KEYS = ['hero_title', 'hero_subtitle', 'hero_description'] as const
 
 const HERO_DEFAULTS = {
-  hero_title: 'AI Software\nEngineer',
+  hero_title: 'AI Software\\nEngineer',
   hero_subtitle: 'Agentic AI · Full-Stack · Embedded Systems',
   hero_description:
-    '10년간 5,000만 대+ 디바이스에 탑재된 미들웨어를 개발하고, 현재는 Agentic AI 시스템과 음성 서비스를 설계합니다. App Store 출시 앱 5개.',
+    '5,000만 대+ 디바이스에 미들웨어를 공급하며 시스템 설계 역량을 쌓았고, 최근에는 Agentic AI 기반 제품 개발에 깊이 빠져 있습니다. 개인 프로젝트로 만든 앱 5개를 App Store에 출시하기도 했습니다.',
 }
 
 export async function HeroSection() {
