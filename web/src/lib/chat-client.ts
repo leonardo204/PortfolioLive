@@ -9,6 +9,7 @@ export interface ChatMessage {
 export async function sendChatMessage(
   messages: ChatMessage[],
   threadId: string,
+  pathname: string,
   onToken: (token: string) => void,
   onThinking: (text: string) => void,
   onDone: () => void,
@@ -20,7 +21,7 @@ export async function sendChatMessage(
     res = await fetch('/api/v1/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, thread_id: threadId }),
+      body: JSON.stringify({ messages, thread_id: threadId, page_context: pathname }),
     })
   } catch {
     onError('서버 연결에 실패했습니다.')

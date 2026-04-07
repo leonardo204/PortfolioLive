@@ -18,7 +18,7 @@ export function ChatWrapper() {
     <>
       <ChatTrigger onClick={() => setIsChatOpen(true)} isOpen={isChatOpen} />
       {isChatOpen && (
-        <ChatPanel isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+        <ChatPanel isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} pathname={pathname} />
       )}
     </>
   )

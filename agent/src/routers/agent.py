@@ -90,9 +90,10 @@ def _build_history_messages(messages: list) -> list:
 async def run_portfolio_agent(body: dict) -> AsyncGenerator[str, None]:
     """PortfolioLive 에이전트 실행 + AG-UI 이벤트 스트리밍"""
     encoder = EventEncoder()
-    thread_id = body.get("threadId", str(uuid.uuid4()))
+    thread_id = body.get("threadId", body.get("thread_id", str(uuid.uuid4())))
     run_id = str(uuid.uuid4())
     messages = body.get("messages", [])
+    page_context = body.get("page_context", "")
 
     # RUN_STARTED
     yield encoder.encode(RunStartedEvent(
@@ -104,6 +105,12 @@ async def run_portfolio_agent(body: dict) -> AsyncGenerator[str, None]:
     # 사용자 메시지 추출
     last_user_content = _extract_last_user_content(messages)
     history_messages = _build_history_messages(messages)
+
+    # 페이지 컨텍스트가 포트폴리오 상세 페이지면 slug를 힌트로 추가
+    if page_context and page_context.startswith("/portfolio/"):
+        slug = page_context.split("/portfolio/")[-1].split("/")[0].split("?")[0]
+        if slug:
+            last_user_content = f"[사용자가 현재 '{slug}' 프로젝트 페이지를 보고 있음]\n{last_user_content}"
 
     # 초기 thinking 상태 전송
     try:

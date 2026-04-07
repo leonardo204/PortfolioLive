@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 
 export async function POST(req: NextRequest) {
-  const body = await req.json() // { messages: [...], thread_id?: string }
+  const body = await req.json() // { messages: [...], thread_id?: string, page_context?: string }
 
   const agentUrl = process.env.AGENT_URL ?? 'http://localhost:3101'
 
@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       thread_id: body.thread_id ?? crypto.randomUUID(),
       run_id: crypto.randomUUID(),
       messages: body.messages,
+      page_context: body.page_context,
     }),
   })
 

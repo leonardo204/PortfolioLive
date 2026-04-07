@@ -10,9 +10,10 @@ import { sendChatMessage, type ChatMessage } from '@/lib/chat-client'
 interface ChatPanelProps {
   isOpen: boolean
   onClose: () => void
+  pathname: string
 }
 
-export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
+export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const threadId = useRef(crypto.randomUUID())
@@ -39,6 +40,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
     await sendChatMessage(
       [...messages, userMessage],
       threadId.current,
+      pathname,
       // onToken: assistant 메시지에 토큰 누적
       (token) => {
         setMessages((prev) =>
