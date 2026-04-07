@@ -54,7 +54,7 @@ const menuItems = [
     href: '/admin/settings',
     icon: Settings,
     label: '설정',
-    active: false,
+    active: true,
   },
 ]
 
