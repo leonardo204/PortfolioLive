@@ -51,7 +51,20 @@ docker compose -f "$COMPOSE_FILE" build $BUILD_OPTS
 log "컨테이너 시작..."
 docker compose -f "$COMPOSE_FILE" up -d
 
-# Step 4: Health check
+# Step 4: DB 초기화 (migration + seed)
+log "PostgreSQL 대기 중..."
+for i in $(seq 1 30); do
+    docker compose -f "$COMPOSE_FILE" exec -T postgres pg_isready -U "${POSTGRES_USER:-portfoliolive}" -q 2>/dev/null && break
+    sleep 1
+done
+
+log "DB 마이그레이션 실행..."
+docker compose -f "$COMPOSE_FILE" exec -T web npx prisma migrate deploy 2>&1 | tail -3 || warn "마이그레이션 스킵 (이미 최신이거나 prisma 미포함)"
+
+log "DB 시드 데이터 투입..."
+docker compose -f "$COMPOSE_FILE" exec -T web npx prisma db seed 2>&1 | tail -3 || warn "시드 스킵 (이미 데이터 존재하거나 seed 미포함)"
+
+# Step 5: Health check
 log "서비스 상태 확인 중..."
 sleep 3
 
