@@ -14,6 +14,8 @@ function resolveImageSrc(src: string, slug: string, width?: number): string | nu
   if (!src) return null
   // 이미 절대 URL
   if (src.startsWith('http://') || src.startsWith('https://')) return src
+  // 로컬 static asset (/images/portfolio/...)
+  if (src.startsWith('/')) return src
   // 상대 경로 → 로컬 프록시 URL (리사이즈 포함)
   const clean = src.replace(/^\.\//, '')
   const w = width ? `&w=${width}` : ''

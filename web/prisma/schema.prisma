@@ -47,6 +47,7 @@ model PortfolioProject {
   year         String?
   githubUrl    String?   @map("github_url")
   readmeRaw    String?   @map("readme_raw")
+  sortOrder    Int       @default(0) @map("sort_order")
   lastSyncedAt DateTime? @map("last_synced_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 

@@ -2,9 +2,38 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { unstable_cache } from 'next/cache'
+import fs from 'fs'
+import path from 'path'
 import { prisma } from '@/lib/prisma'
 import { PortfolioContent } from '@/components/portfolio/portfolio-content'
 import { ChatWrapper } from '@/components/chat/chat-wrapper'
+
+/**
+ * README의 "스크린샷 추가 예정" 플레이스홀더를
+ * public/images/portfolio/{slug}-*.png static 파일로 교체
+ */
+function injectStaticScreenshots(markdown: string, slug: string): string {
+  const imgDir = path.join(process.cwd(), 'public/images/portfolio')
+  let files: string[] = []
+  try {
+    files = fs.readdirSync(imgDir)
+      .filter((f) => f.startsWith(`${slug}-`) && /\.(png|jpg|jpeg|webp)$/i.test(f))
+      .sort()
+  } catch { /* 디렉토리 없으면 무시 */ }
+
+  if (files.length === 0) return markdown
+
+  const imagesMd = files
+    .map((f) => `![${f.replace(/\.[^.]+$/, '').replace(`${slug}-`, '').replace(/-/g, ' ')}](/images/portfolio/${f})`)
+    .join('\n\n')
+
+  // "스크린샷 추가 예정" 플레이스홀더 교체
+  const replaced = markdown.replace(/>\s*스크린샷 추가 예정/g, imagesMd)
+  if (replaced !== markdown) return replaced
+
+  // 플레이스홀더가 없으면 ## 스크린샷 섹션 뒤에 삽입
+  return markdown.replace(/(## 스크린샷\s*\n)/, `$1\n${imagesMd}\n\n`)
+}
 
 export const revalidate = 3600
 
@@ -118,7 +147,10 @@ export default async function PortfolioDetailPage({ params }: Props) {
 
         {/* README Content */}
         {project.readmeRaw ? (
-          <PortfolioContent markdown={project.readmeRaw} slug={project.slug} />
+          <PortfolioContent
+            markdown={injectStaticScreenshots(project.readmeRaw, project.slug)}
+            slug={project.slug}
+          />
         ) : (
           <div className="text-center py-20 text-[#abb3b9]">
             <p className="text-lg">상세 정보를 준비 중입니다.</p>

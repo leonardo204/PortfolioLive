@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 export async function getPortfolioProjects() {
   try {
     return await prisma.portfolioProject.findMany({
-      orderBy: [{ year: 'desc' }, { updatedAt: 'desc' }]
+      orderBy: [{ sortOrder: 'asc' }, { year: 'desc' }, { updatedAt: 'desc' }]
     })
   } catch {
     // DB 연결 실패 시 빈 배열 반환 (빌드/개발 환경 대응)
