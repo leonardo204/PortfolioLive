@@ -29,6 +29,10 @@ function getBadgeStyle(companyType: string) {
 }
 
 export function CompanyBadge({ companyType, className }: CompanyBadgeProps) {
+  const type = companyType.toLowerCase()
+  // 대기업/중견기업만 뱃지 표시, 그 외는 숨김
+  if (type !== '대기업' && type !== '중견기업') return null
+
   const style = getBadgeStyle(companyType)
   return (
     <span
