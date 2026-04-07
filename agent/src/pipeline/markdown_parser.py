@@ -30,13 +30,20 @@ class MarkdownParser:
                 title = h1.group(1).strip()
                 break
 
-        # description: 첫 번째 단락 (헤더 아닌 줄)
+        # description: 첫 번째 의미 있는 단락 (헤더, 배지, 언어 토글, 테이블 제외)
         description = fallback.get("description", "")
         if not description:
+            skip_re = re.compile(
+                r"^(#|!\[|\||\*\*Language\*\*|🌐|---|\s*$|!\[.*badge)"
+            )
             for line in lines[:20]:
-                if not line.startswith("#") and not line.startswith("|") and len(line) > 20:
-                    description = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", line).strip()
-                    break
+                stripped = line.strip()
+                if skip_re.match(stripped) or len(stripped) < 20:
+                    continue
+                # > blockquote도 description 후보
+                cleaned = stripped.lstrip("> ").strip()
+                description = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", cleaned).strip()
+                break
 
         # technologies: 코드 스팬 `` ` `` 또는 badge 이미지 alt 텍스트에서 추출
         techs: list[str] = list(fallback.get("technologies", []))

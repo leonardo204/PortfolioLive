@@ -6,6 +6,7 @@ from langchain_core.messages import AIMessage
 
 from ...llm.factory import call_llm
 from ...llm.prompts import CAREER_SYSTEM_PROMPT, POST_SUGGESTION_PROMPT
+from ...pipeline.career_loader import load_career_context
 from ..tools.rag_tool import rag_search, format_rag_context, rewrite_query_with_history
 from ..state import AgentState
 
@@ -90,7 +91,9 @@ async def career_node(state: AgentState) -> AgentState:
 
     # 2. 컨텍스트 구성
     rag_context = format_rag_context(rag_results)
+    career_context = await load_career_context()
     system_prompt = CAREER_SYSTEM_PROMPT.format(
+        career_context=career_context,
         rag_context=rag_context,
         conversation_context=conversation_context,
     )

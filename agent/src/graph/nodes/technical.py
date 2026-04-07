@@ -6,6 +6,7 @@ from langchain_core.messages import AIMessage
 
 from ...llm.factory import call_llm
 from ...llm.prompts import TECHNICAL_SYSTEM_PROMPT, POST_SUGGESTION_PROMPT
+from ...pipeline.career_loader import load_tech_transition_context
 from ..tools.rag_tool import rag_search, format_rag_context, rewrite_query_with_history
 from ..state import AgentState
 
@@ -89,7 +90,9 @@ async def technical_node(state: AgentState) -> AgentState:
 
     # 2. 컨텍스트 구성
     rag_context = format_rag_context(rag_results)
+    tech_transition_context = await load_tech_transition_context()
     system_prompt = TECHNICAL_SYSTEM_PROMPT.format(
+        tech_transition_context=tech_transition_context,
         rag_context=rag_context,
         conversation_context=conversation_context,
     )
