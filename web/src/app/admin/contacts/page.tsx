@@ -57,50 +57,50 @@ function ContactCard({
     <div
       className={`rounded-xl border p-5 transition-colors ${
         contact.isRead
-          ? 'bg-gray-900 border-gray-800'
-          : 'bg-gray-900 border-blue-800/60'
+          ? 'bg-white border-[#eaeef2]'
+          : 'bg-white border-[#0053db]/20'
       }`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0">
-          <div className={`mt-0.5 shrink-0 ${contact.isRead ? 'text-gray-600' : 'text-blue-400'}`}>
+          <div className={`mt-0.5 shrink-0 ${contact.isRead ? 'text-[#abb3b9]' : 'text-[#0053db]'}`}>
             {contact.isRead ? <MailOpen size={18} /> : <Mail size={18} />}
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold text-white text-sm">{contact.name}</span>
+              <span className="font-semibold text-[#2b3438] text-sm">{contact.name}</span>
               {contact.organization && (
-                <span className="text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">
+                <span className="text-xs text-[#586065] bg-[#eaeef2] px-2 py-0.5 rounded">
                   {contact.organization}
                 </span>
               )}
               {!contact.isRead && (
-                <span className="text-[10px] bg-blue-900 text-blue-300 px-1.5 py-0.5 rounded-full uppercase tracking-wide font-medium">
+                <span className="text-[10px] bg-[#dbe1ff]/30 text-[#0053db] px-1.5 py-0.5 rounded-full uppercase tracking-wide font-medium">
                   new
                 </span>
               )}
             </div>
             <a
               href={`mailto:${contact.email}`}
-              className="text-xs text-blue-400 hover:underline mt-0.5 block"
+              className="text-xs text-[#0053db] hover:underline mt-0.5 block"
             >
               {contact.email}
             </a>
-            <p className="text-sm text-gray-300 mt-2 leading-relaxed line-clamp-3">
+            <p className="text-sm text-[#586065] mt-2 leading-relaxed line-clamp-3">
               {contact.message}
             </p>
           </div>
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0">
-          <span className="text-[11px] text-gray-600 whitespace-nowrap">
+          <span className="text-[11px] text-[#abb3b9] whitespace-nowrap">
             {formatDate(contact.createdAt)}
           </span>
           {!contact.isRead && (
             <button
               onClick={handleMarkRead}
               disabled={marking}
-              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 px-2.5 py-1.5 rounded-md transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 text-xs text-[#586065] hover:text-[#2b3438] bg-[#f1f4f7] hover:bg-[#eaeef2] px-2.5 py-1.5 rounded-md transition-colors disabled:opacity-50"
             >
               <Check size={12} />
               {marking ? '처리 중...' : '읽음'}
@@ -140,28 +140,28 @@ export default function ContactsPage() {
     <div className="flex-1 p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">연락 요청</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[#2b3438] tracking-tight">연락 요청</h1>
+          <p className="text-sm text-[#abb3b9] mt-1">
             {loading
               ? '불러오는 중...'
               : `총 ${contacts.length}건${unreadCount > 0 ? ` · 미읽음 ${unreadCount}건` : ''}`}
           </p>
         </div>
         {unreadCount > 0 && (
-          <span className="text-xs bg-blue-900 text-blue-300 px-3 py-1.5 rounded-full font-medium">
+          <span className="text-xs bg-[#dbe1ff]/30 text-[#0053db] px-3 py-1.5 rounded-full font-medium">
             {unreadCount}건 미읽음
           </span>
         )}
       </div>
 
       {error && (
-        <div className="bg-red-950 border border-red-800 rounded-lg px-4 py-3 text-sm text-red-300 mb-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-600 mb-6">
           데이터를 불러오지 못했습니다: {error}
         </div>
       )}
 
       {!loading && contacts.length === 0 && !error && (
-        <div className="text-center text-gray-600 mt-16">
+        <div className="text-center text-[#abb3b9] mt-16">
           <Mail size={32} className="mx-auto mb-3 opacity-30" />
           <p className="text-sm">아직 연락 요청이 없습니다.</p>
         </div>

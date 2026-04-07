@@ -38,21 +38,21 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#f8f9fb] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* 헤더 */}
         <div className="text-center mb-8">
-          <h1 className="text-xl font-semibold text-white tracking-tight">
-            PortfolioLive
+          <h1 className="text-xl font-semibold text-[#2b3438] tracking-tight">
+            Leonardo204
           </h1>
-          <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mt-1">
+          <p className="text-xs uppercase tracking-[0.2em] text-[#abb3b9] mt-1">
             Admin Console
           </p>
         </div>
 
         {/* 카드 */}
-        <div className="bg-gray-900 rounded-lg p-8 border border-gray-800">
-          <h2 className="text-sm font-medium text-gray-300 mb-6">
+        <div className="bg-white rounded-lg p-8 border border-[#eaeef2] shadow-sm">
+          <h2 className="text-sm font-medium text-[#2b3438] mb-6">
             관리자 로그인
           </h2>
 
@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider"
+                className="block text-xs font-medium text-[#586065] mb-1.5 uppercase tracking-wider"
               >
                 비밀번호
               </label>
@@ -72,20 +72,20 @@ export default function AdminLoginPage() {
                 placeholder="••••••••"
                 required
                 autoFocus
-                className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-md text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors"
+                className="w-full px-3 py-2.5 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-[#2b3438] text-sm placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db] focus:border-[#0053db] transition-colors"
               />
             </div>
 
             {error && (
-              <div className="px-3 py-2.5 bg-red-950 border border-red-800 rounded-md">
-                <p className="text-xs text-red-400">{error}</p>
+              <div className="px-3 py-2.5 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-xs text-red-600">{error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading || !password}
-              className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-500 text-white text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+              className="w-full py-2.5 px-4 bg-[#0053db] hover:bg-[#0048bf] disabled:bg-[#eaeef2] disabled:text-[#abb3b9] text-white text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#0053db] focus:ring-offset-2 focus:ring-offset-[#f8f9fb]"
             >
               {loading ? '로그인 중...' : '로그인'}
             </button>

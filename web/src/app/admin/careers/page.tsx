@@ -108,7 +108,7 @@ function CareerForm({
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+          <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
             회사명 *
           </label>
           <input
@@ -117,11 +117,11 @@ function CareerForm({
             onChange={(e) => setForm({ ...form, company: e.target.value })}
             placeholder="KT 알티미디어"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+          <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
             회사 유형 *
           </label>
           <input
@@ -130,14 +130,14 @@ function CareerForm({
             onChange={(e) => setForm({ ...form, companyType: e.target.value })}
             placeholder="대기업 / 중소기업 / 스타트업"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+          <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
             부서 *
           </label>
           <input
@@ -146,11 +146,11 @@ function CareerForm({
             onChange={(e) => setForm({ ...form, department: e.target.value })}
             placeholder="개발팀"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+          <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
             직책 *
           </label>
           <input
@@ -159,14 +159,14 @@ function CareerForm({
             onChange={(e) => setForm({ ...form, position: e.target.value })}
             placeholder="선임 개발자"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+          <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
             위치 *
           </label>
           <input
@@ -175,11 +175,11 @@ function CareerForm({
             onChange={(e) => setForm({ ...form, location: e.target.value })}
             placeholder="서울"
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+          <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
             정렬 순서
           </label>
           <input
@@ -187,14 +187,14 @@ function CareerForm({
             value={form.sortOrder}
             onChange={(e) => setForm({ ...form, sortOrder: e.target.value })}
             placeholder="0"
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+          <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
             입사일 *
           </label>
           <input
@@ -202,11 +202,11 @@ function CareerForm({
             value={form.startedAt}
             onChange={(e) => setForm({ ...form, startedAt: e.target.value })}
             required
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+          <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
             퇴사일
           </label>
           <input
@@ -214,7 +214,7 @@ function CareerForm({
             value={form.endedAt}
             onChange={(e) => setForm({ ...form, endedAt: e.target.value })}
             disabled={form.isCurrent}
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-400"
+            className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] focus:outline-none focus:ring-1 focus:ring-[#0053db] disabled:bg-[#eaeef2] disabled:text-[#abb3b9]"
           />
         </div>
         <div className="flex items-end pb-2">
@@ -225,15 +225,15 @@ function CareerForm({
               onChange={(e) =>
                 setForm({ ...form, isCurrent: e.target.checked, endedAt: e.target.checked ? '' : form.endedAt })
               }
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="rounded border-[#abb3b9]/20 text-[#0053db] focus:ring-[#0053db]"
             />
-            <span className="text-sm text-gray-600">재직중</span>
+            <span className="text-sm text-[#2b3438]">재직중</span>
           </label>
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+        <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
           기술 전환 메모
         </label>
         <input
@@ -241,12 +241,12 @@ function CareerForm({
           value={form.techTransition}
           onChange={(e) => setForm({ ...form, techTransition: e.target.value })}
           placeholder="C/C++ 임베디드 → Python/AI 서비스"
-          className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
         />
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+        <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
           요약
         </label>
         <textarea
@@ -254,7 +254,7 @@ function CareerForm({
           onChange={(e) => setForm({ ...form, summary: e.target.value })}
           placeholder="해당 회사에서의 주요 역할 및 성과 요약"
           rows={3}
-          className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+          className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db] resize-none"
         />
       </div>
 
@@ -262,7 +262,7 @@ function CareerForm({
         <button
           type="submit"
           disabled={submitting}
-          className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white text-sm font-medium rounded-md transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2 bg-[#0053db] hover:bg-[#0048bf] disabled:bg-[#eaeef2] text-white text-sm font-medium rounded-md transition-colors"
         >
           <Check size={14} />
           {submitting ? '처리 중...' : submitLabel}
@@ -270,7 +270,7 @@ function CareerForm({
         <button
           type="button"
           onClick={onCancel}
-          className="flex items-center gap-1.5 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-md transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2 bg-[#f1f4f7] hover:bg-[#eaeef2] text-[#586065] text-sm font-medium rounded-md transition-colors"
         >
           <X size={14} />
           취소
@@ -402,7 +402,7 @@ export default function AdminCareersPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center">
-        <div className="text-gray-400 text-sm">로딩 중...</div>
+        <div className="text-[#abb3b9] text-sm">로딩 중...</div>
       </div>
     )
   }
@@ -411,15 +411,15 @@ export default function AdminCareersPage() {
     <div className="p-8">
       {/* 헤더 */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-4">
+        <div className="flex items-center gap-2 text-xs text-[#586065] mb-4">
           <span className="uppercase tracking-widest">Admin</span>
-          <span className="text-gray-600">/</span>
-          <span className="text-blue-600 uppercase tracking-widest">경력</span>
+          <span className="text-[#abb3b9]">/</span>
+          <span className="text-[#0053db] uppercase tracking-widest">경력</span>
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">경력 관리</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="text-2xl font-semibold text-[#2b3438]">경력 관리</h1>
+            <p className="text-sm text-[#586065] mt-1">
               {careers.length}개 회사 · 각 회사의 프로젝트를 관리하세요
             </p>
           </div>
@@ -429,7 +429,7 @@ export default function AdminCareersPage() {
               setForm(emptyForm)
               setEditingId(null)
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#0053db] hover:bg-[#0048bf] text-white text-sm font-medium rounded-md transition-colors"
           >
             <Plus size={16} />
             경력 추가
@@ -445,8 +445,8 @@ export default function AdminCareersPage() {
 
       {/* 추가 폼 */}
       {showAddForm && (
-        <div className="mb-6 bg-white rounded-lg border border-blue-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">새 경력 추가</h3>
+        <div className="mb-6 bg-white rounded-lg border border-[#0053db]/20 p-6">
+          <h3 className="text-sm font-semibold text-[#2b3438] mb-4">새 경력 추가</h3>
           <CareerForm
             form={form}
             setForm={setForm}
@@ -461,10 +461,10 @@ export default function AdminCareersPage() {
       {/* 회사 카드 목록 */}
       <div className="grid gap-4">
         {careers.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <Building2 className="mx-auto mb-3 text-gray-300" size={40} />
-            <p className="text-gray-500 text-sm">등록된 경력이 없습니다.</p>
-            <p className="text-gray-400 text-xs mt-1">
+          <div className="bg-white rounded-lg border border-[#eaeef2] p-12 text-center">
+            <Building2 className="mx-auto mb-3 text-[#abb3b9]" size={40} />
+            <p className="text-[#586065] text-sm">등록된 경력이 없습니다.</p>
+            <p className="text-[#abb3b9] text-xs mt-1">
               위의 추가 버튼을 클릭하거나 시드 데이터를 실행하세요.
             </p>
           </div>
@@ -472,12 +472,12 @@ export default function AdminCareersPage() {
           careers.map((career) => (
             <div
               key={career.id}
-              className="bg-white rounded-lg border border-gray-200 hover:border-blue-200 hover:shadow-sm transition-all"
+              className="bg-white rounded-lg border border-[#eaeef2] hover:border-[#0053db]/30 hover:shadow-sm transition-all"
             >
               {editingId === career.id ? (
                 // 수정 인라인 폼
                 <div className="p-6">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                  <h3 className="text-sm font-semibold text-[#2b3438] mb-4">
                     경력 수정 — {career.company}
                   </h3>
                   <CareerForm
@@ -495,20 +495,20 @@ export default function AdminCareersPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h2 className="text-base font-semibold text-gray-900">
+                        <h2 className="text-base font-semibold text-[#2b3438]">
                           {career.company}
                         </h2>
-                        <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded">
+                        <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 bg-[#eaeef2] text-[#586065] rounded">
                           {career.companyType}
                         </span>
                         {career.isCurrent && (
-                          <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded">
+                          <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 bg-[#dbe1ff]/30 text-[#0053db] rounded">
                             재직중
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                      <div className="flex items-center gap-4 text-sm text-[#586065] mt-1">
                         <span>{career.department} · {career.position}</span>
                         <div className="flex items-center gap-1">
                           <MapPin size={12} />
@@ -516,16 +516,16 @@ export default function AdminCareersPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                      <div className="flex items-center gap-3 mt-2 text-xs text-[#abb3b9]">
                         <span>
                           {formatDate(career.startedAt)} ~ {formatDate(career.endedAt)}
                         </span>
-                        <span className="text-gray-300">|</span>
+                        <span className="text-[#eaeef2]">|</span>
                         <span>{calcDuration(career.startedAt, career.endedAt)}</span>
                         {career.techTransition && (
                           <>
-                            <span className="text-gray-300">|</span>
-                            <span className="text-gray-400 truncate max-w-xs">
+                            <span className="text-[#eaeef2]">|</span>
+                            <span className="text-[#586065] truncate max-w-xs">
                               {career.techTransition}
                             </span>
                           </>
@@ -533,7 +533,7 @@ export default function AdminCareersPage() {
                       </div>
 
                       {career.summary && (
-                        <p className="mt-2 text-xs text-gray-500 leading-relaxed line-clamp-2">
+                        <p className="mt-2 text-xs text-[#586065] leading-relaxed line-clamp-2">
                           {career.summary}
                         </p>
                       )}
@@ -541,10 +541,10 @@ export default function AdminCareersPage() {
 
                     <div className="flex items-center gap-3 ml-6">
                       <div className="text-center">
-                        <div className="text-2xl font-mono font-bold text-gray-900">
+                        <div className="text-2xl font-mono font-bold text-[#2b3438]">
                           {career._count.workProjects}
                         </div>
-                        <div className="text-[10px] uppercase tracking-widest text-gray-400">
+                        <div className="text-[10px] uppercase tracking-widest text-[#abb3b9]">
                           프로젝트
                         </div>
                       </div>
@@ -552,14 +552,14 @@ export default function AdminCareersPage() {
                       <div className="flex flex-col gap-1">
                         <Link
                           href={`/admin/careers/${career.id}/projects`}
-                          className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md transition-colors"
+                          className="flex items-center gap-2 px-3 py-1.5 bg-[#0053db] hover:bg-[#0048bf] text-white text-xs font-medium rounded-md transition-colors"
                         >
                           프로젝트
                           <ArrowRight size={12} />
                         </Link>
                         <button
                           onClick={() => startEdit(career)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-md transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#f1f4f7] hover:bg-[#eaeef2] text-[#586065] text-xs font-medium rounded-md transition-colors"
                         >
                           <Pencil size={12} />
                           수정
@@ -579,7 +579,7 @@ export default function AdminCareersPage() {
                   {career.summary && career.summary.length > 100 && (
                     <button
                       onClick={() => setExpandedId(expandedId === career.id ? null : career.id)}
-                      className="mt-3 flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                      className="mt-3 flex items-center gap-1 text-xs text-[#abb3b9] hover:text-[#586065] transition-colors"
                     >
                       {expandedId === career.id ? (
                         <>
@@ -593,7 +593,7 @@ export default function AdminCareersPage() {
                     </button>
                   )}
                   {expandedId === career.id && career.summary && (
-                    <p className="mt-2 text-xs text-gray-500 leading-relaxed border-t border-gray-100 pt-3">
+                    <p className="mt-2 text-xs text-[#586065] leading-relaxed border-t border-[#eaeef2] pt-3">
                       {career.summary}
                     </p>
                   )}

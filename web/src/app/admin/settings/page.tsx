@@ -96,7 +96,7 @@ export default function AdminSettingsPage() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center">
-        <div className="text-gray-400 text-sm">로딩 중...</div>
+        <div className="text-[#abb3b9] text-sm">로딩 중...</div>
       </div>
     )
   }
@@ -105,21 +105,21 @@ export default function AdminSettingsPage() {
     <div className="p-8">
       {/* 헤더 */}
       <div className="mb-8">
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-4">
+        <div className="flex items-center gap-2 text-xs text-[#586065] mb-4">
           <span className="uppercase tracking-widest">Admin</span>
-          <span className="text-gray-600">/</span>
-          <span className="text-blue-600 uppercase tracking-widest">설정</span>
+          <span className="text-[#abb3b9]">/</span>
+          <span className="text-[#0053db] uppercase tracking-widest">설정</span>
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">사이트 설정</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="text-2xl font-semibold text-[#2b3438]">사이트 설정</h1>
+            <p className="text-sm text-[#586065] mt-1">
               히어로 섹션 텍스트를 수정합니다. 저장 즉시 사이트에 반영됩니다.
             </p>
           </div>
           <button
             onClick={fetchSettings}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-md transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-[#f1f4f7] hover:bg-[#eaeef2] text-[#586065] text-sm font-medium rounded-md transition-colors"
           >
             <RefreshCw size={14} />
             새로고침
@@ -134,20 +134,20 @@ export default function AdminSettingsPage() {
       )}
 
       {/* 히어로 텍스트 섹션 */}
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-700">히어로 섹션</h2>
-          <p className="text-xs text-gray-400 mt-0.5">메인 페이지 상단 텍스트</p>
+      <div className="bg-white rounded-lg border border-[#eaeef2]">
+        <div className="px-6 py-4 border-b border-[#eaeef2]">
+          <h2 className="text-sm font-semibold text-[#2b3438]">히어로 섹션</h2>
+          <p className="text-xs text-[#abb3b9] mt-0.5">메인 페이지 상단 텍스트</p>
         </div>
 
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-[#eaeef2]">
           {HERO_FIELDS.map((field) => (
             <form
               key={field.key}
               onSubmit={(e) => handleSave(e, field.key)}
               className="px-6 py-5"
             >
-              <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+              <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
                 {field.label}
               </label>
 
@@ -158,7 +158,7 @@ export default function AdminSettingsPage() {
                     setValues({ ...values, [field.key]: e.target.value })
                   }
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none font-mono"
+                  className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] focus:outline-none focus:ring-1 focus:ring-[#0053db] resize-none font-mono"
                 />
               ) : (
                 <input
@@ -167,19 +167,19 @@ export default function AdminSettingsPage() {
                   onChange={(e) =>
                     setValues({ ...values, [field.key]: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
+                  className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] focus:outline-none focus:ring-1 focus:ring-[#0053db] font-mono"
                 />
               )}
 
               {field.hint && (
-                <p className="mt-1 text-[11px] text-gray-400">{field.hint}</p>
+                <p className="mt-1 text-[11px] text-[#abb3b9]">{field.hint}</p>
               )}
 
               <div className="mt-3 flex items-center gap-2">
                 <button
                   type="submit"
                   disabled={saving === field.key}
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white text-xs font-medium rounded-md transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-[#0053db] hover:bg-[#0048bf] disabled:bg-[#eaeef2] text-white text-xs font-medium rounded-md transition-colors"
                 >
                   <Check size={12} />
                   {saving === field.key ? '저장 중...' : '저장'}
