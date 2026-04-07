@@ -6,8 +6,8 @@ import { PageTracker } from "@/components/layout/page-tracker";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PortfolioLive",
-  description: "대화형 포트폴리오",
+  title: "Leonardo204",
+  description: "이용섭 포트폴리오",
 };
 
 export default function RootLayout({

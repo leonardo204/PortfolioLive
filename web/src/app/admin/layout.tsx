@@ -1,4 +1,9 @@
+import type { Metadata } from 'next'
 import AdminSidebar from '@/components/admin/sidebar'
+
+export const metadata: Metadata = {
+  title: 'Admin - Leonardo204',
+}
 
 export default function AdminLayout({
   children,
