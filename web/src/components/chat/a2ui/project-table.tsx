@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from 'next-intl'
+
 interface ProjectRow {
   slug: string
   title: string
@@ -12,7 +14,8 @@ interface ProjectTableProps {
 }
 
 export function ProjectTable({ data }: ProjectTableProps) {
-  // graceful fallback
+  const locale = useLocale()
+
   if (!Array.isArray(data) || data.length === 0) {
     return null
   }
@@ -22,7 +25,7 @@ export function ProjectTable({ data }: ProjectTableProps) {
   return (
     <div className="my-3 rounded-xl border border-[#eaeef2] bg-white overflow-hidden shadow-sm">
       <div className="px-4 py-2.5 bg-[#f8f9fb] border-b border-[#eaeef2]">
-        <span className="text-xs font-semibold text-[#586065] uppercase tracking-wide">프로젝트</span>
+        <span className="text-xs font-semibold text-[#586065] uppercase tracking-wide">{locale === 'en' ? 'Projects' : '프로젝트'}</span>
       </div>
       <div className="divide-y divide-[#eaeef2]">
         {projects.map((project, i) => (

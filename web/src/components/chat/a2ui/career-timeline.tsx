@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from 'next-intl'
+
 interface CareerEntry {
   company: string
   period: string
@@ -12,6 +14,8 @@ interface CareerTimelineProps {
 }
 
 export function CareerTimeline({ data }: CareerTimelineProps) {
+  const locale = useLocale()
+
   if (!Array.isArray(data) || data.length === 0) return null
 
   const entries = data as CareerEntry[]
@@ -19,7 +23,7 @@ export function CareerTimeline({ data }: CareerTimelineProps) {
   return (
     <div className="my-3 rounded-xl border border-[#eaeef2] bg-white overflow-hidden shadow-sm">
       <div className="px-4 py-2.5 bg-[#f8f9fb] border-b border-[#eaeef2]">
-        <span className="text-xs font-semibold text-[#586065] uppercase tracking-wide">경력 타임라인</span>
+        <span className="text-xs font-semibold text-[#586065] uppercase tracking-wide">{locale === 'en' ? 'Career Timeline' : '경력 타임라인'}</span>
       </div>
       <div className="px-4 py-3">
         <div className="relative">

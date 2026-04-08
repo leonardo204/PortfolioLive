@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from 'next-intl'
+
 interface ComparisonData {
   title?: string
   headers: string[]
@@ -11,6 +13,8 @@ interface ComparisonTableProps {
 }
 
 export function ComparisonTable({ data }: ComparisonTableProps) {
+  const locale = useLocale()
+
   if (!data || typeof data !== 'object' || Array.isArray(data)) return null
 
   const tableData = data as ComparisonData
@@ -20,7 +24,7 @@ export function ComparisonTable({ data }: ComparisonTableProps) {
     <div className="my-3 rounded-xl border border-[#eaeef2] bg-white overflow-hidden shadow-sm">
       <div className="px-4 py-2.5 bg-[#f8f9fb] border-b border-[#eaeef2]">
         <span className="text-xs font-semibold text-[#586065] uppercase tracking-wide">
-          {tableData.title ?? '비교'}
+          {tableData.title ?? (locale === 'en' ? 'Comparison' : '비교')}
         </span>
       </div>
       <div className="overflow-x-auto">

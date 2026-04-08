@@ -1,5 +1,7 @@
 'use client'
 
+import { useLocale } from 'next-intl'
+
 interface TechStackData {
   headers: string[]
   rows: string[][]
@@ -10,6 +12,8 @@ interface TechStackTableProps {
 }
 
 export function TechStackTable({ data }: TechStackTableProps) {
+  const locale = useLocale()
+
   if (!data || typeof data !== 'object' || Array.isArray(data)) return null
 
   const tableData = data as TechStackData
@@ -18,7 +22,7 @@ export function TechStackTable({ data }: TechStackTableProps) {
   return (
     <div className="my-3 rounded-xl border border-[#eaeef2] bg-white overflow-hidden shadow-sm">
       <div className="px-4 py-2.5 bg-[#f8f9fb] border-b border-[#eaeef2]">
-        <span className="text-xs font-semibold text-[#586065] uppercase tracking-wide">기술 스택</span>
+        <span className="text-xs font-semibold text-[#586065] uppercase tracking-wide">{locale === 'en' ? 'Tech Stack' : '기술 스택'}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
