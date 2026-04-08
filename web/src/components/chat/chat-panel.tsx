@@ -16,7 +16,9 @@ interface ChatPanelProps {
 export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [thinking, setThinking] = useState('')
   const threadId = useRef(crypto.randomUUID())
+  const sessionId = useRef<number | null>(null)
 
   const handleSend = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return
@@ -41,7 +43,6 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
       [...messages, userMessage],
       threadId.current,
       pathname,
-      // onToken: assistant 메시지에 토큰 누적
       (token) => {
         setMessages((prev) =>
           prev.map((m) =>
@@ -49,11 +50,12 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
           ),
         )
       },
-      // onThinking: 현재는 별도 처리 없음
-      () => {},
-      // onDone
-      () => setIsLoading(false),
-      // onError
+      (text) => setThinking(text),
+      (newSessionId) => {
+        sessionId.current = newSessionId
+        setThinking('')
+        setIsLoading(false)
+      },
       (error) => {
         setMessages((prev) =>
           prev.map((m) =>
@@ -62,14 +64,15 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
         )
         setIsLoading(false)
       },
+      sessionId.current,
     )
-  }, [isLoading, messages])
+  }, [isLoading, messages, pathname])
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* 데스크톱: 투명 오버레이 (클릭 시 닫기) */}
+          {/* 데스크톱: 투명 오버레이 */}
           <motion.div
             key="desktop-overlay"
             initial={{ opacity: 0 }}
@@ -97,10 +100,9 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.2, ease: 'easeInOut' }}
-            className="hidden md:flex fixed right-0 top-0 h-full w-[400px] z-40 flex-col bg-white border-l border-[#eaeef2] shadow-xl"
+            className="hidden md:flex fixed right-0 top-0 h-full w-[480px] z-40 flex-col bg-white border-l border-[#eaeef2] shadow-xl"
             aria-label="채팅 패널"
           >
-            {/* 헤더 */}
             <div className="flex items-center justify-between px-5 h-14 border-b border-[#eaeef2] flex-shrink-0">
               <span className="text-sm font-semibold text-[#2b3438]">Chat</span>
               <button
@@ -112,14 +114,13 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
               </button>
             </div>
 
-            {/* 메시지 영역 */}
             <ChatMessages
               messages={messages}
               isLoading={isLoading}
+              thinking={thinking}
               onSuggestionSelect={handleSend}
             />
 
-            {/* 입력 영역 */}
             <ChatInput onSend={handleSend} isLoading={isLoading} />
           </motion.aside>
 
@@ -133,12 +134,10 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
             className="md:hidden fixed bottom-0 left-0 right-0 h-[85vh] z-40 bg-white rounded-t-[20px] shadow-[0_-8px_40px_rgba(0,0,0,0.12)] flex flex-col"
             aria-label="채팅 패널"
           >
-            {/* 드래그 핸들 */}
             <div className="w-full flex justify-center pt-3 pb-1 flex-shrink-0">
               <div className="w-9 h-1.5 bg-[#abb3b9]/30 rounded-full" />
             </div>
 
-            {/* 헤더 */}
             <div className="flex items-center justify-between px-5 pb-3 border-b border-[#eaeef2] flex-shrink-0">
               <span className="text-base font-bold text-[#2b3438]">Chat</span>
               <button
@@ -150,14 +149,13 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
               </button>
             </div>
 
-            {/* 메시지 영역 */}
             <ChatMessages
               messages={messages}
               isLoading={isLoading}
+              thinking={thinking}
               onSuggestionSelect={handleSend}
             />
 
-            {/* 입력 영역 */}
             <ChatInput onSend={handleSend} isLoading={isLoading} />
           </motion.div>
         </>

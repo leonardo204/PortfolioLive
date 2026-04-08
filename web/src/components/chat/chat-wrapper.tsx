@@ -9,7 +9,6 @@ export function ChatWrapper() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const pathname = usePathname()
 
-  // 페이지 이동 시 채팅 닫기
   useEffect(() => {
     setIsChatOpen(false)
   }, [pathname])
@@ -18,7 +17,11 @@ export function ChatWrapper() {
     <>
       <ChatTrigger onClick={() => setIsChatOpen(true)} isOpen={isChatOpen} />
       {isChatOpen && (
-        <ChatPanel isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} pathname={pathname} />
+        <ChatPanel
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
+          pathname={pathname}
+        />
       )}
     </>
   )

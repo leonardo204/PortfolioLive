@@ -31,9 +31,9 @@ export function PortfolioCard({ project }: PortfolioCardProps) {
       )}
 
       {/* Tech Badges */}
-      {project.technologies.length > 0 && (
+      {(project.technologies ?? []).length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {project.technologies.slice(0, 5).map((tech) => (
+          {(project.technologies ?? []).slice(0, 5).map((tech) => (
             <span
               key={tech}
               className="text-[10px] font-mono font-bold px-2 py-1 bg-[#eaeef2] text-[#586065] rounded uppercase tracking-tight"
@@ -41,9 +41,9 @@ export function PortfolioCard({ project }: PortfolioCardProps) {
               {tech}
             </span>
           ))}
-          {project.technologies.length > 5 && (
+          {(project.technologies ?? []).length > 5 && (
             <span className="text-[10px] font-mono font-bold px-2 py-1 bg-[#eaeef2] text-[#abb3b9] rounded uppercase tracking-tight">
-              +{project.technologies.length - 5}
+              +{(project.technologies ?? []).length - 5}
             </span>
           )}
         </div>
