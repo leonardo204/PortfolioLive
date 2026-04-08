@@ -5,7 +5,7 @@ import { CareerSection } from '@/components/sections/career-section'
 import { PortfolioSection } from '@/components/sections/portfolio-section'
 import { ChatWrapper } from '@/components/chat/chat-wrapper'
 
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 
 export default function Home() {
   return (

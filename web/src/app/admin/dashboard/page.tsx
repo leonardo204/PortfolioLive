@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma'
+
+export const dynamic = 'force-dynamic'
 import { Users, MessageSquare, MessageCircle, Mail, MailOpen } from 'lucide-react'
 import Link from 'next/link'
 

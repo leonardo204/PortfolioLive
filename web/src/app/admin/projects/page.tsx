@@ -73,13 +73,8 @@ export default function AdminProjectsPage() {
     setSyncMessage('')
     setError('')
     try {
-      const res = await fetch('/api/v1/github/webhook', {
+      const res = await fetch('/api/v1/github/sync', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-github-event': 'push',
-        },
-        body: JSON.stringify({ ref: 'refs/heads/main', forced: false }),
       })
 
       if (res.ok) {

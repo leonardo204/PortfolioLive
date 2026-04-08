@@ -6,6 +6,7 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      AGENT_URL: http://agent:8000
       NEXT_PUBLIC_AGENT_URL: http://agent:8000
     depends_on:
       postgres:

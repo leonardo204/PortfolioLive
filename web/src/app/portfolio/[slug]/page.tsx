@@ -6,6 +6,8 @@ import fs from 'fs'
 import path from 'path'
 import { prisma } from '@/lib/prisma'
 import { PortfolioContent } from '@/components/portfolio/portfolio-content'
+
+export const dynamic = 'force-dynamic'
 import { ChatWrapper } from '@/components/chat/chat-wrapper'
 
 /**
