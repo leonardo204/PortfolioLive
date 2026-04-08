@@ -1,5 +1,6 @@
 """RAG 검색 Tool 래퍼"""
 
+import asyncio
 import logging
 from ...rag.retriever import RAGRetriever
 
@@ -69,11 +70,16 @@ async def rewrite_query_with_history(
             model_name="flash",
             system_prompt=system_prompt,
             user_prompt=user_prompt,
+            timeout=5.0,
+            max_output_tokens=256,
+            temperature=0.3,
         )
         rewritten = rewritten.strip().strip('"').strip("'")
         if rewritten:
             logger.info(f"[RAGTool] Query rewritten: '{query}' → '{rewritten}'")
             return rewritten
+    except asyncio.TimeoutError:
+        logger.warning(f"[RAGTool] Query rewrite timed out, using original query")
     except Exception as e:
         logger.warning(f"[RAGTool] Query rewrite failed: {e}")
 

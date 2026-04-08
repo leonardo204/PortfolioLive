@@ -5,7 +5,7 @@ import logging
 from langchain_core.messages import AIMessage
 
 from ...llm.factory import call_llm
-from ...llm.prompts import TECHNICAL_SYSTEM_PROMPT, POST_SUGGESTION_PROMPT
+from ...llm.prompts import TECHNICAL_SYSTEM_PROMPT
 from ...pipeline.career_loader import load_tech_transition_context
 from ..tools.rag_tool import rag_search, format_rag_context, rewrite_query_with_history
 from ..state import AgentState
@@ -61,9 +61,8 @@ async def technical_node(state: AgentState) -> AgentState:
 
     1. RAG 검색
     2. 컨텍스트 조합 + 프롬프트 작성
-    3. Gemini Pro/Flash 호출
-    4. Post-suggestion 생성 + 응답에 삽입
-    5. needs_grounding 판정
+    3. Gemini Pro/Flash 호출 (시스템 프롬프트에 후속 제안 포함)
+    4. needs_grounding 판정
     """
     user_message = _extract_last_user_message(state)
     conversation_context = _build_conversation_context(state)
@@ -99,7 +98,7 @@ async def technical_node(state: AgentState) -> AgentState:
 
     updates["thinking"] = "기술 답변을 구성 중..."
 
-    # 3. LLM 호출
+    # 3. LLM 호출 (TECHNICAL_SYSTEM_PROMPT에 후속 화제 제안 지시 포함)
     try:
         response_text = await call_llm(
             model_name=model_choice,
@@ -109,22 +108,6 @@ async def technical_node(state: AgentState) -> AgentState:
     except Exception as e:
         logger.error(f"[Technical] LLM call failed: {e}")
         response_text = "죄송합니다. 잠시 후 다시 시도해주세요."
-
-    # 4. Post-suggestion 생성
-    try:
-        suggestion = await call_llm(
-            model_name="flash",
-            system_prompt="당신은 자연스러운 대화 연결 전문가입니다.",
-            user_prompt=POST_SUGGESTION_PROMPT.format(
-                current_response=response_text,
-                conversation_context=conversation_context,
-            ),
-        )
-        suggestion = suggestion.strip()
-        if suggestion and not response_text.endswith(suggestion):
-            response_text = f"{response_text}\n\n{suggestion}"
-    except Exception as e:
-        logger.warning(f"[Technical] Post-suggestion failed: {e}")
 
     updates["thinking"] = ""
     updates["messages"] = [AIMessage(content=response_text)]

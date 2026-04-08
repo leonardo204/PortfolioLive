@@ -142,10 +142,10 @@ async def run_portfolio_agent(body: dict) -> AsyncGenerator[str, None]:
             "needs_grounding": False,
         }
 
-        # 타임아웃 30초
+        # 타임아웃 50초 (supervisor 8s + career/technical 30s + grounding 10s 고려)
         result = await asyncio.wait_for(
             portfolio_graph.ainvoke(initial_state),
-            timeout=30.0,
+            timeout=50.0,
         )
 
         # 마지막 AI 메시지 추출
@@ -172,7 +172,7 @@ async def run_portfolio_agent(body: dict) -> AsyncGenerator[str, None]:
             pass
 
     except asyncio.TimeoutError:
-        logger.error("[AgentRouter] LangGraph timeout after 30s")
+        logger.error("[AgentRouter] LangGraph timeout after 50s")
         response_text = "잠시 후 다시 시도해주세요. 현재 응답 생성에 시간이 걸리고 있습니다."
 
     except Exception as e:

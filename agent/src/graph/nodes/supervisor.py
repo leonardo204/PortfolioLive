@@ -64,6 +64,9 @@ async def supervisor_node(state: AgentState) -> AgentState:
             model_name="flash",
             system_prompt=SUPERVISOR_SYSTEM_PROMPT,
             user_prompt=user_message,
+            timeout=8.0,
+            max_output_tokens=256,
+            temperature=0.2,
         )
 
         # JSON 파싱

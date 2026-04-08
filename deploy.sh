@@ -64,6 +64,24 @@ for i in $(seq 1 30); do
     sleep 1
 done
 
+log "pgvector 확장 + embeddings 테이블 생성..."
+docker compose -f "$COMPOSE_FILE" exec -T postgres psql -U "${POSTGRES_USER:-portfoliolive}" -d "${POSTGRES_DB:-portfoliolive}" -c "
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE TABLE IF NOT EXISTS embeddings (
+    id SERIAL PRIMARY KEY,
+    source_type VARCHAR(50) NOT NULL,
+    source_id INTEGER NOT NULL,
+    section TEXT DEFAULT '',
+    content TEXT NOT NULL,
+    embedding vector(768),
+    metadata JSONB DEFAULT '{}',
+    chunk_index INTEGER DEFAULT 0,
+    total_chunks INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_embeddings_source ON embeddings(source_type, source_id);
+" 2>&1 | tail -3 || warn "pgvector 설정 스킵"
+
 log "DB 마이그레이션 실행..."
 docker compose -f "$COMPOSE_FILE" exec -T web npx prisma migrate deploy 2>&1 | tail -3 || warn "마이그레이션 스킵 (이미 최신이거나 prisma 미포함)"
 

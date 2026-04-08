@@ -87,7 +87,7 @@ async def grounding_node(state: AgentState) -> AgentState:
             loop.run_in_executor(
                 None, _sync_grounding_search, user_message, system_prompt
             ),
-            timeout=20.0,
+            timeout=10.0,
         )
     except asyncio.TimeoutError:
         logger.warning("[Grounding] Web search timed out")
