@@ -105,6 +105,7 @@ async def career_node(state: AgentState) -> AgentState:
             model_name=model_choice,
             system_prompt=system_prompt,
             user_prompt=user_message,
+            max_output_tokens=4096,
         )
     except Exception as e:
         logger.error(f"[Career] LLM call failed: {e}")

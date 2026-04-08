@@ -86,7 +86,7 @@ async def supervisor_node(state: AgentState) -> AgentState:
             system_prompt=SUPERVISOR_SYSTEM_PROMPT,
             user_prompt=user_message,
             timeout=8.0,
-            max_output_tokens=256,
+            max_output_tokens=512,
             temperature=0.2,
         )
 
