@@ -1,22 +1,25 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { PortfolioGrid } from './portfolio-grid'
 import type { PortfolioProjectItem } from '@/lib/queries/portfolio'
 
-const FILTERS = [
-  { label: '전체', value: '' },
-  { label: 'AI & Voice', value: 'AI & Voice' },
-  { label: 'STB', value: 'STB Middleware' },
-  { label: 'Side Projects', value: 'Side Projects' },
-]
-
 interface FilterBarProps {
   projects: PortfolioProjectItem[]
+  locale?: string
 }
 
-export function FilterBar({ projects }: FilterBarProps) {
+export function FilterBar({ projects, locale = 'ko' }: FilterBarProps) {
+  const t = useTranslations('portfolio')
   const [activeFilter, setActiveFilter] = useState('')
+
+  const FILTERS = [
+    { label: t('all'), value: '' },
+    { label: t('aiVoice'), value: 'AI & Voice' },
+    { label: t('stb'), value: 'STB Middleware' },
+    { label: t('sideProjects'), value: 'Side Projects' },
+  ]
 
   const filtered =
     activeFilter === ''
@@ -46,7 +49,7 @@ export function FilterBar({ projects }: FilterBarProps) {
       </div>
 
       {/* Grid */}
-      <PortfolioGrid projects={filtered} />
+      <PortfolioGrid projects={filtered} locale={locale} />
     </div>
   )
 }

@@ -1,8 +1,12 @@
 import { getCareers } from '@/lib/queries/career'
 import { CareerTimeline } from '@/components/career/career-timeline'
 
-export async function CareerSection() {
-  const careers = await getCareers()
+interface Props {
+  locale: string
+}
+
+export async function CareerSection({ locale }: Props) {
+  const careers = await getCareers(locale)
 
   return (
     <section
@@ -18,7 +22,7 @@ export async function CareerSection() {
       </div>
 
       {/* Timeline */}
-      <CareerTimeline careers={careers} />
+      <CareerTimeline careers={careers} locale={locale} />
     </section>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { MessageSquare } from 'lucide-react'
 
 interface ChatTriggerProps {
@@ -8,6 +9,8 @@ interface ChatTriggerProps {
 }
 
 export function ChatTrigger({ onClick, isOpen }: ChatTriggerProps) {
+  const t = useTranslations('chat')
+
   if (isOpen) return null
 
   return (
@@ -18,7 +21,7 @@ export function ChatTrigger({ onClick, isOpen }: ChatTriggerProps) {
     >
       <MessageSquare size={18} className="text-blue-400" />
       <span className="text-sm font-medium hidden sm:inline">
-        궁금한 점이 있으신가요?
+        {t('trigger')}
       </span>
     </button>
   )

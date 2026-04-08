@@ -2,38 +2,38 @@ import { cn } from '@/lib/utils'
 
 interface CompanyBadgeProps {
   companyType: string
+  locale?: string
   className?: string
 }
 
-function getBadgeStyle(companyType: string) {
+function getBadgeStyle(companyType: string, locale: string) {
   const type = companyType.toLowerCase()
   if (type === '대기업') {
     return {
       bg: 'bg-[#dbe1ff]',
       text: 'text-[#0048bf]',
-      label: '대기업',
+      label: locale === 'en' ? 'Enterprise' : '대기업',
     }
   }
   if (type === '중견기업') {
     return {
       bg: 'bg-[#eaeef2]',
       text: 'text-[#586065]',
-      label: '중견기업',
+      label: locale === 'en' ? 'Mid-size' : '중견기업',
     }
   }
   return {
     bg: 'bg-[#f1f4f7]',
     text: 'text-[#586065]',
-    label: type || '기타',
+    label: type || (locale === 'en' ? 'Other' : '기타'),
   }
 }
 
-export function CompanyBadge({ companyType, className }: CompanyBadgeProps) {
+export function CompanyBadge({ companyType, locale = 'ko', className }: CompanyBadgeProps) {
   const type = companyType.toLowerCase()
-  // 대기업/중견기업만 뱃지 표시, 그 외는 숨김
   if (type !== '대기업' && type !== '중견기업') return null
 
-  const style = getBadgeStyle(companyType)
+  const style = getBadgeStyle(companyType, locale)
   return (
     <span
       className={cn(

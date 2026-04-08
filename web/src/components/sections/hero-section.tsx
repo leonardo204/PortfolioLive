@@ -1,25 +1,39 @@
 import { prisma } from '@/lib/prisma'
+import { getTranslations } from 'next-intl/server'
 
 const HERO_KEYS = ['hero_title', 'hero_subtitle', 'hero_description'] as const
 
-const HERO_DEFAULTS = {
-  hero_title: 'AI Software\\nEngineer',
-  hero_subtitle: 'Agentic AI · Full-Stack · Embedded Systems',
-  hero_description:
-    '5,000만 대+ 디바이스에 미들웨어를 공급하며 시스템 설계 역량을 쌓았고, 최근에는 Agentic AI 기반 제품 개발에 깊이 빠져 있습니다. 개인 프로젝트로 만든 앱 5개를 App Store에 출시하기도 했습니다.',
+interface Props {
+  locale: string
 }
 
-export async function HeroSection() {
-  const rows = await prisma.adminSetting.findMany({
-    where: { key: { in: [...HERO_KEYS] } },
-  })
+export async function HeroSection({ locale }: Props) {
+  const t = await getTranslations('hero')
 
-  const settings: Record<string, string> = { ...HERO_DEFAULTS }
-  for (const row of rows) {
-    settings[row.key] = row.value
+  const HERO_DEFAULTS = {
+    hero_title: t('defaultTitle'),
+    hero_subtitle: t('defaultSubtitle'),
+    hero_description: t('defaultDescription'),
   }
 
-  const titleParts = settings.hero_title.split('\\n')
+  let settings: Record<string, string> = { ...HERO_DEFAULTS }
+
+  try {
+    const rows = await prisma.adminSetting.findMany({
+      where: { key: { in: [...HERO_KEYS] } },
+    })
+
+    for (const row of rows) {
+      // Only use DB values for ko locale; en uses message defaults
+      if (locale === 'ko') {
+        settings[row.key] = row.value
+      }
+    }
+  } catch {
+    // DB unavailable, use defaults
+  }
+
+  const titleParts = settings.hero_title.replace('\\n', '\n').split('\n')
 
   return (
     <section className="max-w-7xl mx-auto px-6 md:px-8 py-20 md:py-32 text-left">

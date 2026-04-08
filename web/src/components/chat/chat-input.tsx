@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, KeyboardEvent } from 'react'
+import { useTranslations } from 'next-intl'
 import { SendHorizonal } from 'lucide-react'
 
 interface ChatInputProps {
@@ -12,6 +13,7 @@ interface ChatInputProps {
 export function ChatInput({ onSend, isLoading = false, sessionEnded }: ChatInputProps) {
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const t = useTranslations('chat')
 
   const isDisabled = isLoading || !!sessionEnded
 
@@ -58,7 +60,7 @@ export function ChatInput({ onSend, isLoading = false, sessionEnded }: ChatInput
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           onInput={handleInput}
-          placeholder="메시지를 입력하세요..."
+          placeholder={t('placeholder')}
           disabled={isDisabled}
           rows={1}
           className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-[#2b3438] placeholder:text-[#737c81] disabled:opacity-50 py-1 max-h-[120px] leading-relaxed"

@@ -3,12 +3,13 @@ import type { PortfolioProjectItem } from '@/lib/queries/portfolio'
 
 interface PortfolioCardProps {
   project: PortfolioProjectItem
+  locale?: string
 }
 
-export function PortfolioCard({ project }: PortfolioCardProps) {
+export function PortfolioCard({ project, locale = 'ko' }: PortfolioCardProps) {
   return (
     <Link
-      href={`/portfolio/${project.slug}`}
+      href={`/${locale}/portfolio/${project.slug}`}
       className="group block p-6 md:p-8 rounded-xl bg-white border border-[#abb3b9]/15 hover:shadow-[0px_12px_32px_rgba(43,52,56,0.04)] hover:border-[#c7d3ff]/40 transition-all duration-300"
     >
       {/* Category */}

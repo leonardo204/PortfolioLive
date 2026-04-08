@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { ChatMessages } from './chat-messages'
 import { ChatInput } from './chat-input'
 import { sendChatMessage, type ChatMessage } from '@/lib/chat-client'
@@ -14,6 +15,7 @@ interface ChatPanelProps {
 }
 
 export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
+  const t = useTranslations('chat')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [thinking, setThinking] = useState('')
@@ -104,7 +106,7 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
             aria-label="채팅 패널"
           >
             <div className="flex items-center justify-between px-5 h-14 border-b border-[#eaeef2] flex-shrink-0">
-              <span className="text-sm font-semibold text-[#2b3438]">Chat</span>
+              <span className="text-sm font-semibold text-[#2b3438]">{t('title')}</span>
               <button
                 onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f1f4f7] transition-colors"
@@ -139,7 +141,7 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
             </div>
 
             <div className="flex items-center justify-between px-5 pb-3 border-b border-[#eaeef2] flex-shrink-0">
-              <span className="text-base font-bold text-[#2b3438]">Chat</span>
+              <span className="text-base font-bold text-[#2b3438]">{t('title')}</span>
               <button
                 onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-[#f1f4f7] hover:bg-[#eaeef2] transition-colors"

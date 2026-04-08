@@ -1,8 +1,12 @@
 import { getPortfolioProjects } from '@/lib/queries/portfolio'
 import { FilterBar } from '@/components/portfolio/filter-bar'
 
-export async function PortfolioSection() {
-  const projects = await getPortfolioProjects()
+interface Props {
+  locale: string
+}
+
+export async function PortfolioSection({ locale }: Props) {
+  const projects = await getPortfolioProjects(locale)
 
   return (
     <section
@@ -18,7 +22,7 @@ export async function PortfolioSection() {
       </div>
 
       {/* Filter + Grid */}
-      <FilterBar projects={projects} />
+      <FilterBar projects={projects} locale={locale} />
     </section>
   )
 }

@@ -1,12 +1,20 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 export function WelcomeMessage() {
+  const t = useTranslations('chat')
+  const welcome = t('welcome')
+
   return (
     <div className="flex flex-col items-start gap-2 max-w-[85%]">
       <div className="bg-[#f1f4f7] text-[#2b3438] p-4 rounded-2xl rounded-tl-none text-sm leading-relaxed border border-[#eaeef2]">
-        안녕하세요! 저는 이용섭의 AI 어시스턴트입니다.
-        <br />
-        제 경력, 기술, 프로젝트에 대해 자유롭게 질문해주세요.
+        {welcome.split('\n').map((line, i) => (
+          <span key={i}>
+            {line}
+            {i < welcome.split('\n').length - 1 && <br />}
+          </span>
+        ))}
       </div>
     </div>
   )

@@ -1,15 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Menu, X } from 'lucide-react'
-
-const navItems = [
-  { label: '경력', href: '#career' },
-  { label: '포트폴리오', href: '#portfolio' },
-]
 
 export function MobileNav() {
   const [open, setOpen] = useState(false)
+  const t = useTranslations('nav')
+
+  const navItems = [
+    { label: t('career'), href: '#career' },
+    { label: t('portfolio'), href: '#portfolio' },
+  ]
 
   return (
     <>
@@ -36,7 +38,7 @@ export function MobileNav() {
         }`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#abb3b9]/20">
-          <span className="font-semibold text-[#2b3438]">이용섭</span>
+          <span className="font-semibold text-[#2b3438]">Yongsub Lee</span>
           <button
             onClick={() => setOpen(false)}
             aria-label="메뉴 닫기"

@@ -3,13 +3,16 @@ import type { CareerWithProjects } from '@/lib/queries/career'
 
 interface CareerTimelineProps {
   careers: CareerWithProjects[]
+  locale: string
 }
 
-export function CareerTimeline({ careers }: CareerTimelineProps) {
+export function CareerTimeline({ careers, locale }: CareerTimelineProps) {
   if (careers.length === 0) {
     return (
       <div className="py-16 text-center text-[#586065]">
-        <p className="text-sm">경력 데이터를 불러오는 중입니다.</p>
+        <p className="text-sm">
+          {locale === 'en' ? 'Loading career data...' : '경력 데이터를 불러오는 중입니다.'}
+        </p>
       </div>
     )
   }
@@ -24,7 +27,7 @@ export function CareerTimeline({ careers }: CareerTimelineProps) {
               career.isCurrent ? 'bg-[#0053db]' : 'bg-[#abb3b9]'
             }`}
           />
-          <CompanyCard career={career} isCurrent={career.isCurrent} />
+          <CompanyCard career={career} isCurrent={career.isCurrent} locale={locale} />
         </div>
       ))}
     </div>

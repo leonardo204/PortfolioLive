@@ -1,9 +1,17 @@
 'use client'
 
-const SUGGESTIONS = [
+import { useTranslations, useLocale } from 'next-intl'
+
+const SUGGESTIONS_KO = [
   '어떤 기술을 주로 사용하나요?',
   'AI 프로젝트 경험을 알려주세요',
   '최근 프로젝트는 무엇인가요?',
+]
+
+const SUGGESTIONS_EN = [
+  'What technologies do you mainly use?',
+  'Tell me about your AI project experience',
+  'What are your recent projects?',
 ]
 
 interface PreSuggestionProps {
@@ -12,9 +20,12 @@ interface PreSuggestionProps {
 }
 
 export function PreSuggestion({ onSelect, disabled }: PreSuggestionProps) {
+  const locale = useLocale()
+  const suggestions = locale === 'en' ? SUGGESTIONS_EN : SUGGESTIONS_KO
+
   return (
     <div className="flex flex-wrap gap-2 mt-1">
-      {SUGGESTIONS.map((text) => (
+      {suggestions.map((text) => (
         <button
           key={text}
           onClick={() => !disabled && onSelect(text)}

@@ -1,14 +1,17 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { MobileNav } from './mobile-nav'
 import { LanguageSwitcher } from './language-switcher'
 
-const navItems = [
-  { label: '경력', href: '#career' },
-  { label: '포트폴리오', href: '#portfolio' },
-]
-
 export function Header() {
+  const t = useTranslations('nav')
+
+  const navItems = [
+    { label: t('career'), href: '#career' },
+    { label: t('portfolio'), href: '#portfolio' },
+  ]
+
   return (
     <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-[#abb3b9]/15">
       <div className="max-w-7xl mx-auto px-6 md:px-8 h-16 flex items-center justify-between">
