@@ -75,6 +75,7 @@ async def sync_pipeline() -> SyncResult:
                 "year": meta["year"],
                 "github_url": github_url,
                 "readme_raw": readme,
+                "readme_raw_en": project_data.get("readme_en", "") or None,
             }
             project_id = await store.upsert_portfolio_project(project_record)
 

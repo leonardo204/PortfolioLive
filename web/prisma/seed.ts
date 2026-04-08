@@ -26,6 +26,13 @@ async function main() {
       techTransition: 'STB Cloud → Cross-platform Players → AI Agents',
       summary: 'STB 클라우드, 크로스플랫폼 플레이어, AI 에이전트 개발',
       sortOrder: 1,
+      // EN
+      companyEn: 'KT Altimedia',
+      departmentEn: 'Product Innovation Team',
+      positionEn: 'Researcher',
+      locationEn: 'Seoul',
+      techTransitionEn: 'STB Cloud → Cross-platform Players → AI Agents',
+      summaryEn: 'STB cloud, cross-platform player, and AI agent development',
     },
   })
 
@@ -42,6 +49,13 @@ async function main() {
       techTransition: 'STB UI/UX Development · Windmill Framework',
       summary: 'STB UI/UX 개발, Windmill 프레임워크, 다수 방송사 정합',
       sortOrder: 2,
+      // EN
+      companyEn: 'Alticast',
+      departmentEn: 'Media Technology Team',
+      positionEn: 'Researcher',
+      locationEn: 'Seoul',
+      techTransitionEn: 'STB UI/UX Development · Windmill Framework',
+      summaryEn: 'STB UI/UX development, Windmill framework, integration with multiple broadcasters',
     },
   })
 
@@ -58,6 +72,13 @@ async function main() {
       techTransition: null,
       summary: 'CAD/CAE 시스템 개발',
       sortOrder: 3,
+      // EN
+      companyEn: 'P&I Solution',
+      departmentEn: 'CAD/CAE',
+      positionEn: 'Assistant Manager',
+      locationEn: 'Suwon',
+      techTransitionEn: null,
+      summaryEn: 'CAD/CAE system development',
     },
   })
 

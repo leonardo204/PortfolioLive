@@ -24,10 +24,10 @@ class PipelineStore:
             """
             INSERT INTO portfolio_projects (
                 slug, title, description, category, technologies,
-                year, github_url, readme_raw, last_synced_at, updated_at
+                year, github_url, readme_raw, readme_raw_en, last_synced_at, updated_at
             ) VALUES (
                 $1, $2, $3, $4, $5::text[],
-                $6, $7, $8, NOW(), NOW()
+                $6, $7, $8, $9, NOW(), NOW()
             )
             ON CONFLICT (slug) DO UPDATE SET
                 title          = EXCLUDED.title,
@@ -37,6 +37,7 @@ class PipelineStore:
                 year           = EXCLUDED.year,
                 github_url     = EXCLUDED.github_url,
                 readme_raw     = EXCLUDED.readme_raw,
+                readme_raw_en  = EXCLUDED.readme_raw_en,
                 last_synced_at = NOW(),
                 updated_at     = NOW()
             RETURNING id
@@ -49,6 +50,7 @@ class PipelineStore:
             project.get("year", ""),
             project.get("github_url", ""),
             project.get("readme_raw", ""),
+            project.get("readme_raw_en", None),
         )
         return row["id"]
 

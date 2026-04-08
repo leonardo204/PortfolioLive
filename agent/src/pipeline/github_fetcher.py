@@ -77,6 +77,18 @@ class GitHubFetcher:
             except Exception:
                 continue
 
+        # README_EN.md fetch (영어 버전)
+        readme_en = ""
+        for filename in ["README_EN.md", "README_en.md", "readme_en.md"]:
+            try:
+                readme_en = await self._fetch_file_content(
+                    client, REPO_OWNER, MAIN_REPO,
+                    f"{PROJECTS_DIR}/{dir_name}/{filename}"
+                )
+                break
+            except Exception:
+                continue
+
         # 메인 README의 메타 정보 병합
         meta = meta_map.get(dir_name, {})
 
@@ -84,6 +96,7 @@ class GitHubFetcher:
             "repo": dir_name,
             "slug": dir_name,
             "readme": readme,
+            "readme_en": readme_en,
             "category": meta.get("category", ""),
             "technologies": meta.get("technologies", []),
             "year": meta.get("year", ""),
