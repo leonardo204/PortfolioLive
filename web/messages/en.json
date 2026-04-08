@@ -1,0 +1,37 @@
+{
+  "nav": { "career": "Career", "portfolio": "Portfolio" },
+  "hero": {
+    "defaultTitle": "AI Software\\nEngineer",
+    "defaultSubtitle": "Agentic AI · Full-Stack · Embedded Systems",
+    "defaultDescription": "Built deep expertise in system design supplying middleware to 50M+ devices, and recently immersed in building Agentic AI-based products. Also shipped 5 personal apps to the App Store."
+  },
+  "career": {
+    "sectionTitle": "Career",
+    "current": "Present",
+    "years": "yrs",
+    "months": "mos",
+    "loading": "Loading career data..."
+  },
+  "portfolio": {
+    "sectionTitle": "Portfolio",
+    "all": "All",
+    "aiVoice": "AI & Voice",
+    "stb": "STB",
+    "sideProjects": "Side Projects",
+    "loading": "Loading portfolio data...",
+    "back": "Back",
+    "preparing": "Detail information is being prepared."
+  },
+  "footer": { "copyright": "© 2026 Yongsub Lee" },
+  "chat": {
+    "trigger": "Any questions?",
+    "title": "Chat",
+    "placeholder": "Type a message...",
+    "welcome": "Hi! I'm Yongsub's AI assistant.\nFeel free to ask about his career, skills, and projects."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you requested does not exist or has been moved.",
+    "home": "Go Home"
+  }
+}

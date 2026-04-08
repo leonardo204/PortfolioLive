@@ -1,0 +1,37 @@
+{
+  "nav": { "career": "경력", "portfolio": "포트폴리오" },
+  "hero": {
+    "defaultTitle": "AI Software\\nEngineer",
+    "defaultSubtitle": "Agentic AI · Full-Stack · Embedded Systems",
+    "defaultDescription": "5,000만 대+ 디바이스에 미들웨어를 공급하며 시스템 설계 역량을 쌓았고, 최근에는 Agentic AI 기반 제품 개발에 깊이 빠져 있습니다. 개인 프로젝트로 만든 앱 5개를 App Store에 출시하기도 했습니다."
+  },
+  "career": {
+    "sectionTitle": "Career",
+    "current": "현재",
+    "years": "년",
+    "months": "개월",
+    "loading": "경력 데이터를 불러오는 중입니다."
+  },
+  "portfolio": {
+    "sectionTitle": "Portfolio",
+    "all": "전체",
+    "aiVoice": "AI & Voice",
+    "stb": "STB",
+    "sideProjects": "Side Projects",
+    "loading": "포트폴리오 데이터를 불러오는 중입니다.",
+    "back": "돌아가기",
+    "preparing": "상세 정보를 준비 중입니다."
+  },
+  "footer": { "copyright": "© 2026 Yongsub Lee" },
+  "chat": {
+    "trigger": "궁금한 점이 있으신가요?",
+    "title": "Chat",
+    "placeholder": "메시지를 입력하세요...",
+    "welcome": "안녕하세요! 저는 이용섭의 AI 어시스턴트입니다.\n제 경력, 기술, 프로젝트에 대해 자유롭게 질문해주세요."
+  },
+  "notFound": {
+    "title": "페이지를 찾을 수 없습니다",
+    "description": "요청하신 페이지가 존재하지 않거나 이동되었습니다.",
+    "home": "홈으로 돌아가기"
+  }
+}
