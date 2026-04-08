@@ -1,110 +1,152 @@
 # PortfolioLive
 
-포트폴리오 웹 소개 + 자연어 대화형 Q&A 서비스
+개인 포트폴리오 & 경력 소개 사이트에 **Agentic AI Chat**을 결합한 서비스.
+정적인 이력 소개를 넘어, 방문자가 자연어로 경력과 기술을 직접 질문하고 대화할 수 있습니다.
 
 > **Live**: https://me.zerolive.co.kr
 
+---
+
 ## Architecture
 
+### System Overview
+
+```mermaid
+graph TB
+    subgraph Client["Browser"]
+        UI[Next.js 15 + Tailwind]
+        Chat[Chat UI]
+    end
+
+    subgraph Web["web container"]
+        Pages[Pages & API Routes]
+        CK[CopilotKit Runtime]
+        WH[Webhook Handler]
+    end
+
+    subgraph Agent["agent container"]
+        AWP[AG-UI Endpoint /awp]
+        Graph[LangGraph Agent]
+        Pipeline[Sync Pipeline]
+        RAG[RAG Retriever]
+    end
+
+    subgraph DB["PostgreSQL + pgvector"]
+        Tables[(portfolio_projects\ncareers\nembeddings)]
+    end
+
+    subgraph External["External"]
+        GH[GitHub API]
+        Gemini[Google Gemini]
+    end
+
+    UI --> Pages
+    Chat --> CK --> AWP --> Graph
+    Graph --> RAG --> DB
+    Graph --> Gemini
+    WH --> Pipeline --> GH
+    Pipeline --> DB
+    Pipeline -.->|embed| Gemini
 ```
-┌─────────────┐     ┌──────────────┐     ┌────────────┐
-│  Next.js 15  │────▶│  FastAPI      │────▶│ PostgreSQL │
-│  (web)       │◀────│  (agent)      │◀────│ + pgvector │
-│  :3100       │     │  :3101        │     │  :5433     │
-└─────────────┘     └──────────────┘     └────────────┘
-      │                    │
-      │  CopilotKit        │  LangGraph + Gemini
-      │  React UI          │  RAG Pipeline
-      └────────────────────┘
+
+### Agentic Chat Flow
+
+```mermaid
+graph LR
+    Input[사용자 질문] --> Supervisor
+
+    subgraph LangGraph
+        Supervisor -->|Intent 분류| Router{Intent?}
+        Router -->|CAREER| Career[Career Node]
+        Router -->|TECHNICAL| Technical[Technical Node]
+        Router -->|GREETING / CONTACT| Direct[즉시 응답]
+        Router -->|ABUSE| Guardrail[가드레일]
+
+        Career -->|RAG 검색| RAG[(pgvector)]
+        Technical -->|RAG 검색| RAG
+
+        Career -->|컨텍스트 부족| Grounding[Web Search]
+        Technical -->|컨텍스트 부족| Grounding
+    end
+
+    Career --> Stream[SSE 스트리밍]
+    Technical --> Stream
+    Grounding --> Stream
+    Direct --> Stream
+    Stream --> Response[실시간 응답]
 ```
+
+**모델 선택**: Flash(빠른 분류/간단 응답) vs Pro(복잡한 기술 질문) 자동 전환
+
+### GitHub Sync Pipeline
+
+```mermaid
+sequenceDiagram
+    participant GH as GitHub
+    participant WH as Webhook API
+    participant Pipe as Sync Pipeline
+    participant Embed as Gemini Embedding
+    participant DB as PostgreSQL
+
+    GH->>WH: push event (HMAC-SHA256)
+    WH-->>GH: 202 Accepted
+    WH->>Pipe: POST /agent/pipeline/sync
+
+    Pipe->>GH: Fetch repos + READMEs
+    Pipe->>Pipe: Parse & Chunk markdown
+
+    Pipe->>DB: Upsert portfolio_projects
+    Pipe->>Embed: Generate embeddings (768d)
+    Embed-->>Pipe: vectors
+    Pipe->>DB: Store in pgvector
+
+    Note over WH: Revalidate ISR cache
+```
+
+새 repo가 추가되면 `sort_order=0`으로 삽입되어 포트폴리오 최상단에 표시됩니다.
+
+---
+
+## Features
+
+### Agentic AI Chat
+
+LangGraph 멀티 에이전트가 방문자의 질문에 실시간으로 답변합니다.
+
+- **Intent 분류** — Supervisor가 질문을 6개 카테고리로 분류 (Career / Technical / Contact / Greeting / Out-of-scope / Abuse)
+- **RAG 검색** — 경력, 프로젝트 README를 pgvector 코사인 유사도로 검색 (top-k=6, threshold≥0.5)
+- **멀티턴 대화** — 쿼리 리라이팅으로 대명사/맥락 해소
+- **Web Search 폴백** — RAG 결과 부족 시 Gemini Google Search로 보완
+- **가드레일** — 범위 이탈/악용 3회 시 세션 종료
+- **SSE 스트리밍** — AG-UI 프로토콜로 토큰 단위 실시간 전송
+
+### Portfolio Showcase
+
+- GitHub 자동 동기화 (Webhook + 수동 Sync)
+- 카테고리 필터 (AI & Voice / STB / Side Projects)
+- README 마크다운 렌더링
+- 프로젝트별 기술 스택 태그
+
+### Admin Dashboard
+
+- 경력/프로젝트/프로필 관리
+- 채팅 로그 및 방문 통계
+- GitHub Sync 수동 트리거
+- 사이트 설정 (히어로 문구 등)
+
+---
+
+## Tech Stack
 
 | Layer | Stack |
 |-------|-------|
 | Frontend | Next.js 15, Tailwind CSS, CopilotKit |
-| Agent | FastAPI, LangGraph, Gemini, pgvector RAG |
-| Database | PostgreSQL 16 (pgvector) |
+| Agent | FastAPI, LangGraph, Gemini 2.5 (Flash + Pro), AG-UI Protocol |
+| RAG | Gemini Embedding 001 (768d), pgvector cosine similarity |
+| Database | PostgreSQL 16 + pgvector |
 | Infra | Docker Compose, Cloudflare |
 
-## Features
-
-- **Portfolio Showcase** -- GitHub 자동 동기화, 카테고리 필터, README 렌더링
-- **AI Chat** -- LangGraph 기반 대화형 Q&A (경력/프로젝트 RAG 검색)
-- **Admin Dashboard** -- 경력/프로젝트/설정 관리, 채팅 로그, 방문 통계
-- **GitHub Webhook** -- push 이벤트 시 포트폴리오 자동 업데이트
-
-## Quick Start
-
-### Prerequisites
-
-- Docker & Docker Compose
-- GitHub Personal Access Token (repo read)
-- Gemini API Key
-
-### Setup
-
-```bash
-# 1. Clone
-git clone https://github.com/leonardo204/PortfolioLive.git
-cd PortfolioLive
-
-# 2. Environment
-cp .env.example .env
-# .env 파일을 열어 필수 값 입력
-
-# 3. Deploy
-chmod +x deploy.sh
-./deploy.sh
-```
-
-### Environment Variables
-
-| Variable | Required | Description |
-|----------|:--------:|-------------|
-| `GEMINI_API_KEY` | Yes | Google Gemini API key |
-| `POSTGRES_DB` | Yes | Database name |
-| `POSTGRES_USER` | Yes | Database user |
-| `POSTGRES_PASSWORD` | Yes | Database password |
-| `ADMIN_PASSWORD` | Yes | Admin login password |
-| `SMTP_USER` | Yes | Gmail address |
-| `SMTP_PASS` | Yes | Gmail app password |
-| `GITHUB_TOKEN` | No | GitHub PAT (repo read) |
-| `GITHUB_WEBHOOK_SECRET` | No | Webhook signature secret |
-
-### Development
-
-```bash
-# PostgreSQL이 localhost:5433에서 실행 중이어야 함
-./dev.sh
-```
-
-## Project Structure
-
-```
-PortfolioLive/
-├── web/                    # Next.js frontend + API routes
-│   ├── src/app/            # Pages & API endpoints
-│   ├── src/components/     # React components
-│   ├── src/lib/            # Prisma client, queries
-│   └── prisma/             # Schema, migrations, seed
-├── agent/                  # FastAPI backend
-│   ├── src/pipeline/       # GitHub sync pipeline
-│   ├── src/graph/          # LangGraph agent
-│   ├── src/rag/            # RAG retriever
-│   └── src/routers/        # API routes
-├── docker-compose.yml
-├── deploy.sh               # Production deploy script
-└── dev.sh                  # Development server
-```
-
-## Endpoints
-
-| URL | Description |
-|-----|-------------|
-| `/` | Portfolio main page |
-| `/portfolio/:slug` | Project detail |
-| `/admin` | Admin dashboard |
-| `/api/v1/github/webhook` | GitHub webhook receiver |
-| `/api/v1/github/sync` | Manual sync trigger |
+---
 
 ## License
 
