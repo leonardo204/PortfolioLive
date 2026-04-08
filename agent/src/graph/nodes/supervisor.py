@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 
 from langchain_core.messages import AIMessage
 
@@ -10,11 +11,31 @@ from ...llm.prompts import (
     SUPERVISOR_SYSTEM_PROMPT,
     CONTACT_RESPONSE,
     GREETING_RESPONSE,
+    build_contact_response,
 )
+from ...db.connection import get_pool
 from ..guardrail import check_guardrail
 from ..state import AgentState
 
 logger = logging.getLogger(__name__)
+
+
+async def _fetch_contact_response() -> str:
+    """DB admin_settings에서 실제 연락처 정보를 조회하여 응답 생성"""
+    try:
+        pool = await get_pool()
+        rows = await pool.fetch(
+            "SELECT key, value FROM admin_settings WHERE key IN ('profile_email', 'profile_github', 'profile_linkedin')"
+        )
+        info = {row["key"]: row["value"] for row in rows}
+        return build_contact_response(
+            email=info.get("profile_email", ""),
+            github=info.get("profile_github", ""),
+            linkedin=info.get("profile_linkedin", ""),
+        )
+    except Exception as e:
+        logger.warning(f"[Supervisor] DB contact fetch failed: {e}")
+        return CONTACT_RESPONSE  # fallback to hardcoded
 
 
 def _extract_last_user_message(state: AgentState) -> str:
@@ -89,11 +110,20 @@ async def supervisor_node(state: AgentState) -> AgentState:
 
     except json.JSONDecodeError as e:
         logger.warning(f"[Supervisor] JSON parse failed: {e}, raw={classification_result!r}")
-        # 텍스트에서 intent 키워드 추출 시도
-        for kw in ("CAREER", "TECHNICAL", "CONTACT", "GREETING", "ABUSE"):
-            if kw in classification_result.upper():
-                intent = kw
-                break
+        # 정규식으로 intent 값 추출 시도 (truncated JSON 대응)
+        intent_match = re.search(r'"intent"\s*:\s*"(\w+)"', classification_result, re.IGNORECASE)
+        if intent_match:
+            extracted = intent_match.group(1).upper()
+            valid_intents = {"CAREER", "TECHNICAL", "CONTACT", "GREETING", "OUT_OF_SCOPE", "ABUSE"}
+            if extracted in valid_intents:
+                intent = extracted
+                logger.info(f"[Supervisor] Recovered intent from regex: {intent}")
+        else:
+            # 텍스트에서 intent 키워드 추출 시도
+            for kw in ("CAREER", "TECHNICAL", "CONTACT", "GREETING", "ABUSE"):
+                if kw in classification_result.upper():
+                    intent = kw
+                    break
     except TimeoutError as e:
         logger.error(f"[Supervisor] LLM timeout: {e}")
         updates["thinking"] = ""
@@ -129,10 +159,11 @@ async def supervisor_node(state: AgentState) -> AgentState:
         updates["messages"] = [AIMessage(content=guardrail_result["response"])]
         return updates
 
-    # CONTACT: 연락처 직접 안내
+    # CONTACT: 연락처 직접 안내 (DB에서 실제 정보 조회)
     if intent == "CONTACT":
         updates["thinking"] = ""
-        updates["messages"] = [AIMessage(content=CONTACT_RESPONSE)]
+        contact_text = await _fetch_contact_response()
+        updates["messages"] = [AIMessage(content=contact_text)]
         return updates
 
     # GREETING: 환영 메시지

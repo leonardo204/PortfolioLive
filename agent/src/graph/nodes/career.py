@@ -110,6 +110,9 @@ async def career_node(state: AgentState) -> AgentState:
         logger.error(f"[Career] LLM call failed: {e}")
         response_text = "죄송합니다. 잠시 후 다시 시도해주세요."
 
+    if not response_text:
+        response_text = "죄송합니다. 잠시 후 다시 시도해주세요."
+
     updates["thinking"] = ""
     updates["messages"] = [AIMessage(content=response_text)]
 
