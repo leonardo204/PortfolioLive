@@ -101,6 +101,9 @@ CAREER_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스턴
 4. comparison-table — 범용 비교
 <!--a2ui:comparison-table-->{{"title":"기술 비교","headers":["항목","A","B"],"rows":[["성능","높음","중간"]]}}<!--/a2ui-->
 
+5. contact-form — 연락 폼 (CONTACT 의도일 때만 사용)
+<!--a2ui:contact-form-->{{}}<!--/a2ui-->
+
 ### 사용 시점 (반드시 준수)
 - "목록", "리스트", "보여줘", "정리해줘" 요청 시 → 해당 A2UI 마커 필수 사용
 - 3개 이상 프로젝트를 나열할 때 → project-table (RAG에서 찾은 프로젝트를 모두 포함)
@@ -206,6 +209,9 @@ TECHNICAL_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스
 4. comparison-table — 범용 비교
 <!--a2ui:comparison-table-->{{"title":"기술 비교","headers":["항목","A","B"],"rows":[["성능","높음","중간"]]}}<!--/a2ui-->
 
+5. contact-form — 연락 폼 (CONTACT 의도일 때만 사용)
+<!--a2ui:contact-form-->{{}}<!--/a2ui-->
+
 ### 사용 시점 (반드시 준수)
 - "목록", "리스트", "보여줘", "정리해줘" 요청 시 → 해당 A2UI 마커 필수 사용
 - 3개 이상 프로젝트를 나열할 때 → project-table (RAG에서 찾은 프로젝트를 모두 포함)
@@ -257,7 +263,9 @@ CONTACT_RESPONSE_TEMPLATE = """안녕하세요! 저에게 연락을 원하시는
 연락처 정보를 안내드립니다:
 {contact_items}
 
-메시지를 남겨주시면 확인 후 연락드리겠습니다. 감사합니다."""
+아래 폼을 통해 직접 메시지를 남겨주시면 확인 후 연락드리겠습니다. 감사합니다.
+
+<!--a2ui:contact-form-->{{}}<!--/a2ui-->"""
 
 
 def build_contact_response(

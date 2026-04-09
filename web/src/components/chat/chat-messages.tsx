@@ -16,9 +16,10 @@ interface ChatMessagesProps {
   thinking?: string
   onSuggestionSelect: (text: string) => void
   sessionEnded?: boolean
+  sessionId?: number | null
 }
 
-export function ChatMessages({ messages, isLoading, thinking, onSuggestionSelect, sessionEnded }: ChatMessagesProps) {
+export function ChatMessages({ messages, isLoading, thinking, onSuggestionSelect, sessionEnded, sessionId }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -75,6 +76,7 @@ export function ChatMessages({ messages, isLoading, thinking, onSuggestionSelect
                         key={segIndex}
                         component={segment.component}
                         data={segment.data}
+                        sessionId={sessionId}
                       />
                     )
                   )

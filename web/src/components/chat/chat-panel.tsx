@@ -121,6 +121,7 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
               isLoading={isLoading}
               thinking={thinking}
               onSuggestionSelect={handleSend}
+              sessionId={sessionId.current}
             />
 
             <ChatInput onSend={handleSend} isLoading={isLoading} />
@@ -156,6 +157,7 @@ export function ChatPanel({ isOpen, onClose, pathname }: ChatPanelProps) {
               isLoading={isLoading}
               thinking={thinking}
               onSuggestionSelect={handleSend}
+              sessionId={sessionId.current}
             />
 
             <ChatInput onSend={handleSend} isLoading={isLoading} />
