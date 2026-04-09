@@ -104,14 +104,43 @@ CAREER_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스턴
 5. contact-form — 연락 폼 (CONTACT 의도일 때만 사용)
 <!--a2ui:contact-form-->{{}}<!--/a2ui-->
 
-### 사용 시점 (반드시 준수)
-- "목록", "리스트", "보여줘", "정리해줘" 요청 시 → 해당 A2UI 마커 필수 사용
-- 3개 이상 프로젝트를 나열할 때 → project-table (RAG에서 찾은 프로젝트를 모두 포함)
-- 기술 스택을 카테고리별로 소개할 때 → tech-stack-table
-- 경력을 시간순으로 설명할 때 → career-timeline
-- 항목을 비교할 때 → comparison-table
-- 2개 이하 항목이면 일반 마크다운으로 충분 (마커 불필요)
-- A2UI 마커 앞뒤에 간단한 텍스트 설명을 붙이되, 마커 안의 데이터가 핵심 정보를 담당
+6. project-ref-card — 관련 프로젝트 참조 카드 (프로젝트 언급 시)
+<!--a2ui:project-ref-card-->[{{"slug":"dotclaude","title":"dotclaude","description":"Claude Code 개발 하네스","techs":["TypeScript","SQLite"]}}]<!--/a2ui-->
+
+7. diagram-card — 아키텍처/구조 다이어그램 (Mermaid)
+<!--a2ui:diagram-card-->{{"title":"시스템 아키텍처","mermaidCode":"graph TD\\n  A[Client] --> B[Server]\\n  B --> C[Database]"}}<!--/a2ui-->
+
+8. skill-matrix — 기술 역량 시각화
+<!--a2ui:skill-matrix-->{{"categories":[{{"name":"AI/ML","skills":[{{"name":"LangGraph","level":4}},{{"name":"RAG","level":4}}]}}]}}<!--/a2ui-->
+
+9. timeline-card — 경력 하이라이트 카드 (특정 회사 상세)
+<!--a2ui:timeline-card-->{{"company":"KT 알티미디어","period":"2019.12-현재","role":"연구원","department":"AI연구소","highlights":["AI Agent 개발","STT/TTS 시스템"]}}<!--/a2ui-->
+
+### 타입 선택 규칙 (반드시 준수)
+
+**프로젝트 관련:**
+- 프로젝트 3개 이상 나열 → project-table
+- 특정 프로젝트 1-2개를 언급/소개 → project-ref-card (project-table이 아님!)
+- "~프로젝트에 대해", "~프로젝트 알려줘" → project-ref-card
+
+**경력 관련:**
+- 전체 경력을 시간순 나열 → career-timeline
+- 특정 회사 1곳의 상세 경력 → timeline-card (career-timeline이 아님!)
+- "~에서의 경력", "~회사 경험" → timeline-card
+
+**기술 관련:**
+- 기술 스택을 분야별 표로 정리 → tech-stack-table
+- "역량", "레벨", "숙련도", "시각화" 키워드 포함 → skill-matrix (tech-stack-table이 아님!)
+- "기술 역량을 보여줘", "스킬셋" → skill-matrix
+
+**다이어그램:**
+- "아키텍처", "구조", "다이어그램", "시각화", "흐름" 키워드 + 시스템 설명 → diagram-card 필수!
+- diagram-card의 mermaidCode는 반드시 유효한 Mermaid 문법(graph TD, flowchart 등)으로 작성
+
+**기타:**
+- 항목 비교 → comparison-table
+- 연락 요청 → contact-form
+- 마커 앞뒤에 텍스트 설명을 붙이되, 마커 안의 데이터가 핵심 정보 담당
 
 ## RAG 컨텍스트
 {rag_context}
@@ -212,14 +241,43 @@ TECHNICAL_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스
 5. contact-form — 연락 폼 (CONTACT 의도일 때만 사용)
 <!--a2ui:contact-form-->{{}}<!--/a2ui-->
 
-### 사용 시점 (반드시 준수)
-- "목록", "리스트", "보여줘", "정리해줘" 요청 시 → 해당 A2UI 마커 필수 사용
-- 3개 이상 프로젝트를 나열할 때 → project-table (RAG에서 찾은 프로젝트를 모두 포함)
-- 기술 스택을 카테고리별로 소개할 때 → tech-stack-table
-- 경력을 시간순으로 설명할 때 → career-timeline
-- 항목을 비교할 때 → comparison-table
-- 2개 이하 항목이면 일반 마크다운으로 충분 (마커 불필요)
-- A2UI 마커 앞뒤에 간단한 텍스트 설명을 붙이되, 마커 안의 데이터가 핵심 정보를 담당
+6. project-ref-card — 관련 프로젝트 참조 카드 (프로젝트 언급 시)
+<!--a2ui:project-ref-card-->[{{"slug":"dotclaude","title":"dotclaude","description":"Claude Code 개발 하네스","techs":["TypeScript","SQLite"]}}]<!--/a2ui-->
+
+7. diagram-card — 아키텍처/구조 다이어그램 (Mermaid)
+<!--a2ui:diagram-card-->{{"title":"시스템 아키텍처","mermaidCode":"graph TD\\n  A[Client] --> B[Server]\\n  B --> C[Database]"}}<!--/a2ui-->
+
+8. skill-matrix — 기술 역량 시각화
+<!--a2ui:skill-matrix-->{{"categories":[{{"name":"AI/ML","skills":[{{"name":"LangGraph","level":4}},{{"name":"RAG","level":4}}]}}]}}<!--/a2ui-->
+
+9. timeline-card — 경력 하이라이트 카드 (특정 회사 상세)
+<!--a2ui:timeline-card-->{{"company":"KT 알티미디어","period":"2019.12-현재","role":"연구원","department":"AI연구소","highlights":["AI Agent 개발","STT/TTS 시스템"]}}<!--/a2ui-->
+
+### 타입 선택 규칙 (반드시 준수)
+
+**프로젝트 관련:**
+- 프로젝트 3개 이상 나열 → project-table
+- 특정 프로젝트 1-2개를 언급/소개 → project-ref-card (project-table이 아님!)
+- "~프로젝트에 대해", "~프로젝트 알려줘" → project-ref-card
+
+**경력 관련:**
+- 전체 경력을 시간순 나열 → career-timeline
+- 특정 회사 1곳의 상세 경력 → timeline-card (career-timeline이 아님!)
+- "~에서의 경력", "~회사 경험" → timeline-card
+
+**기술 관련:**
+- 기술 스택을 분야별 표로 정리 → tech-stack-table
+- "역량", "레벨", "숙련도", "시각화" 키워드 포함 → skill-matrix (tech-stack-table이 아님!)
+- "기술 역량을 보여줘", "스킬셋" → skill-matrix
+
+**다이어그램:**
+- "아키텍처", "구조", "다이어그램", "시각화", "흐름" 키워드 + 시스템 설명 → diagram-card 필수!
+- diagram-card의 mermaidCode는 반드시 유효한 Mermaid 문법(graph TD, flowchart 등)으로 작성
+
+**기타:**
+- 항목 비교 → comparison-table
+- 연락 요청 → contact-form
+- 마커 앞뒤에 텍스트 설명을 붙이되, 마커 안의 데이터가 핵심 정보 담당
 
 ## RAG 컨텍스트
 {rag_context}

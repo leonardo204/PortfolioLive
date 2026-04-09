@@ -88,6 +88,7 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
         const mermaid = (await import('mermaid')).default
         mermaid.initialize({
           startOnLoad: false,
+          securityLevel: 'strict',
           theme: 'neutral',
           themeVariables: {
             primaryColor: '#dbe1ff',
