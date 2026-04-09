@@ -6,7 +6,7 @@ from langchain_core.messages import AIMessage
 
 from ...llm.factory import call_llm
 from ...llm.prompts import TECHNICAL_SYSTEM_PROMPT
-from ...pipeline.career_loader import load_tech_transition_context
+from ...llm.tools_schema import PORTFOLIO_TOOLS, TOOL_FUNCTIONS
 from ..tools.rag_tool import rag_search, format_rag_context, rewrite_query_with_history
 from ..state import AgentState
 
@@ -59,9 +59,9 @@ def _build_conversation_history_for_rewrite(state: AgentState) -> list[dict]:
 async def technical_node(state: AgentState) -> AgentState:
     """Technical 노드: 기술 질문 응답 생성
 
-    1. RAG 검색
-    2. 컨텍스트 조합 + 프롬프트 작성
-    3. Gemini Pro/Flash 호출 (시스템 프롬프트에 후속 제안 포함)
+    1. RAG 검색 (사전 검색)
+    2. 프롬프트 작성 (RAG 컨텍스트 + 대화 히스토리)
+    3. Gemini 호출 — Tool calling으로 경력/포트폴리오 데이터 on-demand 조회
     4. needs_grounding 판정
     """
     user_message = _extract_last_user_message(state)
@@ -73,7 +73,7 @@ async def technical_node(state: AgentState) -> AgentState:
         "needs_grounding": False,
     }
 
-    # 1. 멀티턴 쿼리 재작성 후 RAG 검색
+    # 1. 멀티턴 쿼리 재작성 후 RAG 검색 (사전 검색 유지)
     history_for_rewrite = _build_conversation_history_for_rewrite(state)
     rag_query = await rewrite_query_with_history(user_message, history_for_rewrite)
     rag_results = await rag_search(rag_query, top_k=6)
@@ -87,24 +87,24 @@ async def technical_node(state: AgentState) -> AgentState:
 
     updates["thinking"] = f"{len(rag_results)}건의 관련 기술 문서를 분석 중..."
 
-    # 2. 컨텍스트 구성
+    # 2. 프롬프트 작성 (RAG 컨텍스트 + 대화 히스토리만 주입)
     rag_context = format_rag_context(rag_results)
-    tech_transition_context = await load_tech_transition_context()
     system_prompt = TECHNICAL_SYSTEM_PROMPT.format(
-        tech_transition_context=tech_transition_context,
         rag_context=rag_context,
         conversation_context=conversation_context,
     )
 
     updates["thinking"] = "기술 답변을 구성 중..."
 
-    # 3. LLM 호출 (TECHNICAL_SYSTEM_PROMPT에 후속 화제 제안 지시 포함)
+    # 3. LLM 호출 — Tool calling으로 경력/포트폴리오 데이터 on-demand 조회
     try:
         response_text = await call_llm(
             model_name=model_choice,
             system_prompt=system_prompt,
             user_prompt=user_message,
             max_output_tokens=4096,
+            tools=[PORTFOLIO_TOOLS],
+            tool_functions=TOOL_FUNCTIONS,
         )
     except Exception as e:
         logger.error(f"[Technical] LLM call failed: {e}")
