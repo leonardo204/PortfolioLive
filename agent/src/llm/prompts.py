@@ -108,7 +108,8 @@ CAREER_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스턴
 <!--a2ui:project-ref-card-->[{{"slug":"dotclaude","title":"dotclaude","description":"Claude Code 개발 하네스","techs":["TypeScript","SQLite"]}}]<!--/a2ui-->
 
 7. diagram-card — 아키텍처/구조 다이어그램 (Mermaid)
-<!--a2ui:diagram-card-->{{"title":"시스템 아키텍처","mermaidCode":"graph TD\\n  A[Client] --> B[Server]\\n  B --> C[Database]"}}<!--/a2ui-->
+<!--a2ui:diagram-card-->{{"title":"시스템 아키텍처","mermaidCode":"graph TD\n  A[Client] --> B[Server]\n  B --> C[Database]"}}<!--/a2ui-->
+**Mermaid 필수 규칙**: 노드 라벨 내 줄바꿈은 <br> 사용 (\\n 금지), 소괄호() 금지 (— 또는 쉼표로 대체), 숫자 넘버링 금지 (A. B. 사용)
 
 8. skill-matrix — 기술 역량 시각화
 <!--a2ui:skill-matrix-->{{"categories":[{{"name":"AI/ML","skills":[{{"name":"LangGraph","level":4}},{{"name":"RAG","level":4}}]}}]}}<!--/a2ui-->
@@ -135,7 +136,9 @@ CAREER_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스턴
 
 **다이어그램:**
 - "아키텍처", "구조", "다이어그램", "시각화", "흐름" 키워드 + 시스템 설명 → diagram-card 필수!
-- diagram-card의 mermaidCode는 반드시 유효한 Mermaid 문법(graph TD, flowchart 등)으로 작성
+- mermaidCode는 반드시 유효한 Mermaid 문법(graph TD, flowchart 등)으로 작성
+- **Mermaid 규칙**: 노드 라벨 내 줄바꿈 <br> 사용, 소괄호 금지, 숫자 넘버링 금지
+- **중요**: A2UI JSON은 반드시 한 줄로 작성 (멀티라인 JSON 금지)
 
 **기타:**
 - 항목 비교 → comparison-table
@@ -245,7 +248,8 @@ TECHNICAL_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스
 <!--a2ui:project-ref-card-->[{{"slug":"dotclaude","title":"dotclaude","description":"Claude Code 개발 하네스","techs":["TypeScript","SQLite"]}}]<!--/a2ui-->
 
 7. diagram-card — 아키텍처/구조 다이어그램 (Mermaid)
-<!--a2ui:diagram-card-->{{"title":"시스템 아키텍처","mermaidCode":"graph TD\\n  A[Client] --> B[Server]\\n  B --> C[Database]"}}<!--/a2ui-->
+<!--a2ui:diagram-card-->{{"title":"시스템 아키텍처","mermaidCode":"graph TD\n  A[Client] --> B[Server]\n  B --> C[Database]"}}<!--/a2ui-->
+**Mermaid 필수 규칙**: 노드 라벨 내 줄바꿈은 <br> 사용 (\\n 금지), 소괄호() 금지 (— 또는 쉼표로 대체), 숫자 넘버링 금지 (A. B. 사용)
 
 8. skill-matrix — 기술 역량 시각화
 <!--a2ui:skill-matrix-->{{"categories":[{{"name":"AI/ML","skills":[{{"name":"LangGraph","level":4}},{{"name":"RAG","level":4}}]}}]}}<!--/a2ui-->
@@ -272,7 +276,9 @@ TECHNICAL_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스
 
 **다이어그램:**
 - "아키텍처", "구조", "다이어그램", "시각화", "흐름" 키워드 + 시스템 설명 → diagram-card 필수!
-- diagram-card의 mermaidCode는 반드시 유효한 Mermaid 문법(graph TD, flowchart 등)으로 작성
+- mermaidCode는 반드시 유효한 Mermaid 문법(graph TD, flowchart 등)으로 작성
+- **Mermaid 규칙**: 노드 라벨 내 줄바꿈 <br> 사용, 소괄호 금지, 숫자 넘버링 금지
+- **중요**: A2UI JSON은 반드시 한 줄로 작성 (멀티라인 JSON 금지)
 
 **기타:**
 - 항목 비교 → comparison-table

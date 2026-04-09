@@ -34,11 +34,22 @@ export function parseA2UI(content: string): Segment[] {
 
     // A2UI JSON 파싱 (실패 시 텍스트 폴백)
     try {
+      // 1차: 그대로 파싱 시도
       const data = JSON.parse(jsonStr.trim())
       segments.push({ type: 'a2ui', component, data })
     } catch {
-      // JSON 파싱 실패 → 원본 텍스트로 폴백
-      segments.push({ type: 'text', content: fullMatch })
+      try {
+        // 2차: LLM이 멀티라인 JSON을 생성한 경우 — 문자열 값 내 리터럴 줄바꿈 이스케이프
+        // JSON 문자열 리터럴("..." 내부)의 실제 줄바꿈/탭만 이스케이프
+        const sanitized = jsonStr.trim().replace(/"(?:[^"\\]|\\.)*"/g, (str) =>
+          str.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+        )
+        const data = JSON.parse(sanitized)
+        segments.push({ type: 'a2ui', component, data })
+      } catch {
+        // JSON 파싱 실패 → 원본 텍스트로 폴백
+        segments.push({ type: 'text', content: fullMatch })
+      }
     }
 
     lastIndex = matchStart + fullMatch.length
