@@ -24,7 +24,7 @@ async function main() {
       endedAt: null,
       isCurrent: true,
       techTransition: 'STB Cloud → Cross-platform Players → AI Agents',
-      summary: 'STB 클라우드, 크로스플랫폼 플레이어, AI 에이전트 개발',
+      summary: '알티캐스트에서 물적분할로 알티미디어 설립(2019) → KT 그룹사 편입 후 KT 알티미디어로 사명 변경(2025). STB 클라우드, 크로스플랫폼 플레이어, AI 에이전트 개발',
       sortOrder: 1,
       // EN
       companyEn: 'KT Altimedia',
@@ -32,7 +32,7 @@ async function main() {
       positionEn: 'Researcher',
       locationEn: 'Seoul',
       techTransitionEn: 'STB Cloud → Cross-platform Players → AI Agents',
-      summaryEn: 'STB cloud, cross-platform player, and AI agent development',
+      summaryEn: 'Alticast spun off Altimedia via demerger (2019) → joined KT Group, renamed to KT Altimedia (2025). STB cloud, cross-platform player, and AI agent development',
     },
   })
 
@@ -47,7 +47,7 @@ async function main() {
       endedAt: new Date('2019-12-06'),
       isCurrent: false,
       techTransition: 'STB UI/UX Development · Windmill Framework',
-      summary: 'STB UI/UX 개발, Windmill 프레임워크, 다수 방송사 정합',
+      summary: '알티캐스트(DVB-MHP/OCAP 기반 STB 미들웨어 세계 최초 상용화 기업). STB UI/UX 개발, Windmill 프레임워크, 다수 방송사 정합. 이후 미디어 플랫폼 사업부가 알티미디어로 물적분할',
       sortOrder: 2,
       // EN
       companyEn: 'Alticast',
@@ -55,7 +55,7 @@ async function main() {
       positionEn: 'Researcher',
       locationEn: 'Seoul',
       techTransitionEn: 'STB UI/UX Development · Windmill Framework',
-      summaryEn: 'STB UI/UX development, Windmill framework, integration with multiple broadcasters',
+      summaryEn: 'Alticast (world-first commercialization of DVB-MHP/OCAP STB middleware). STB UI/UX development, Windmill framework, integration with multiple broadcasters. Media platform division later spun off as Altimedia',
     },
   })
 

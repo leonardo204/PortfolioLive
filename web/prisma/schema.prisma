@@ -52,6 +52,7 @@ model PortfolioProject {
   description   String?
   category      String?
   technologies  String[]  @default([])
+  tags          String[]  @default([])
   year          String?
   githubUrl     String?   @map("github_url")
   readmeRaw     String?   @map("readme_raw")

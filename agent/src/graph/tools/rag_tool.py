@@ -106,6 +106,41 @@ async def rag_search(query: str, top_k: int = 5) -> list[dict]:
         return []
 
 
+async def load_portfolio_catalog() -> list[dict]:
+    """DB에서 포트폴리오 프로젝트 카탈로그(slug, title, description, techs, tags)를 조회"""
+    try:
+        from ...db.connection import get_pool
+        pool = await get_pool()
+        rows = await pool.fetch(
+            "SELECT slug, title, description, technologies, tags FROM portfolio_projects ORDER BY sort_order, slug"
+        )
+        return [
+            {
+                "slug": row["slug"],
+                "title": row["title"],
+                "description": (row["description"] or "")[:80],
+                "techs": list(row["technologies"]) if row["technologies"] else [],
+                "tags": list(row["tags"]) if row["tags"] else [],
+            }
+            for row in rows
+        ]
+    except Exception as e:
+        logger.warning(f"[RAGTool] Failed to load portfolio catalog: {e}")
+        return []
+
+
+def format_portfolio_catalog(catalog: list[dict]) -> str:
+    """카탈로그를 프롬프트용 문자열로 포맷"""
+    if not catalog:
+        return "(조회 불가 — project-ref-card/project-table 사용 금지)"
+    lines = []
+    for p in catalog:
+        techs = ", ".join(p["techs"][:5]) if p["techs"] else ""
+        tags = ", ".join(p["tags"]) if p["tags"] else ""
+        lines.append(f'- slug: {p["slug"]} | title: {p["title"]} | desc: {p["description"]} | techs: [{techs}] | tags: [{tags}]')
+    return "\n".join(lines)
+
+
 def format_rag_context(results: list[dict], max_chars: int = 3000) -> str:
     """RAG 결과를 프롬프트용 컨텍스트 문자열로 포맷
 
