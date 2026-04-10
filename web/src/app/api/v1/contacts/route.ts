@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendContactNotification } from '@/lib/mailer'
 
 // Rate limiting: IP당 5분에 1회
 const rateLimitMap = new Map<string, number>()
@@ -94,25 +95,34 @@ export async function POST(req: NextRequest) {
   // Rate limit 갱신 (검증 통과 후)
   rateLimitMap.set(ip, now)
 
-  try {
-    await prisma.contactRequest.create({
-      data: {
-        name: name.trim(),
-        email: email.trim(),
-        message: message.trim(),
-        organization:
-          organization && typeof organization === 'string'
-            ? organization.trim() || null
-            : null,
-        ipAddress: ip === 'unknown' ? null : ip,
-        sessionId:
-          typeof sessionId === 'number' ? sessionId : null,
-      },
-    })
+  const normalized = {
+    name: name.trim(),
+    email: email.trim(),
+    message: message.trim(),
+    organization:
+      organization && typeof organization === 'string'
+        ? organization.trim() || null
+        : null,
+    ipAddress: ip === 'unknown' ? null : ip,
+    sessionId: typeof sessionId === 'number' ? sessionId : null,
+  }
 
-    return NextResponse.json({ success: true }, { status: 201 })
+  try {
+    await prisma.contactRequest.create({ data: normalized })
   } catch (err) {
-    console.error('[Contacts API]', err)
+    console.error('[Contacts API] DB 저장 실패', err)
     return NextResponse.json({ error: '서버 오류가 발생했습니다.' }, { status: 500 })
   }
+
+  // 관리자 알림 메일 발송 — 실패해도 사용자 응답은 성공으로 처리 (DB엔 저장됨)
+  try {
+    const sent = await sendContactNotification(normalized)
+    if (!sent) {
+      console.warn('[Contacts API] 메일 발송 건너뜀/실패 — DB에만 저장됨')
+    }
+  } catch (err) {
+    console.error('[Contacts API] 메일 발송 중 예외', err)
+  }
+
+  return NextResponse.json({ success: true }, { status: 201 })
 }
