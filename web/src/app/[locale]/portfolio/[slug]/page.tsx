@@ -152,6 +152,26 @@ export default async function PortfolioDetailPage({ params }: Props) {
                 ))}
               </div>
             )}
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#eaeef2] hover:bg-[#e2e9ee] text-[#586065] text-xs font-bold uppercase tracking-widest rounded-full transition-colors"
+              >
+                GitHub
+              </a>
+            )}
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0053db] hover:bg-[#0048bf] text-white text-xs font-bold uppercase tracking-widest rounded-full transition-colors"
+              >
+                Visit Live Site
+              </a>
+            )}
           </div>
         </div>
 

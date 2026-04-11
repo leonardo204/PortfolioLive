@@ -12,11 +12,24 @@ export function PortfolioCard({ project, locale = 'ko' }: PortfolioCardProps) {
       href={`/${locale}/portfolio/${project.slug}`}
       className="group block p-6 md:p-8 rounded-xl bg-white border border-[#abb3b9]/15 hover:shadow-[0px_12px_32px_rgba(43,52,56,0.04)] hover:border-[#c7d3ff]/40 transition-all duration-300"
     >
-      {/* Category */}
-      {project.category && (
-        <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#abb3b9] mb-3 block">
-          {project.category}
-        </span>
+      {/* Category + Live Badge */}
+      {(project.category || project.liveUrl) && (
+        <div className="flex items-center justify-between mb-3">
+          {project.category ? (
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#abb3b9]">
+              {project.category}
+            </span>
+          ) : <span />}
+          {project.liveUrl && (
+            <span
+              className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-[#0048bf]"
+              aria-label="Currently running live service"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0053db]" aria-hidden="true" />
+              Live
+            </span>
+          )}
+        </div>
       )}
 
       {/* Title */}

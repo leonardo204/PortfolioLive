@@ -10,8 +10,10 @@ type Project = {
   description: string | null
   category: string | null
   technologies: string[]
+  tags: string[]
   year: string | null
   githubUrl: string | null
+  liveUrl: string | null
   lastSyncedAt: string | null
   updatedAt: string
 }
@@ -43,6 +45,8 @@ export default function AdminProjectsPage() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editDesc, setEditDesc] = useState<string>('')
   const [editCategory, setEditCategory] = useState<string>('')
+  const [editLiveUrl, setEditLiveUrl] = useState<string>('')
+  const [editIsLive, setEditIsLive] = useState<boolean>(false)
   const [savingId, setSavingId] = useState<number | null>(null)
   const [error, setError] = useState<string>('')
   const [syncMessage, setSyncMessage] = useState<string>('')
@@ -98,6 +102,10 @@ export default function AdminProjectsPage() {
     setSavingId(project.id)
     setError('')
     try {
+      // tags 처리: 기존 tags에서 'live' 제거 후, editIsLive이면 추가
+      const baseTags = (project.tags ?? []).filter((t) => t !== 'live')
+      const newTags = editIsLive ? [...baseTags, 'live'] : baseTags
+
       const res = await fetch('/api/v1/admin/projects', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -105,6 +113,8 @@ export default function AdminProjectsPage() {
           id: project.id,
           description: editDesc,
           category: editCategory,
+          liveUrl: editLiveUrl.trim() || null,
+          tags: newTags,
         }),
       })
 
@@ -117,7 +127,13 @@ export default function AdminProjectsPage() {
       setProjects((prev) =>
         prev.map((p) =>
           p.id === project.id
-            ? { ...p, description: editDesc, category: editCategory || null }
+            ? {
+                ...p,
+                description: editDesc,
+                category: editCategory || null,
+                liveUrl: editLiveUrl || null,
+                tags: newTags,
+              }
             : p
         )
       )
@@ -133,12 +149,16 @@ export default function AdminProjectsPage() {
     setEditingId(project.id)
     setEditDesc(project.description ?? '')
     setEditCategory(project.category ?? '')
+    setEditLiveUrl(project.liveUrl ?? '')
+    setEditIsLive((project.tags ?? []).includes('live'))
   }
 
   function cancelEdit() {
     setEditingId(null)
     setEditDesc('')
     setEditCategory('')
+    setEditLiveUrl('')
+    setEditIsLive(false)
   }
 
   // 카테고리 목록 (DB에 있는 것 + 기본값)
@@ -383,7 +403,33 @@ export default function AdminProjectsPage() {
                                 ))}
                               </select>
                             </div>
-                            <div />
+                            <div>
+                              <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
+                                Live URL
+                              </label>
+                              <input
+                                type="text"
+                                value={editLiveUrl}
+                                onChange={(e) => setEditLiveUrl(e.target.value)}
+                                placeholder="https://example.com"
+                                className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={`live-tag-${project.id}`}
+                              checked={editIsLive}
+                              onChange={(e) => setEditIsLive(e.target.checked)}
+                              className="w-4 h-4 rounded border-[#eaeef2] text-[#0053db] focus:ring-[#0053db]"
+                            />
+                            <label
+                              htmlFor={`live-tag-${project.id}`}
+                              className="text-xs font-medium text-[#586065] uppercase tracking-wider cursor-pointer select-none"
+                            >
+                              Live 태그 (현재 운영 중인 실서비스)
+                            </label>
                           </div>
                           <div>
                             <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">

@@ -317,6 +317,47 @@ async function main() {
   }
 
   // ──────────────────────────────────────
+  // 포트폴리오 Live URL + live 태그
+  // (GitHub sync에서 건드리지 않는 필드 — seed가 소스 오브 트루스)
+  // ──────────────────────────────────────
+
+  const portfolioLiveUrls: Record<string, string> = {
+    'news-origin': 'https://news.zerolive.co.kr',
+    'wander': 'https://wander.zerolive.co.kr',
+    'mytammi': 'https://tammi.zerolive.co.kr',
+    'zerolive-vpn': 'https://vpn.zerolive.co.kr',
+  }
+
+  for (const [slug, liveUrl] of Object.entries(portfolioLiveUrls)) {
+    // liveUrl 업데이트
+    const updateResult = await prisma.portfolioProject.updateMany({
+      where: { slug },
+      data: { liveUrl },
+    })
+
+    if (updateResult.count === 0) {
+      console.warn(`[seed] Live URL 설정 대상 없음 (slug: ${slug}) — 스킵`)
+      continue
+    }
+
+    // 기존 tags에 'live' 중복 없이 추가
+    const existing = await prisma.portfolioProject.findUnique({
+      where: { slug },
+      select: { tags: true },
+    })
+
+    if (existing) {
+      const mergedTags = Array.from(new Set([...existing.tags, 'live']))
+      await prisma.portfolioProject.update({
+        where: { slug },
+        data: { tags: mergedTags },
+      })
+    }
+
+    console.log(`✓ Live service marked: ${slug} → ${liveUrl}`)
+  }
+
+  // ──────────────────────────────────────
   // 결과 출력
   // ──────────────────────────────────────
 

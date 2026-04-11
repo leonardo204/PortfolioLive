@@ -55,6 +55,7 @@ model PortfolioProject {
   tags          String[]  @default([])
   year          String?
   githubUrl     String?   @map("github_url")
+  liveUrl       String?   @map("live_url")
   readmeRaw     String?   @map("readme_raw")
   sortOrder     Int       @default(0) @map("sort_order")
   lastSyncedAt  DateTime? @map("last_synced_at")

@@ -13,6 +13,7 @@ interface FilterBarProps {
 export function FilterBar({ projects, locale = 'ko' }: FilterBarProps) {
   const t = useTranslations('portfolio')
   const [activeFilter, setActiveFilter] = useState('')
+  const [liveOnly, setLiveOnly] = useState(false)
 
   const FILTERS = [
     { label: t('all'), value: '' },
@@ -21,10 +22,11 @@ export function FilterBar({ projects, locale = 'ko' }: FilterBarProps) {
     { label: t('sideProjects'), value: 'Side Projects' },
   ]
 
-  const filtered =
-    activeFilter === ''
-      ? projects
-      : projects.filter((p) => p.category?.includes(activeFilter))
+  const filtered = projects.filter((p) => {
+    if (activeFilter && !p.category?.includes(activeFilter)) return false
+    if (liveOnly && !p.tags?.includes('live')) return false
+    return true
+  })
 
   return (
     <div>
@@ -46,6 +48,17 @@ export function FilterBar({ projects, locale = 'ko' }: FilterBarProps) {
             </button>
           )
         })}
+        <span className="w-px h-4 bg-[#eaeef2] mx-1 self-center" />
+        <button
+          onClick={() => setLiveOnly((prev) => !prev)}
+          className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+            liveOnly
+              ? 'bg-[#dbe1ff] text-[#0048bf]'
+              : 'text-[#586065] hover:bg-[#e2e9ee]'
+          }`}
+        >
+          Live
+        </button>
       </div>
 
       {/* Grid */}
