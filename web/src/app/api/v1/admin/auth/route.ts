@@ -3,6 +3,12 @@ import { signAdminSession } from '@/lib/admin-auth'
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
 
+function isSecureRequest(request: NextRequest): boolean {
+  if (request.nextUrl.protocol === 'https:') return true
+  if (request.headers.get('x-forwarded-proto') === 'https') return true
+  return false
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -29,16 +35,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // HMAC 서명된 세션 토큰 생성
     const sessionToken = await signAdminSession()
 
     const response = NextResponse.json({ success: true })
     response.cookies.set('admin-session', sessionToken, {
       httpOnly: true,
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24, // 24시간
+      maxAge: 60 * 60 * 24,
       path: '/',
-      secure: process.env.NODE_ENV === 'production',
+      secure: isSecureRequest(request),
     })
 
     return response
@@ -50,14 +55,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
   const response = NextResponse.json({ success: true })
   response.cookies.set('admin-session', '', {
     httpOnly: true,
     sameSite: 'lax',
     maxAge: 0,
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecureRequest(request),
   })
   return response
 }

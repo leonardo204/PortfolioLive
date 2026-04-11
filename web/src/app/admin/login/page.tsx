@@ -1,10 +1,8 @@
 'use client'
 
 import { useState, FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function AdminLoginPage() {
-  const router = useRouter()
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,14 +23,15 @@ export default function AdminLoginPage() {
 
       if (!res.ok) {
         setError(data.error || '로그인에 실패했습니다.')
+        setLoading(false)
         return
       }
 
-      router.push('/admin/careers')
-      router.refresh()
+      // 하드 네비게이션: Next.js App Router의 RSC 캐시와 새 httpOnly 쿠키의
+      // 레이스를 피하기 위해 router.push 대신 window.location 사용
+      window.location.href = '/admin/careers'
     } catch {
       setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
-    } finally {
       setLoading(false)
     }
   }
