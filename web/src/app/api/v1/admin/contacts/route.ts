@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminAuth } from '@/lib/admin-auth'
 
-export async function GET() {
-  const authError = await requireAdminAuth()
-  if (authError) return authError
+export async function GET(request: NextRequest) {
+  const auth = await requireAdminAuth(request)
+  if (!auth.ok) return auth.response
 
   try {
     const contacts = await prisma.contactRequest.findMany({
@@ -19,12 +19,12 @@ export async function GET() {
   }
 }
 
-export async function PATCH(req: NextRequest) {
-  const authError = await requireAdminAuth()
-  if (authError) return authError
+export async function PATCH(request: NextRequest) {
+  const auth = await requireAdminAuth(request)
+  if (!auth.ok) return auth.response
 
   try {
-    const body = await req.json()
+    const body = await request.json()
     const { id, isRead } = body as { id: number; isRead: boolean }
 
     if (!id) {

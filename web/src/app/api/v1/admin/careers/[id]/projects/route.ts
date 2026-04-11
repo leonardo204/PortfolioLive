@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-
-function isAuthenticated(request: NextRequest): boolean {
-  const session = request.cookies.get('admin-session')
-  return !!session?.value
-}
+import { requireAdminAuth } from '@/lib/admin-auth'
 
 type RouteContext = { params: Promise<{ id: string }> }
 
 export async function GET(request: NextRequest, context: RouteContext) {
-  if (!isAuthenticated(request)) {
-    return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
-  }
+  const auth = await requireAdminAuth(request)
+  if (!auth.ok) return auth.response
 
   const { id } = await context.params
   const careerId = parseInt(id, 10)
@@ -36,9 +31,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
 }
 
 export async function POST(request: NextRequest, context: RouteContext) {
-  if (!isAuthenticated(request)) {
-    return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
-  }
+  const auth = await requireAdminAuth(request)
+  if (!auth.ok) return auth.response
 
   const { id } = await context.params
   const careerId = parseInt(id, 10)
@@ -77,9 +71,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
 }
 
 export async function PUT(request: NextRequest, context: RouteContext) {
-  if (!isAuthenticated(request)) {
-    return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
-  }
+  const auth = await requireAdminAuth(request)
+  if (!auth.ok) return auth.response
 
   const { id } = await context.params
   const careerId = parseInt(id, 10)
@@ -118,9 +111,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 }
 
 export async function DELETE(request: NextRequest, context: RouteContext) {
-  if (!isAuthenticated(request)) {
-    return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 })
-  }
+  const auth = await requireAdminAuth(request)
+  if (!auth.ok) return auth.response
 
   const { id } = await context.params
   const careerId = parseInt(id, 10)

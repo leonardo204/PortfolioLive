@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
+import { verifyAdminSession } from './lib/admin-auth'
 
 const intlMiddleware = createMiddleware(routing)
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // /admin 경로는 next-intl 밖에서 직접 처리
@@ -14,11 +15,20 @@ export function middleware(request: NextRequest) {
     if (pathname === '/admin/login') {
       return NextResponse.next()
     }
-    const session = request.cookies.get('admin-session')
-    if (!session?.value) {
+
+    // 쿠키에서 세션 토큰 읽기 + HMAC 서명 검증
+    const token = request.cookies.get('admin-session')?.value
+    if (!token) {
       const loginUrl = new URL('/admin/login', request.url)
       return NextResponse.redirect(loginUrl)
     }
+
+    const payload = await verifyAdminSession(token)
+    if (!payload) {
+      const loginUrl = new URL('/admin/login', request.url)
+      return NextResponse.redirect(loginUrl)
+    }
+
     return NextResponse.next()
   }
 

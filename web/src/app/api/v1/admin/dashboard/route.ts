@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdminAuth } from '@/lib/admin-auth'
 
-export async function GET() {
-  const authError = await requireAdminAuth()
-  if (authError) return authError
+export async function GET(request: NextRequest) {
+  const auth = await requireAdminAuth(request)
+  if (!auth.ok) return auth.response
 
   try {
     const [

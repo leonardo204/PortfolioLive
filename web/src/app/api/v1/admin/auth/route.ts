@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { signAdminSession } from '@/lib/admin-auth'
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
 
@@ -29,15 +29,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 세션 토큰 생성 (단순 base64 인코딩)
-    const sessionToken = Buffer.from(`admin:${Date.now()}`).toString('base64')
+    // HMAC 서명된 세션 토큰 생성
+    const sessionToken = await signAdminSession()
 
     const response = NextResponse.json({ success: true })
     response.cookies.set('admin-session', sessionToken, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 60 * 60 * 24, // 24시간
       path: '/',
+      secure: process.env.NODE_ENV === 'production',
     })
 
     return response
@@ -53,9 +54,10 @@ export async function DELETE() {
   const response = NextResponse.json({ success: true })
   response.cookies.set('admin-session', '', {
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 0,
     path: '/',
+    secure: process.env.NODE_ENV === 'production',
   })
   return response
 }
