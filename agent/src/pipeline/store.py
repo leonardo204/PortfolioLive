@@ -40,6 +40,7 @@ class PipelineStore:
                 readme_raw_en  = EXCLUDED.readme_raw_en,
                 last_synced_at = NOW(),
                 updated_at     = NOW()
+                -- NOTE: tags, live_url은 sync에서 건드리지 않음 (seed/admin이 소스 오브 트루스)
             RETURNING id
             """,
             project.get("slug", ""),

@@ -37,7 +37,8 @@ PORTFOLIO_TOOLS = genai_types.Tool(
                             "태그 종류: side-project, work-b2b, work-internal / "
                             "web, ios, android, desktop, embedded, cloud, watch, tv / "
                             "c, cpp, java, python, swift, typescript, javascript, csharp, rust / "
-                            "ai-ml, voice-stt-tts, stb-middleware, devtools, media, productivity"
+                            "ai-ml, voice-stt-tts, stb-middleware, devtools, media, productivity. "
+                            "특수 태그 'live': 현재 운영 중인 실서비스"
                         ),
                     ),
                     "limit": genai_types.Schema(
