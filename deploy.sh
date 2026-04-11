@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # PortfolioLive 배포 스크립트
-# 사용법: ./deploy.sh [--no-cache]
+# 사용법: ./deploy.sh [--no-cache] [--strict-ports]
 
 COMPOSE_FILE="docker-compose.yml"
 ENV_FILE=".env"
@@ -23,7 +23,7 @@ err()  { echo -e "${RED}[deploy]${NC} $1"; exit 1; }
 # 필수 환경변수 검증
 check_env() {
     local missing=()
-    for var in GEMINI_API_KEY POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD ADMIN_PASSWORD SMTP_USER SMTP_PASS; do
+    for var in GEMINI_API_KEY POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD ADMIN_PASSWORD ADMIN_SESSION_SECRET SMTP_USER SMTP_PASS; do
         grep -q "^${var}=.\+" "$ENV_FILE" || missing+=("$var")
     done
     if [ ${#missing[@]} -gt 0 ]; then
@@ -32,12 +32,16 @@ check_env() {
 }
 check_env
 
-# 빌드 옵션
+# 인자 파싱
 BUILD_OPTS=""
-if [ "${1:-}" = "--no-cache" ]; then
-    BUILD_OPTS="--no-cache"
-    log "캐시 없이 빌드합니다."
-fi
+STRICT_PORTS=0
+for arg in "$@"; do
+  case "$arg" in
+    --no-cache) BUILD_OPTS="--no-cache" ; log "캐시 없이 빌드합니다." ;;
+    --strict-ports) STRICT_PORTS=1 ;;
+    *) warn "알 수 없는 옵션: $arg (무시됨)" ;;
+  esac
+done
 
 # Step 1: Down
 log "기존 컨테이너 중지..."
@@ -108,6 +112,14 @@ else
 fi
 check_service "Web (Next.js)" "http://localhost:${WEB_PORT:-3100}" || true
 check_service "Agent (FastAPI)" "http://localhost:${AGENT_PORT:-3101}/agent/health" || true
+
+# Step 6: 포트 인벤토리 점검
+log "포트 인벤토리 점검..."
+if [ "${STRICT_PORTS:-0}" = "1" ]; then
+    ./scripts/check-ports.sh || err "포트 인벤토리 위반 (--strict-ports 모드)"
+else
+    ./scripts/check-ports.sh || warn "포트 인벤토리 경고 (무시하려면 무시, 강제하려면 --strict-ports)"
+fi
 
 echo ""
 log "배포 완료!"

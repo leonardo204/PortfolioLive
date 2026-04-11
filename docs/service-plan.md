@@ -634,7 +634,7 @@ services:
 
   postgres:
     image: pgvector/pgvector:pg16
-    ports: ["5433:5432"]  # private port (기존 PC의 PostgreSQL과 충돌 방지)
+    ports: ["127.0.0.1:5433:5432"]  # loopback 전용 바인딩 (외부 노출 금지)
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

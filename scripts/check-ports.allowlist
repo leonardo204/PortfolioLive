@@ -1,0 +1,14 @@
+# 허용된 추가 외부 노출 포트 (줄 단위). WEB_PORT / AGENT_PORT는 .env에서 자동 로드.
+# 시스템 서비스
+22      # SSH
+80      # HTTP (Cloudflare/Nginx)
+443     # HTTPS (Cloudflare/Nginx)
+4022    # 기타 시스템 서비스
+10880   # 기타 시스템 서비스
+15555   # 기타 시스템 서비스
+51821   # WireGuard VPN
+# 개발/기타 서비스
+5173    # Vite dev server (다른 프로젝트)
+5179    # Vite dev server (다른 프로젝트)
+5180    # Vite dev server (다른 프로젝트)
+5181    # Vite dev server (다른 프로젝트)
