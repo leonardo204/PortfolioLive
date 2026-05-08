@@ -10,6 +10,9 @@ from ..rag.retriever import RAGRetriever
 
 router = APIRouter(prefix="/agent", tags=["pipeline"])
 
+# 동시 sync 차단 락: 진행 중이면 409로 거부 (Gemini 쿼터/중복 처리 방지)
+_sync_in_progress = False
+
 
 class SyncResult(BaseModel):
     success: int
@@ -30,6 +33,19 @@ async def sync_pipeline() -> SyncResult:
     GitHub Portfolio 리포지토리에서 프로젝트를 fetch하고
     파싱 → DB 저장 → 임베딩 생성까지 전체 파이프라인을 실행합니다.
     """
+    global _sync_in_progress
+    if _sync_in_progress:
+        print("[Pipeline] Sync already in progress, rejecting duplicate request")
+        raise HTTPException(status_code=409, detail="Pipeline sync already in progress")
+    _sync_in_progress = True
+
+    try:
+        return await _run_sync_pipeline()
+    finally:
+        _sync_in_progress = False
+
+
+async def _run_sync_pipeline() -> SyncResult:
     fetcher = GitHubFetcher()
     parser = MarkdownParser()
     store = PipelineStore()

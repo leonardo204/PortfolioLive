@@ -82,11 +82,11 @@ export default function AdminProjectsPage() {
       })
 
       if (res.ok) {
-        setSyncMessage('GitHub 동기화가 시작되었습니다. 잠시 후 새로고침하세요.')
+        setSyncMessage('GitHub 동기화가 백그라운드에서 시작되었습니다. 약 1분 후 자동으로 목록을 갱신합니다.')
         setTimeout(() => {
           setSyncMessage('')
           fetchProjects()
-        }, 3000)
+        }, 60000)
       } else {
         const data = await res.json().catch(() => ({}))
         setError(data?.error || 'GitHub 동기화 요청 실패')
