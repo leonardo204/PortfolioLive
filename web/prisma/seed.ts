@@ -317,6 +317,59 @@ async function main() {
   }
 
   // ──────────────────────────────────────
+  // 포트폴리오 기본 태그
+  // (GitHub sync에서 건드리지 않는 필드 — seed/admin이 소스 오브 트루스)
+  // 'live' 태그는 아래 Live URL 블록에서 별도 부여하므로 여기서는 제외
+  // ──────────────────────────────────────
+
+  const portfolioBaseTags: Record<string, string[]> = {
+    'a2a-sample': ['side-project', 'web', 'python', 'ai-ml'],
+    'android-natpmp': ['work-internal', 'android', 'java', 'stb-middleware'],
+    'battery-agent': ['side-project', 'ios', 'swift', 'productivity'],
+    'black-radio': ['side-project', 'watch', 'swift', 'media'],
+    'cloud-client-web': ['work-internal', 'web', 'javascript', 'stb-middleware', 'cloud'],
+    'dotclaude': ['side-project', 'desktop', 'typescript', 'devtools'],
+    'figma-to-markdown': ['work-internal', 'web', 'typescript', 'devtools', 'ai-ml'],
+    'flipbook-maker': ['work-internal', 'desktop', 'typescript', 'devtools', 'ai-ml'],
+    'google-cloud-stt': ['work-internal', 'web', 'typescript', 'voice-stt-tts', 'cloud'],
+    'image-cloud-framework': ['work-internal', 'ios', 'swift', 'stb-middleware', 'cloud'],
+    'intent-classifier': ['work-internal', 'desktop', 'typescript', 'ai-ml'],
+    'json-native': ['work-internal', 'embedded', 'c', 'stb-middleware'],
+    'kt-kiosk-agent': ['work-b2b', 'desktop', 'csharp', 'ai-ml', 'voice-stt-tts'],
+    'lnhud': ['side-project', 'ios', 'swift', 'productivity'],
+    'make-release-note': ['work-internal', 'desktop', 'java', 'devtools'],
+    'markdown-editor': ['side-project', 'ios', 'swift', 'productivity'],
+    'mini-calendar': ['side-project', 'ios', 'swift', 'productivity'],
+    'mytammi': ['work-b2b', 'web', 'tv', 'typescript', 'ai-ml', 'voice-stt-tts'],
+    'news-origin': ['side-project', 'web', 'python', 'ai-ml'],
+    'portfolio-live': ['side-project', 'web', 'python', 'typescript', 'ai-ml'],
+    'rclient-ics': ['work-internal', 'embedded', 'c', 'stb-middleware', 'cloud'],
+    'round-on': ['side-project', 'ios', 'watch', 'swift', 'productivity', 'ai-ml'],
+    'simple-secret-rotto': ['side-project', 'ios', 'swift', 'ai-ml'],
+    'speech-tester': ['work-internal', 'web', 'python', 'voice-stt-tts'],
+    'stb-middleware': ['work-b2b', 'embedded', 'c', 'cpp', 'java', 'stb-middleware'],
+    'summa2-tauri': ['work-internal', 'desktop', 'rust', 'typescript', 'ai-ml', 'voice-stt-tts'],
+    'summa-electron': ['work-internal', 'desktop', 'typescript', 'ai-ml', 'voice-stt-tts'],
+    'tizen-sample-player': ['work-internal', 'tv', 'csharp', 'media'],
+    'trace-tool': ['work-internal', 'desktop', 'typescript', 'devtools'],
+    'tvos-player-sample': ['side-project', 'tv', 'swift', 'media'],
+    'vtt-assistant-chat': ['work-internal', 'desktop', 'typescript', 'ai-ml'],
+    'wander': ['side-project', 'ios', 'swift', 'productivity', 'ai-ml'],
+    'zerolive-vpn': [],
+    'zero-player': ['side-project', 'ios', 'swift', 'media'],
+  }
+
+  for (const [slug, tags] of Object.entries(portfolioBaseTags)) {
+    const result = await prisma.portfolioProject.updateMany({
+      where: { slug },
+      data: { tags },
+    })
+    if (result.count === 0) {
+      console.warn(`[seed] 기본 태그 설정 대상 없음 (slug: ${slug}) — 스킵`)
+    }
+  }
+
+  // ──────────────────────────────────────
   // 포트폴리오 Live URL + live 태그
   // (GitHub sync에서 건드리지 않는 필드 — seed가 소스 오브 트루스)
   // ──────────────────────────────────────
