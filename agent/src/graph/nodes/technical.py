@@ -1,6 +1,7 @@
 """Technical 노드: 기술 관련 질문 응답"""
 
 import logging
+import re
 
 from langchain_core.messages import AIMessage
 
@@ -14,6 +15,9 @@ logger = logging.getLogger(__name__)
 
 RAG_MIN_RESULTS = 2
 RAG_MIN_SIMILARITY = 0.5
+
+# "최근/최신" 류 질문 감지 — LLM이 sort='recent'를 놓쳐도 강제하는 결정적 안전망
+RECENT_PATTERN = re.compile(r"최근|최신|요즘|근래|latest|recent", re.IGNORECASE)
 
 
 def _build_conversation_context(state: AgentState, last_n: int = 5) -> str:
@@ -93,6 +97,15 @@ async def technical_node(state: AgentState) -> AgentState:
         rag_context=rag_context,
         conversation_context=conversation_context,
     )
+
+    # 안전망: "최근/최신" 질문이면 recency 정렬을 강제 (LLM이 sort 파라미터를 놓쳐도 보장)
+    if RECENT_PATTERN.search(user_message):
+        system_prompt += (
+            "\n\n[중요 힌트] 사용자가 '최근/최신' 프로젝트를 묻고 있습니다. "
+            "반드시 search_portfolio_projects를 sort='recent'로 호출하여 연도 내림차순으로 조회하고, "
+            "가장 최신(2026년 등) 프로젝트부터 상위 3~5개를 연도와 함께 제시하세요."
+        )
+        logger.info("[Technical] recency 질문 감지 → sort='recent' 힌트 주입")
 
     updates["thinking"] = "기술 답변을 구성 중..."
 

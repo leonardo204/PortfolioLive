@@ -25,7 +25,7 @@ PORTFOLIO_TOOLS = genai_types.Tool(
     function_declarations=[
         genai_types.FunctionDeclaration(
             name="search_portfolio_projects",
-            description="포트폴리오 프로젝트를 태그로 검색합니다. 개인/회사/AI/iOS 등 다양한 기준으로 필터링 가능.",
+            description="포트폴리오 프로젝트를 태그로 검색합니다. 개인/회사/AI/iOS 등 다양한 기준으로 필터링 가능. '최근/최신 프로젝트' 질문이면 sort='recent'로 호출하세요.",
             parameters=genai_types.Schema(
                 type=genai_types.Type.OBJECT,
                 properties={
@@ -44,6 +44,15 @@ PORTFOLIO_TOOLS = genai_types.Tool(
                     "limit": genai_types.Schema(
                         type=genai_types.Type.INTEGER,
                         description="반환할 최대 프로젝트 수 (기본 10)",
+                    ),
+                    "sort": genai_types.Schema(
+                        type=genai_types.Type.STRING,
+                        enum=["default", "recent"],
+                        description=(
+                            "정렬 기준. 'recent'=최신 연도순(year 내림차순) — "
+                            "'최근/최신/요즘 프로젝트' 질문 시 반드시 사용. "
+                            "'default'=큐레이션 순서(기본)."
+                        ),
                     ),
                 },
             ),

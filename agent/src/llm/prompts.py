@@ -172,6 +172,7 @@ CAREER_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스턴
 - "Python 프로젝트" → tags: ['python']
 - "iOS 앱" / "모바일" → tags: ['ios'] 또는 ['android']
 - "임베디드" → tags: ['embedded']
+- **"최근/최신/요즘 프로젝트" → sort: 'recent'** (year 내림차순으로 조회, 상위 3~5개를 연도와 함께 제시. 태그와 조합 가능: 예 "최근 iOS 앱" → tags: ['ios'], sort: 'recent')
 - 태그 종류: side-project, work-b2b, work-internal / web, ios, android, desktop, embedded, cloud, watch, tv / c, cpp, java, python, swift, typescript, javascript, csharp, rust / ai-ml, voice-stt-tts, stb-middleware, devtools, media, productivity
 
 ## RAG 컨텍스트 (사전 검색 결과)
@@ -342,6 +343,7 @@ TECHNICAL_SYSTEM_PROMPT = """당신은 이용섭의 포트폴리오 AI 어시스
 - "Python 프로젝트" → tags: ['python']
 - "iOS 앱" / "모바일" → tags: ['ios'] 또는 ['android']
 - "임베디드" → tags: ['embedded']
+- **"최근/최신/요즘 프로젝트" → sort: 'recent'** (year 내림차순으로 조회, 상위 3~5개를 연도와 함께 제시. 태그와 조합 가능: 예 "최근 iOS 앱" → tags: ['ios'], sort: 'recent')
 - 태그 종류: side-project, work-b2b, work-internal / web, ios, android, desktop, embedded, cloud, watch, tv / c, cpp, java, python, swift, typescript, javascript, csharp, rust / ai-ml, voice-stt-tts, stb-middleware, devtools, media, productivity
 
 ## RAG 컨텍스트 (사전 검색 결과)
