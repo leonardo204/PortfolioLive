@@ -182,9 +182,17 @@ class GitHubFetcher:
                         if re.match(r"^[A-Za-z][A-Za-z0-9\.\-+#\s]{0,25}$", t):
                             techs.append(t.strip())
 
-                # 연도 추출 (헤더에서)
-                year_match = re.search(r"\((\d{4}(?:-\d{4})?)\)", current_category)
-                year = year_match.group(1) if year_match else ""
+                # 연도 추출: 테이블 셀의 연도 컬럼 우선, 없으면 헤더에서 fallback
+                # (Side Projects 섹션은 헤더에 연도가 없고 "연도" 컬럼으로 프로젝트별 연도를 표기)
+                year = ""
+                for c in cells:
+                    cell_year = re.match(r"^(\d{4}(?:-\d{4})?)$", c.strip())
+                    if cell_year:
+                        year = cell_year.group(1)
+                        break
+                if not year:
+                    year_match = re.search(r"\((\d{4}(?:-\d{4})?)\)", current_category)
+                    year = year_match.group(1) if year_match else ""
 
                 meta_map[dir_name] = {
                     "title": display_name,
