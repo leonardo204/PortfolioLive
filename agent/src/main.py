@@ -1,8 +1,17 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import pipeline as pipeline_router
 from .db.connection import close_pool
+
+# 앱 로거(logger.info 등)가 컨테이너 stdout에 보이도록 INFO 레벨 설정.
+# 미설정 시 root 기본 레벨(WARNING)이라 info 로그가 누락됨.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+)
 
 try:
     from .routers import agent as agent_router
