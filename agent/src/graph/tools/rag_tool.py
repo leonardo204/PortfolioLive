@@ -107,18 +107,19 @@ async def rag_search(query: str, top_k: int = 5) -> list[dict]:
 
 
 async def load_portfolio_catalog() -> list[dict]:
-    """DB에서 포트폴리오 프로젝트 카탈로그(slug, title, description, techs, tags)를 조회"""
+    """DB에서 포트폴리오 프로젝트 카탈로그(slug, title, description, year, techs, tags)를 조회"""
     try:
         from ...db.connection import get_pool
         pool = await get_pool()
         rows = await pool.fetch(
-            "SELECT slug, title, description, technologies, tags FROM portfolio_projects ORDER BY sort_order, slug"
+            "SELECT slug, title, description, year, technologies, tags FROM portfolio_projects ORDER BY sort_order, slug"
         )
         return [
             {
                 "slug": row["slug"],
                 "title": row["title"],
                 "description": (row["description"] or "")[:80],
+                "year": row["year"] or "",
                 "techs": list(row["technologies"]) if row["technologies"] else [],
                 "tags": list(row["tags"]) if row["tags"] else [],
             }
@@ -137,7 +138,8 @@ def format_portfolio_catalog(catalog: list[dict]) -> str:
     for p in catalog:
         techs = ", ".join(p["techs"][:5]) if p["techs"] else ""
         tags = ", ".join(p["tags"]) if p["tags"] else ""
-        lines.append(f'- slug: {p["slug"]} | title: {p["title"]} | desc: {p["description"]} | techs: [{techs}] | tags: [{tags}]')
+        year = p.get("year", "")
+        lines.append(f'- slug: {p["slug"]} | title: {p["title"]} | year: {year} | desc: {p["description"]} | techs: [{techs}] | tags: [{tags}]')
     return "\n".join(lines)
 
 
@@ -162,8 +164,16 @@ def format_rag_context(results: list[dict], max_chars: int = 3000) -> str:
         section = result.get("section", "")
         content = result.get("content", "")
         similarity = result.get("similarity", 0.0)
+        meta = result.get("metadata") or {}
+        proj_title = meta.get("title", "")
+        proj_year = meta.get("year", "")
+        meta_bits = "".join(
+            f", {label}: {val}"
+            for label, val in (("프로젝트", proj_title), ("연도", proj_year))
+            if val
+        )
 
-        part = f"[문서 {i+1}] (출처: {source_type}, 섹션: {section}, 유사도: {similarity:.2f})\n{content}\n"
+        part = f"[문서 {i+1}] (출처: {source_type}{meta_bits}, 섹션: {section}, 유사도: {similarity:.2f})\n{content}\n"
 
         if total_chars + len(part) > max_chars:
             break
