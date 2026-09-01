@@ -34,9 +34,22 @@ class GitHubFetcher:
             )
             meta_map = self._parse_main_readme_metadata(main_readme)
 
+            # 영문 메인 README(README_EN.md)도 파싱 — 한글판과 대칭 구조이므로
+            # 동일 파서로 영문 description/title 추출
+            en_meta_map: dict[str, dict[str, Any]] = {}
+            for en_name in ["README_EN.md", "README_en.md"]:
+                try:
+                    main_readme_en = await self._fetch_file_content(
+                        client, REPO_OWNER, MAIN_REPO, en_name
+                    )
+                    en_meta_map = self._parse_main_readme_metadata(main_readme_en)
+                    break
+                except Exception as e:
+                    print(f"[GitHubFetcher] 영문 메인 README({en_name}) fetch 실패: {e}")
+
             # 각 프로젝트 README fetch (병렬)
             tasks = [
-                self._fetch_project(client, d, meta_map)
+                self._fetch_project(client, d, meta_map, en_meta_map)
                 for d in project_dirs
             ]
             results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -63,6 +76,7 @@ class GitHubFetcher:
         client: httpx.AsyncClient,
         dir_name: str,
         meta_map: dict[str, dict[str, Any]],
+        en_meta_map: dict[str, dict[str, Any]] | None = None,
     ) -> dict[str, Any] | None:
         """단일 프로젝트 디렉토리에서 README를 가져옵니다."""
         # README.md 우선, 없으면 README.md 대소문자 변형 시도
@@ -89,8 +103,9 @@ class GitHubFetcher:
             except Exception:
                 continue
 
-        # 메인 README의 메타 정보 병합
+        # 메인 README의 메타 정보 병합 (한글 + 영문)
         meta = meta_map.get(dir_name, {})
+        en_meta = (en_meta_map or {}).get(dir_name, {})
 
         return {
             "repo": dir_name,
@@ -101,6 +116,8 @@ class GitHubFetcher:
             "technologies": meta.get("technologies", []),
             "year": meta.get("year", ""),
             "description": meta.get("description", ""),
+            "description_en": en_meta.get("description", ""),
+            "title_en": en_meta.get("title", ""),
             "github_url": f"https://github.com/{REPO_OWNER}/{MAIN_REPO}/tree/main/{PROJECTS_DIR}/{dir_name}",
         }
 

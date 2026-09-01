@@ -88,6 +88,7 @@ async def supervisor_node(state: AgentState) -> AgentState:
             timeout=8.0,
             max_output_tokens=512,
             temperature=0.2,
+            screen="supervisor",
         )
 
         # JSON 파싱

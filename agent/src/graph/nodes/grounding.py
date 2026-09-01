@@ -1,18 +1,23 @@
-"""Grounding 노드: Gemini Web Search 폴백"""
+"""Grounding 노드: 웹 검색 폴백 (AI 프록시 경유)
+
+RAG 결과가 부족할 때만 실행된다. 프록시 앱 설정의 'grounding' 용도가
+웹검색이 켜진 모델(:online)로 매핑돼 있어, 앱은 용도 이름만 보낸다.
+"""
 
 import asyncio
 import logging
 
 from langchain_core.messages import AIMessage
-from google import genai
-from google.genai import types as genai_types
 
-from ...config import settings
-from ...llm.factory import FLASH_MODEL
+from ...llm.factory import ProxyError, call_llm_grounded
 from ...llm.prompts import GROUNDING_SYSTEM_PROMPT
 from ..state import AgentState
 
 logger = logging.getLogger(__name__)
+
+# 웹검색은 토큰 비용과 별개로 검색료가 붙는다. 한 질문당 1회만 실행한다.
+GROUNDING_TIMEOUT = 25.0
+GROUNDING_MAX_TOKENS = 1024
 
 
 def _extract_last_user_message(state: AgentState) -> str:
@@ -37,25 +42,24 @@ def _get_last_ai_response(state: AgentState) -> str:
     return ""
 
 
-def _sync_grounding_search(query: str, system_prompt: str) -> str:
-    """Gemini Web Search (Grounding) 동기 호출"""
-    client = genai.Client(api_key=settings.gemini_api_key)
-
-    try:
-        response = client.models.generate_content(
-            model=FLASH_MODEL,
-            contents=query,
-            config=genai_types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                tools=[genai_types.Tool(google_search=genai_types.GoogleSearch())],
-                temperature=0.5,
-                max_output_tokens=1024,
-            ),
-        )
-        return response.text or ""
-    except Exception as e:
-        logger.error(f"[Grounding] Web search failed: {e}")
+def _format_citations(citations: list[dict[str, str]]) -> str:
+    """출처를 마크다운 목록으로. 화면에 출처를 함께 보여준다."""
+    if not citations:
         return ""
+    lines = [f"- [{c['title']}]({c['url']})" for c in citations[:5]]
+    return "\n\n*출처:*\n" + "\n".join(lines)
+
+
+async def _grounding_search(query: str, system_prompt: str) -> tuple[str, str]:
+    """웹 검색 호출. (본문, 출처 마크다운)을 돌려준다."""
+    text, citations = await call_llm_grounded(
+        system_prompt,
+        query,
+        timeout=GROUNDING_TIMEOUT,
+        max_output_tokens=GROUNDING_MAX_TOKENS,
+        temperature=0.5,
+    )
+    return text, _format_citations(citations)
 
 
 async def grounding_node(state: AgentState) -> AgentState:
@@ -80,32 +84,28 @@ async def grounding_node(state: AgentState) -> AgentState:
 
     system_prompt = GROUNDING_SYSTEM_PROMPT.format(query=user_message)
 
-    # 웹 검색 실행 (executor 사용)
-    loop = asyncio.get_event_loop()
+    grounding_result = ""
+    sources = ""
     try:
-        grounding_result = await asyncio.wait_for(
-            loop.run_in_executor(
-                None, _sync_grounding_search, user_message, system_prompt
-            ),
-            timeout=10.0,
-        )
+        grounding_result, sources = await _grounding_search(user_message, system_prompt)
+    except ProxyError as e:
+        # 검색 실패는 치명적이지 않다. 기존 응답을 그대로 살린다.
+        logger.warning(f"[Grounding] Web search failed: {e}")
     except asyncio.TimeoutError:
         logger.warning("[Grounding] Web search timed out")
-        grounding_result = ""
     except Exception as e:
         logger.error(f"[Grounding] Unexpected error: {e}")
-        grounding_result = ""
 
     if grounding_result and existing_response:
         # 기존 응답 + 웹 검색 보강 결합
         enhanced_response = (
             f"{existing_response}\n\n"
             f"---\n"
-            f"*추가 참고 정보 (웹 검색):*\n{grounding_result}"
+            f"*추가 참고 정보 (웹 검색):*\n{grounding_result}{sources}"
         )
         updates["messages"] = [AIMessage(content=enhanced_response)]
     elif grounding_result and not existing_response:
-        updates["messages"] = [AIMessage(content=grounding_result)]
+        updates["messages"] = [AIMessage(content=grounding_result + sources)]
 
     updates["thinking"] = ""
     updates["needs_grounding"] = False

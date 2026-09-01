@@ -23,7 +23,7 @@ err()  { echo -e "${RED}[deploy]${NC} $1"; exit 1; }
 # 필수 환경변수 검증
 check_env() {
     local missing=()
-    for var in GEMINI_API_KEY POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD ADMIN_PASSWORD ADMIN_SESSION_SECRET SMTP_USER SMTP_PASS; do
+    for var in AI_PROXY_TOKEN POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD ADMIN_PASSWORD ADMIN_SESSION_SECRET SMTP_USER SMTP_PASS; do
         grep -q "^${var}=.\+" "$ENV_FILE" || missing+=("$var")
     done
     if [ ${#missing[@]} -gt 0 ]; then

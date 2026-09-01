@@ -3,6 +3,19 @@ from typing import Any
 from ..db.connection import get_pool
 
 
+# 색인 테이블은 두 벌이다(주 모델 / 예비 모델). 테이블명은 SQL에 직접 들어가므로
+# 외부 값을 그대로 쓰지 않고 아래 목록에 있는 것만 허용한다.
+PRIMARY_TABLE = "embeddings"
+FALLBACK_TABLE = "embeddings_fallback"
+_ALLOWED_TABLES = (PRIMARY_TABLE, FALLBACK_TABLE)
+
+
+def _checked_table(table: str) -> str:
+    if table not in _ALLOWED_TABLES:
+        raise ValueError(f"허용되지 않은 색인 테이블입니다: {table}")
+    return table
+
+
 class PipelineStore:
     """portfolio_projects 및 embeddings 테이블에 데이터를 저장합니다."""
 
@@ -24,10 +37,11 @@ class PipelineStore:
             """
             INSERT INTO portfolio_projects (
                 slug, title, description, category, technologies,
-                year, github_url, readme_raw, readme_raw_en, last_synced_at, updated_at
+                year, github_url, readme_raw, readme_raw_en,
+                description_en, title_en, last_synced_at, updated_at
             ) VALUES (
                 $1, $2, $3, $4, $5::text[],
-                $6, $7, $8, $9, NOW(), NOW()
+                $6, $7, $8, $9, $10, $11, NOW(), NOW()
             )
             ON CONFLICT (slug) DO UPDATE SET
                 title          = EXCLUDED.title,
@@ -38,6 +52,9 @@ class PipelineStore:
                 github_url     = EXCLUDED.github_url,
                 readme_raw     = EXCLUDED.readme_raw,
                 readme_raw_en  = EXCLUDED.readme_raw_en,
+                -- 영문 메인 README 파싱이 비면(해당 프로젝트 누락 등) 기존값 보존
+                description_en = COALESCE(NULLIF(EXCLUDED.description_en, ''), portfolio_projects.description_en),
+                title_en       = COALESCE(NULLIF(EXCLUDED.title_en, ''), portfolio_projects.title_en),
                 last_synced_at = NOW(),
                 updated_at     = NOW()
                 -- NOTE: tags, live_url은 sync에서 건드리지 않음 (seed/admin이 소스 오브 트루스)
@@ -52,14 +69,19 @@ class PipelineStore:
             project.get("github_url", ""),
             project.get("readme_raw", ""),
             project.get("readme_raw_en", None),
+            project.get("description_en", None),
+            project.get("title_en", None),
         )
         return row["id"]
 
-    async def delete_embeddings_for_source(self, source_type: str, source_id: int) -> None:
+    async def delete_embeddings_for_source(
+        self, source_type: str, source_id: int, table: str = PRIMARY_TABLE
+    ) -> None:
         """기존 임베딩 삭제 (재동기화 시 클린업)"""
+        table = _checked_table(table)
         pool = await get_pool()
         await pool.execute(
-            "DELETE FROM embeddings WHERE source_type = $1 AND source_id = $2",
+            f"DELETE FROM {table} WHERE source_type = $1 AND source_id = $2",
             source_type,
             source_id,
         )
@@ -68,8 +90,10 @@ class PipelineStore:
         self,
         chunks: list[dict[str, Any]],
         embeddings: list[list[float]],
+        table: str = PRIMARY_TABLE,
     ) -> int:
-        """embeddings 테이블에 벡터와 청크를 함께 저장합니다."""
+        """색인 테이블에 벡터와 청크를 함께 저장합니다."""
+        table = _checked_table(table)
         if len(chunks) != len(embeddings):
             raise ValueError(
                 f"Chunks ({len(chunks)}) and embeddings ({len(embeddings)}) count mismatch"
@@ -86,14 +110,14 @@ class PipelineStore:
 
                 await conn.execute(
                     """
-                    INSERT INTO embeddings (
+                    INSERT INTO {table} (
                         source_type, source_id, section, content,
                         embedding, metadata, chunk_index, total_chunks
                     ) VALUES (
                         $1, $2, $3, $4,
                         $5::vector, $6::jsonb, $7, $8
                     )
-                    """,
+                    """.format(table=table),
                     chunk["source_type"],
                     chunk["source_id"],
                     chunk.get("section", ""),

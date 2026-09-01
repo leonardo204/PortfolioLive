@@ -115,7 +115,7 @@ async def get_project_detail(slug: str) -> str:
         row = await pool.fetchrow(
             """
             SELECT slug, title, description, technologies, tags,
-                   readme_raw, github_url, demo_url, sort_order
+                   readme_raw, github_url, live_url, sort_order
             FROM portfolio_projects
             WHERE slug = $1
             """,
@@ -131,7 +131,7 @@ async def get_project_detail(slug: str) -> str:
         tags = list(row["tags"]) if row["tags"] else []
         readme_raw = row["readme_raw"] or ""
         github_url = row["github_url"] or ""
-        demo_url = row["demo_url"] or ""
+        live_url = row["live_url"] or ""
 
         techs_str = ", ".join(techs) if techs else "(없음)"
         tags_str = ", ".join(tags) if tags else "(없음)"
@@ -145,8 +145,8 @@ async def get_project_detail(slug: str) -> str:
 
         if github_url:
             lines.append(f"**GitHub**: {github_url}")
-        if demo_url:
-            lines.append(f"**데모**: {demo_url}")
+        if live_url:
+            lines.append(f"**데모**: {live_url}")
 
         if readme_raw:
             readme_excerpt = readme_raw[:500]

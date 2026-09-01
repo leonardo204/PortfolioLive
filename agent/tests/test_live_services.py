@@ -9,14 +9,14 @@
     # uv 환경 (Docker 내부 또는 uv 설치 시)
     cd agent && uv run pytest tests/test_live_services.py -v
 
-    # 시스템 Python (asyncpg/google-genai 미설치 시 — Schema 클래스는 자동 SKIP)
+    # 시스템 Python (asyncpg 미설치 시 — mock 주입으로 실행)
     cd agent && python3 -m pytest tests/test_live_services.py -v
 
     # Docker 내부 전체 실행
     docker-compose exec agent uv run pytest tests/test_live_services.py -v
 
 참고:
-    - TestSearchPortfolioProjectsSchema: google-genai 패키지 필요 (미설치 시 SKIP)
+    - TestSearchPortfolioProjectsSchema: 순수 dict 스키마 검증 (외부 패키지 불필요)
     - TestSearchPortfolioProjectsLiveFilter: sys.modules mock으로 asyncpg 없이 실행 가능
     - TestLiveUrlSanitize: 순수 Python 로직, 의존성 없음
 """
@@ -53,7 +53,7 @@ def _make_mock_row(slug="test-project", title="Test", description="Desc",
 
 
 def _inject_mock_modules(pool_mock):
-    """asyncpg, pydantic_settings, google.genai 등 미설치 패키지를 sys.modules에 mock 주입.
+    """asyncpg, pydantic_settings 등 미설치 패키지를 sys.modules에 mock 주입.
 
     portfolio_tools.py가 지연 임포트(`from ...db.connection import get_pool`)를 사용하므로
     db.connection 모듈 자체를 mock으로 교체한다.
@@ -110,51 +110,72 @@ def _inject_mock_modules(pool_mock):
 
 
 # ---------------------------------------------------------------------------
-# 1. tools_schema.py 스키마 검증 (google-genai 필요)
+# 1. tools_schema.py 스키마 검증 (OpenAI 형식 — AI 프록시 경유)
 # ---------------------------------------------------------------------------
 
 class TestSearchPortfolioProjectsSchema:
-    """search_portfolio_projects FunctionDeclaration 스키마 검증
+    """search_portfolio_projects tool 스키마 검증
 
-    google-genai 패키지가 없으면 각 테스트가 자동 SKIP.
+    프록시는 OpenAI 형식(tools 배열)을 그대로 상류에 전달한다.
     """
 
     def _import_tools(self):
-        pytest.importorskip("google.genai", reason="google-genai 패키지 미설치")
         from src.llm.tools_schema import PORTFOLIO_TOOLS, TOOL_FUNCTIONS
         return PORTFOLIO_TOOLS, TOOL_FUNCTIONS
 
-    def test_search_portfolio_projects_declaration_exists(self):
-        """search_portfolio_projects FunctionDeclaration이 PORTFOLIO_TOOLS에 등록되어 있어야 한다"""
+    def _decl(self, tools, name):
+        return next(
+            t["function"] for t in tools
+            if t.get("type") == "function" and t["function"]["name"] == name
+        )
+
+    def test_tools_are_openai_format(self):
+        """PORTFOLIO_TOOLS는 type=function 항목의 리스트여야 한다"""
         tools, _ = self._import_tools()
-        names = [d.name for d in tools.function_declarations]
+        assert isinstance(tools, list) and tools
+        for t in tools:
+            assert t["type"] == "function"
+            fn = t["function"]
+            assert isinstance(fn["name"], str) and fn["name"]
+            assert fn["parameters"]["type"] == "object"
+
+    def test_search_portfolio_projects_declaration_exists(self):
+        """search_portfolio_projects가 PORTFOLIO_TOOLS에 등록되어 있어야 한다"""
+        tools, _ = self._import_tools()
+        names = [t["function"]["name"] for t in tools]
         assert "search_portfolio_projects" in names
 
     def test_tags_parameter_is_array_type(self):
-        """tags 파라미터 타입은 ARRAY여야 한다"""
+        """tags 파라미터 타입은 array여야 한다"""
         tools, _ = self._import_tools()
-        from google.genai import types as genai_types
-        decl = next(d for d in tools.function_declarations if d.name == "search_portfolio_projects")
-        tags_schema = decl.parameters.properties["tags"]
-        assert tags_schema.type == genai_types.Type.ARRAY
+        props = self._decl(tools, "search_portfolio_projects")["parameters"]["properties"]
+        assert props["tags"]["type"] == "array"
+        assert props["tags"]["items"]["type"] == "string"
 
     def test_limit_parameter_exists(self):
         """limit 파라미터가 스키마에 존재해야 한다"""
         tools, _ = self._import_tools()
-        decl = next(d for d in tools.function_declarations if d.name == "search_portfolio_projects")
-        assert "limit" in decl.parameters.properties
+        props = self._decl(tools, "search_portfolio_projects")["parameters"]["properties"]
+        assert "limit" in props
 
-    def test_tool_function_mapping_exists(self):
-        """TOOL_FUNCTIONS에 search_portfolio_projects callable이 매핑되어야 한다"""
-        _, tool_functions = self._import_tools()
-        assert "search_portfolio_projects" in tool_functions
-        assert callable(tool_functions["search_portfolio_projects"])
+    def test_sort_enum_has_recent(self):
+        """sort 파라미터에 recent 옵션이 있어야 한다"""
+        tools, _ = self._import_tools()
+        props = self._decl(tools, "search_portfolio_projects")["parameters"]["properties"]
+        assert "recent" in props["sort"]["enum"]
+
+    def test_every_tool_has_a_callable(self):
+        """모든 tool 이름이 TOOL_FUNCTIONS에 매핑되어야 한다"""
+        tools, tool_functions = self._import_tools()
+        for t in tools:
+            name = t["function"]["name"]
+            assert name in tool_functions, f"{name} 매핑 누락"
+            assert callable(tool_functions[name])
 
     def test_description_mentions_tag_filtering(self):
         """description에 태그 필터링 관련 설명이 포함되어야 한다"""
         tools, _ = self._import_tools()
-        decl = next(d for d in tools.function_declarations if d.name == "search_portfolio_projects")
-        desc = decl.description or ""
+        desc = self._decl(tools, "search_portfolio_projects")["description"] or ""
         assert "태그" in desc or "tag" in desc.lower() or "필터" in desc
 
 

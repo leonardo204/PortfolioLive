@@ -1,6 +1,7 @@
-"""Gemini FunctionDeclaration 스키마 및 tool 함수 매핑"""
+"""OpenAI 형식 tools 스키마 및 tool 함수 매핑
 
-from google.genai import types as genai_types
+AI 프록시는 OpenAI 형식(messages + tools)을 그대로 상류에 전달한다.
+"""
 
 from ..graph.tools.career_tools import search_career_history, get_career_summary
 from ..graph.tools.portfolio_tools import search_portfolio_projects, get_project_detail
@@ -21,18 +22,22 @@ async def rag_search_tool(query: str, top_k: int = 5) -> str:
     return format_rag_context(results)
 
 
-PORTFOLIO_TOOLS = genai_types.Tool(
-    function_declarations=[
-        genai_types.FunctionDeclaration(
-            name="search_portfolio_projects",
-            description="포트폴리오 프로젝트를 태그로 검색합니다. 개인/회사/AI/iOS 등 다양한 기준으로 필터링 가능. '최근/최신 프로젝트' 질문이면 sort='recent'로 호출하세요.",
-            parameters=genai_types.Schema(
-                type=genai_types.Type.OBJECT,
-                properties={
-                    "tags": genai_types.Schema(
-                        type=genai_types.Type.ARRAY,
-                        items=genai_types.Schema(type=genai_types.Type.STRING),
-                        description=(
+PORTFOLIO_TOOLS: list[dict] = [
+    {
+        "type": "function",
+        "function": {
+            "name": "search_portfolio_projects",
+            "description": (
+                "포트폴리오 프로젝트를 태그로 검색합니다. 개인/회사/AI/iOS 등 다양한 기준으로 "
+                "필터링 가능. '최근/최신 프로젝트' 질문이면 sort='recent'로 호출하세요."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "tags": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": (
                             "필터할 태그 목록. 예: ['side-project'], ['ai-ml', 'python'], ['work-b2b']. "
                             "태그 종류: side-project, work-b2b, work-internal / "
                             "web, ios, android, desktop, embedded, cloud, watch, tv / "
@@ -40,79 +45,91 @@ PORTFOLIO_TOOLS = genai_types.Tool(
                             "ai-ml, voice-stt-tts, stb-middleware, devtools, media, productivity. "
                             "특수 태그 'live': 현재 운영 중인 실서비스"
                         ),
-                    ),
-                    "limit": genai_types.Schema(
-                        type=genai_types.Type.INTEGER,
-                        description="반환할 최대 프로젝트 수 (기본 10)",
-                    ),
-                    "sort": genai_types.Schema(
-                        type=genai_types.Type.STRING,
-                        enum=["default", "recent"],
-                        description=(
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "반환할 최대 프로젝트 수 (기본 10)",
+                    },
+                    "sort": {
+                        "type": "string",
+                        "enum": ["default", "recent"],
+                        "description": (
                             "정렬 기준. 'recent'=최신 연도순(year 내림차순) — "
                             "'최근/최신/요즘 프로젝트' 질문 시 반드시 사용. "
                             "'default'=큐레이션 순서(기본)."
                         ),
-                    ),
+                    },
                 },
-            ),
-        ),
-        genai_types.FunctionDeclaration(
-            name="get_project_detail",
-            description="특정 포트폴리오 프로젝트의 상세 정보를 가져옵니다.",
-            parameters=genai_types.Schema(
-                type=genai_types.Type.OBJECT,
-                properties={
-                    "slug": genai_types.Schema(
-                        type=genai_types.Type.STRING,
-                        description="프로젝트 slug (예: dotclaude, mytammi)",
-                    ),
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_project_detail",
+            "description": "특정 포트폴리오 프로젝트의 상세 정보를 가져옵니다.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "slug": {
+                        "type": "string",
+                        "description": "프로젝트 slug (예: dotclaude, mytammi)",
+                    },
                 },
-                required=["slug"],
+                "required": ["slug"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_career_history",
+            "description": (
+                "경력과 업무 프로젝트를 키워드로 검색합니다. "
+                "회사명, 기술, 프로젝트명 등으로 검색 가능."
             ),
-        ),
-        genai_types.FunctionDeclaration(
-            name="search_career_history",
-            description="경력과 업무 프로젝트를 키워드로 검색합니다. 회사명, 기술, 프로젝트명 등으로 검색 가능.",
-            parameters=genai_types.Schema(
-                type=genai_types.Type.OBJECT,
-                properties={
-                    "query": genai_types.Schema(
-                        type=genai_types.Type.STRING,
-                        description="검색 키워드 (예: 'AI', '알티캐스트', 'STB', '2022')",
-                    ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "검색 키워드 (예: 'AI', '알티캐스트', 'STB', '2022')",
+                    },
                 },
-                required=["query"],
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_career_summary",
+            "description": "전체 경력 타임라인 간략 요약을 가져옵니다. 회사명, 기간, 역할만 포함된 개요.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "rag_search",
+            "description": (
+                "포트폴리오 문서를 벡터 유사도로 검색합니다. "
+                "구체적인 기술 질문이나 프로젝트 세부사항 검색에 유용."
             ),
-        ),
-        genai_types.FunctionDeclaration(
-            name="get_career_summary",
-            description="전체 경력 타임라인 간략 요약을 가져옵니다. 회사명, 기간, 역할만 포함된 개요.",
-            parameters=genai_types.Schema(
-                type=genai_types.Type.OBJECT,
-                properties={},
-            ),
-        ),
-        genai_types.FunctionDeclaration(
-            name="rag_search",
-            description="포트폴리오 문서를 벡터 유사도로 검색합니다. 구체적인 기술 질문이나 프로젝트 세부사항 검색에 유용.",
-            parameters=genai_types.Schema(
-                type=genai_types.Type.OBJECT,
-                properties={
-                    "query": genai_types.Schema(
-                        type=genai_types.Type.STRING,
-                        description="검색 쿼리",
-                    ),
-                    "top_k": genai_types.Schema(
-                        type=genai_types.Type.INTEGER,
-                        description="반환할 결과 수 (기본 5)",
-                    ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "검색 쿼리"},
+                    "top_k": {"type": "integer", "description": "반환할 결과 수 (기본 5)"},
                 },
-                required=["query"],
-            ),
-        ),
-    ]
-)
+                "required": ["query"],
+            },
+        },
+    },
+]
 
 # tool 이름 → async callable 매핑
 TOOL_FUNCTIONS: dict = {

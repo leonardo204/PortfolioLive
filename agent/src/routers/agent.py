@@ -22,8 +22,12 @@ from ag_ui.core.types import RunAgentInput
 from ag_ui.encoder import EventEncoder
 
 from ..graph.portfolio_agent import portfolio_graph
+from ..llm.factory import user_message_for
 
 logger = logging.getLogger(__name__)
+# 그래프 전체 실행 상한 (초)
+GRAPH_TIMEOUT = 90.0
+
 router = APIRouter(tags=["agent"])
 
 
@@ -142,10 +146,12 @@ async def run_portfolio_agent(body: dict) -> AsyncGenerator[str, None]:
             "needs_grounding": False,
         }
 
-        # 타임아웃 50초 (supervisor 8s + career/technical 30s + grounding 10s 고려)
+        # 타임아웃 90초.
+        # 최악의 경로: supervisor 8s + 쿼리 재작성 5s + career/technical(pro 모델
+        # tool calling 2왕복 ≈ 30s) + grounding 웹검색 25s.
         result = await asyncio.wait_for(
             portfolio_graph.ainvoke(initial_state),
-            timeout=50.0,
+            timeout=GRAPH_TIMEOUT,
         )
 
         # 마지막 AI 메시지 추출
@@ -172,19 +178,14 @@ async def run_portfolio_agent(body: dict) -> AsyncGenerator[str, None]:
             pass
 
     except asyncio.TimeoutError:
-        logger.error("[AgentRouter] LangGraph timeout after 50s")
+        logger.error(f"[AgentRouter] LangGraph timeout after {GRAPH_TIMEOUT:.0f}s")
         response_text = "잠시 후 다시 시도해주세요. 현재 응답 생성에 시간이 걸리고 있습니다."
 
     except Exception as e:
         logger.error(f"[AgentRouter] Agent execution failed: {e}", exc_info=True)
 
-        err_msg = str(e).lower()
-        if "quota" in err_msg or "rate" in err_msg or "429" in err_msg:
-            response_text = "현재 요청이 많습니다. 잠시 후 다시 시도해주세요."
-        elif "timeout" in err_msg:
-            response_text = "잠시 후 다시 시도해주세요. 현재 응답 생성에 시간이 걸리고 있습니다."
-        else:
-            response_text = "죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        # 프록시 오류는 상태 코드에 맞춘 안내를 준다 (PROXY-API.md 7장).
+        response_text = user_message_for(e)
 
     # 텍스트 메시지 스트리밍
     yield encoder.encode(TextMessageStartEvent(

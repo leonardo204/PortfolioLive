@@ -4,17 +4,18 @@ import logging
 
 from langchain_core.messages import AIMessage
 
-from ...llm.factory import call_llm
+from ...llm.factory import call_llm, user_message_for
 from ...llm.prompts import CAREER_SYSTEM_PROMPT
 from ...llm.tools_schema import PORTFOLIO_TOOLS, TOOL_FUNCTIONS
-from ..tools.rag_tool import rag_search, format_rag_context, rewrite_query_with_history
+from ...config import settings
+from ..tools.rag_tool import rag_search_scored, format_rag_context, rewrite_query_with_history
 from ..state import AgentState
 
 logger = logging.getLogger(__name__)
 
 # RAG 결과가 부족한 기준 (similarity 기준)
-RAG_MIN_RESULTS = 2
-RAG_MIN_SIMILARITY = 0.5
+# 충분도 기준은 설정에서 읽는다. 질의를 임베딩한 모델에 따라 값이 달라지므로
+# 검색 결과와 함께 돌려받는다.
 
 
 def _build_conversation_context(state: AgentState, last_n: int = 5) -> str:
@@ -62,7 +63,7 @@ async def career_node(state: AgentState) -> AgentState:
 
     1. RAG 검색 (사전 검색)
     2. 프롬프트 작성 (RAG 컨텍스트 + 대화 히스토리)
-    3. Gemini 호출 — Tool calling으로 경력/포트폴리오 데이터 on-demand 조회
+    3. LLM 호출(AI 프록시 경유) — Tool calling으로 경력/포트폴리오 데이터 on-demand 조회
     4. needs_grounding 판정
     """
     user_message = _extract_last_user_message(state)
@@ -77,14 +78,17 @@ async def career_node(state: AgentState) -> AgentState:
     # 1. 멀티턴 쿼리 재작성 후 RAG 검색 (사전 검색 유지)
     history_for_rewrite = _build_conversation_history_for_rewrite(state)
     rag_query = await rewrite_query_with_history(user_message, history_for_rewrite)
-    rag_results = await rag_search(rag_query, top_k=6)
+    rag_results, min_similarity = await rag_search_scored(rag_query, top_k=6)
     updates["rag_results"] = rag_results
 
     # RAG 충분도 판정
-    good_results = [r for r in rag_results if r.get("similarity", 0) >= RAG_MIN_SIMILARITY]
-    if len(good_results) < RAG_MIN_RESULTS:
+    good_results = [r for r in rag_results if r.get("similarity", 0) >= min_similarity]
+    if len(good_results) < settings.rag_min_results:
         updates["needs_grounding"] = True
-        logger.info(f"[Career] RAG insufficient: {len(good_results)} good results")
+        logger.info(
+            f"[Career] RAG 결과 부족 — 기준 {min_similarity:.2f} 이상 {len(good_results)}건, "
+            f"웹 검색으로 보강합니다."
+        )
 
     updates["thinking"] = f"{len(rag_results)}건의 관련 문서를 분석 중..."
 
@@ -104,12 +108,13 @@ async def career_node(state: AgentState) -> AgentState:
             system_prompt=system_prompt,
             user_prompt=user_message,
             max_output_tokens=4096,
-            tools=[PORTFOLIO_TOOLS],
+            tools=PORTFOLIO_TOOLS,
             tool_functions=TOOL_FUNCTIONS,
+            screen="career",
         )
     except Exception as e:
         logger.error(f"[Career] LLM call failed: {e}")
-        response_text = "죄송합니다. 잠시 후 다시 시도해주세요."
+        response_text = user_message_for(e)
 
     if not response_text:
         response_text = "죄송합니다. 잠시 후 다시 시도해주세요."

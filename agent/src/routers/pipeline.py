@@ -5,7 +5,9 @@ from typing import Any
 from ..pipeline.github_fetcher import GitHubFetcher
 from ..pipeline.markdown_parser import MarkdownParser
 from ..pipeline.store import PipelineStore
+from ..config import settings
 from ..pipeline.embedder import Embedder
+from ..pipeline.store import PRIMARY_TABLE, FALLBACK_TABLE
 from ..rag.retriever import RAGRetriever
 
 router = APIRouter(prefix="/agent", tags=["pipeline"])
@@ -50,6 +52,7 @@ async def _run_sync_pipeline() -> SyncResult:
     parser = MarkdownParser()
     store = PipelineStore()
     embedder = Embedder()
+    fallback_embedder = Embedder(model=settings.ai_embedding_fallback_model)
 
     success_count = 0
     failed_count = 0
@@ -92,6 +95,8 @@ async def _run_sync_pipeline() -> SyncResult:
                 "github_url": github_url,
                 "readme_raw": readme,
                 "readme_raw_en": project_data.get("readme_en", "") or None,
+                "description_en": project_data.get("description_en", "") or None,
+                "title_en": project_data.get("title_en", "") or None,
             }
             project_id = await store.upsert_portfolio_project(project_record)
 
@@ -116,15 +121,29 @@ async def _run_sync_pipeline() -> SyncResult:
                 details.append({"repo": repo, "id": project_id, "chunks": 0, "embeddings": 0})
                 continue
 
-            # 5. 기존 임베딩 삭제 (재동기화)
-            await store.delete_embeddings_for_source("portfolio_project", project_id)
-
-            # 6. 임베딩 생성
+            # 5~7. 색인 두 벌을 각각 다시 만든다.
+            #  - 주 색인: 평소 검색에 쓴다.
+            #  - 예비 색인: 주 모델이 상류 쿼터로 막혔을 때만 쓴다.
+            # 예비 색인이 실패해도 동기화 자체는 성공으로 둔다(검색은 주 색인으로 된다).
             texts = [c["content"] for c in chunks]
-            embeddings = await embedder.embed_texts(texts)
+            saved = 0
 
-            # 7. 임베딩 저장
-            saved = await store.save_embeddings(chunks, embeddings)
+            for embedder_for_table, table, required in (
+                (embedder, PRIMARY_TABLE, True),
+                (fallback_embedder, FALLBACK_TABLE, False),
+            ):
+                try:
+                    await store.delete_embeddings_for_source(
+                        "portfolio_project", project_id, table=table
+                    )
+                    vectors = await embedder_for_table.embed_texts(texts)
+                    count = await store.save_embeddings(chunks, vectors, table=table)
+                    if required:
+                        saved = count
+                except Exception as e:
+                    if required:
+                        raise
+                    print(f"[Pipeline] 예비 색인 갱신 실패 ({repo}): {e}")
 
             total_chunks += len(chunks)
             total_embeddings += saved
@@ -159,10 +178,11 @@ async def rag_search(request: SearchRequest) -> dict[str, Any]:
     """
     retriever = RAGRetriever()
     try:
-        results = await retriever.search(request.query, top_k=request.top_k)
+        results, min_similarity = await retriever.search(request.query, top_k=request.top_k)
         return {
             "query": request.query,
             "top_k": request.top_k,
+            "min_similarity": min_similarity,
             "results": results,
         }
     except Exception as e:

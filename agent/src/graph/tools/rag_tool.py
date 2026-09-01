@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+from ...config import settings
 from ...rag.retriever import RAGRetriever
 
 logger = logging.getLogger(__name__)
@@ -73,6 +74,7 @@ async def rewrite_query_with_history(
             timeout=5.0,
             max_output_tokens=256,
             temperature=0.3,
+            screen="query-rewrite",
         )
         rewritten = rewritten.strip().strip('"').strip("'")
         if rewritten:
@@ -96,14 +98,25 @@ async def rag_search(query: str, top_k: int = 5) -> list[dict]:
     Returns:
         검색 결과 리스트 (content, source_type, section, similarity 등)
     """
+    results, _ = await rag_search_scored(query, top_k=top_k)
+    return results
+
+
+async def rag_search_scored(query: str, top_k: int = 5) -> tuple[list[dict], float]:
+    """RAG 벡터 검색 + 이 결과에 적용할 충분도 기준을 함께 반환.
+
+    질의를 주 모델로 임베딩했는지 예비 모델로 임베딩했는지에 따라 기준이 다르다.
+    검색이 실패하면 빈 결과와 주 모델 기준을 돌려준다(웹 검색 보강으로 이어진다).
+
+    Returns:
+        (검색 결과 리스트, 충분도 판정 기준)
+    """
     retriever = _get_retriever()
     try:
-        results = await retriever.search(query, top_k=top_k)
-        return results
+        return await retriever.search(query, top_k=top_k)
     except Exception as e:
-        # DB 연결 실패 등 — 빈 결과 반환
-        print(f"[RAGTool] Search failed: {e}")
-        return []
+        logger.error(f"[RAGTool] 검색 실패: {e}")
+        return [], settings.rag_min_similarity
 
 
 async def load_portfolio_catalog() -> list[dict]:
