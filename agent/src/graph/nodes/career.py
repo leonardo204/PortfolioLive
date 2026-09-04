@@ -81,13 +81,15 @@ async def career_node(state: AgentState) -> AgentState:
     rag_results, min_similarity = await rag_search_scored(rag_query, top_k=6)
     updates["rag_results"] = rag_results
 
-    # RAG 충분도 판정
+    # 경력·연락처 질문은 웹 검색으로 보강하지 않는다.
+    # 본인의 소속·직급·연락처는 웹에서 확인할 수 없고, 검색 결과에 섞인
+    # 동명이인이나 남의 이력을 1인칭으로 옮겨 적는 사고가 실제로 났다.
+    # 자료에 없으면 없다고 답하는 편이 낫다.
     good_results = [r for r in rag_results if r.get("similarity", 0) >= min_similarity]
     if len(good_results) < settings.rag_min_results:
-        updates["needs_grounding"] = True
         logger.info(
-            f"[Career] RAG 결과 부족 — 기준 {min_similarity:.2f} 이상 {len(good_results)}건, "
-            f"웹 검색으로 보강합니다."
+            f"[Career] RAG 결과 부족 — 기준 {min_similarity:.2f} 이상 {len(good_results)}건. "
+            f"경력 질문이라 웹 검색 보강 없이 DB 조회 도구로 답합니다."
         )
 
     updates["thinking"] = f"{len(rag_results)}건의 관련 문서를 분석 중..."
@@ -110,6 +112,9 @@ async def career_node(state: AgentState) -> AgentState:
             max_output_tokens=4096,
             tools=PORTFOLIO_TOOLS,
             tool_functions=TOOL_FUNCTIONS,
+            # 경력 질문은 반드시 DB를 먼저 조회하게 한다. 모델이 도구를 건너뛰고
+            # "자료에 없습니다"로 답한 뒤 엉뚱한 내용을 지어내는 것을 막는다.
+            tool_choice="required",
             screen="career",
         )
     except Exception as e:

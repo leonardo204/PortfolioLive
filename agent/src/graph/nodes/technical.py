@@ -20,6 +20,15 @@ logger = logging.getLogger(__name__)
 # "최근/최신" 류 질문 감지 — LLM이 sort='recent'를 놓쳐도 강제하는 결정적 안전망
 RECENT_PATTERN = re.compile(r"최근|최신|요즘|근래|latest|recent", re.IGNORECASE)
 
+# 본인 신상을 묻는 질문 — 웹 검색으로 보강하면 안 되는 영역.
+# 검색 결과에 섞인 동명이인이나 남의 이력을 1인칭으로 옮겨 적는 사고가 실제로 났다.
+# 의도가 TECHNICAL로 분류돼도 내용이 신상이면 웹 검색을 끈다.
+PERSONAL_PATTERN = re.compile(
+    r"소속|직급|직책|재직|회사|팀|연봉|나이|학력|전공|출신|연락처|이메일|메일|전화|"
+    r"현재\s*하는|어디서\s*일|position|company|contact|email|salary",
+    re.IGNORECASE,
+)
+
 
 def _build_conversation_context(state: AgentState, last_n: int = 5) -> str:
     """최근 대화 히스토리를 문자열로 변환"""
@@ -87,11 +96,17 @@ async def technical_node(state: AgentState) -> AgentState:
     # RAG 충분도 판정
     good_results = [r for r in rag_results if r.get("similarity", 0) >= min_similarity]
     if len(good_results) < settings.rag_min_results:
-        updates["needs_grounding"] = True
-        logger.info(
-            f"[Technical] RAG 결과 부족 — 기준 {min_similarity:.2f} 이상 {len(good_results)}건, "
-            f"웹 검색으로 보강합니다."
-        )
+        if PERSONAL_PATTERN.search(user_message):
+            logger.info(
+                f"[Technical] RAG 결과 부족({len(good_results)}건)이지만 신상 질문이라 "
+                f"웹 검색 보강을 건너뜁니다."
+            )
+        else:
+            updates["needs_grounding"] = True
+            logger.info(
+                f"[Technical] RAG 결과 부족 — 기준 {min_similarity:.2f} 이상 {len(good_results)}건, "
+                f"웹 검색으로 보강합니다."
+            )
 
     updates["thinking"] = f"{len(rag_results)}건의 관련 기술 문서를 분석 중..."
 

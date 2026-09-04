@@ -210,6 +210,7 @@ async def call_llm(
     temperature: float = 0.7,
     tools: list | None = None,
     tool_functions: dict[str, Any] | None = None,
+    tool_choice: str = "auto",
     screen: str = "agent",
 ) -> str:
     """프록시 경유 LLM 호출
@@ -225,6 +226,10 @@ async def call_llm(
         temperature: 생성 온도 (openai/ 계열 모델에서는 무시된다)
         tools: OpenAI 형식 tools 리스트 (None이면 tool calling 비활성)
         tool_functions: tool 이름 → async callable 매핑
+        tool_choice: 첫 요청에서 도구를 부를지 정한다.
+            'auto'는 모델 판단에 맡기고, 'required'는 반드시 하나를 부르게 한다.
+            두 번째 요청부터는 항상 'auto'로 돌린다. 계속 'required'면
+            모델이 매 차례 도구를 불러야 해서 답변을 끝맺지 못한다.
         screen: 통계용 호출 지점 이름
 
     Returns:
@@ -256,7 +261,7 @@ async def call_llm(
         return _first_text(data)
 
     payload["tools"] = tools
-    payload["tool_choice"] = "auto"
+    payload["tool_choice"] = tool_choice
 
     tool_call_count = 0
     data: dict[str, Any] = {}
@@ -269,6 +274,9 @@ async def call_llm(
         # tool_call이 없으면 최종 응답
         if not tool_calls:
             return (message.get("content") or "").strip()
+
+        # 도구를 한 번 부른 뒤에는 모델이 답변을 끝맺을 수 있어야 한다.
+        payload["tool_choice"] = "auto"
 
         # assistant turn을 히스토리에 추가
         messages.append(
