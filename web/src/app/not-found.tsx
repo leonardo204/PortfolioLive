@@ -1,6 +1,10 @@
 import Link from 'next/link'
+import { reportStatus } from '@/lib/hit'
 
-export default function NotFound() {
+export default async function NotFound() {
+  // 미들웨어는 통과 여부만 알아서 200으로 남긴다. 여기서 404로 고쳐 보낸다.
+  await reportStatus(404)
+
   return (
     <div className="min-h-screen bg-[#f8f9fb] flex items-center justify-center p-4">
       <div className="text-center max-w-md">

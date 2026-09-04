@@ -7,6 +7,10 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
+# 방문 기록 토큰 — Next.js 미들웨어(엣지 런타임)는 빌드 때 값을 굳혀 넣는 경우가 있어
+# 빌드 시점과 실행 시점 양쪽에 모두 넣어 둔다.
+ARG TRAFFIC_TOKEN=""
+ENV TRAFFIC_TOKEN=$TRAFFIC_TOKEN
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm prisma generate

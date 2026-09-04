@@ -10,6 +10,12 @@ interface ErrorPageProps {
 export default function GlobalError({ error, reset }: ErrorPageProps) {
   useEffect(() => {
     console.error('[GlobalError]', error)
+    // 대시보드에 5xx로 남긴다. 실패해도 화면에는 영향이 없다.
+    fetch('/api/traffic-fix', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 500, path: window.location.pathname }),
+    }).catch(() => undefined)
   }, [error])
 
   return (

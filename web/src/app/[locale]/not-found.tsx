@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { reportStatus } from '@/lib/hit'
 
 export default async function LocaleNotFound() {
   const t = await getTranslations('notFound')
+  // 미들웨어는 통과 여부만 알아서 200으로 남긴다. 여기서 404로 고쳐 보낸다.
+  await reportStatus(404)
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] flex items-center justify-center p-4">

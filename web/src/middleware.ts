@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import type { NextFetchEvent, NextRequest } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
 import { verifyAdminSession } from './lib/admin-auth'
+import { sendHit } from './lib/hit'
 
 const intlMiddleware = createMiddleware(routing)
 
-export async function middleware(request: NextRequest) {
+async function handle(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // /admin 경로는 next-intl 밖에서 직접 처리
@@ -72,6 +73,20 @@ export async function middleware(request: NextRequest) {
   }
 
   return response
+}
+
+/**
+ * 바깥 껍데기 — 실제 처리를 끝낸 뒤에 방문 기록을 보낸다.
+ * 이렇게 해야 미들웨어가 만든 응답의 상태 코드(리디렉션 307·308)를 함께 남길 수 있다.
+ * 통과시킨 요청은 최종 코드를 여기서 알 수 없어 200으로 적고,
+ * 404·오류 화면이 그려지면 그쪽에서 코드만 고쳐 보낸다(lib/hit.ts의 reportStatus).
+ */
+export async function middleware(request: NextRequest, event: NextFetchEvent) {
+  const startedAt = Date.now()
+  const result = await handle(request)
+  const hit = sendHit(request, result?.status ?? 200, Date.now() - startedAt)
+  if (hit) event.waitUntil(hit)
+  return result
 }
 
 export const config = {

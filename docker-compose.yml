@@ -1,6 +1,9 @@
 services:
   web:
-    build: ./web
+    build:
+      context: ./web
+      args:
+        TRAFFIC_TOKEN: ${TRAFFIC_TOKEN:-}
     ports:
       - "${WEB_PORT:-3100}:3000"
     env_file: .env
@@ -8,6 +11,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       AGENT_URL: http://agent:8000
       NEXT_PUBLIC_AGENT_URL: http://agent:8000
+      TRAFFIC_TOKEN: ${TRAFFIC_TOKEN:-}
     depends_on:
       postgres:
         condition: service_healthy
