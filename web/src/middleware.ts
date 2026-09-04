@@ -3,7 +3,7 @@ import type { NextFetchEvent, NextRequest } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
 import { verifyAdminSession } from './lib/admin-auth'
-import { sendHit } from './lib/hit'
+import { looksMissing, sendHit } from './lib/hit'
 
 const intlMiddleware = createMiddleware(routing)
 
@@ -77,14 +77,23 @@ async function handle(request: NextRequest) {
 
 /**
  * 바깥 껍데기 — 실제 처리를 끝낸 뒤에 방문 기록을 보낸다.
- * 이렇게 해야 미들웨어가 만든 응답의 상태 코드(리디렉션 307·308)를 함께 남길 수 있다.
- * 통과시킨 요청은 최종 코드를 여기서 알 수 없어 200으로 적고,
- * 404·오류 화면이 그려지면 그쪽에서 코드만 고쳐 보낸다(lib/hit.ts의 reportStatus).
+ *
+ * 상태 코드를 정하는 순서.
+ *  1) 미들웨어가 스스로 만든 응답(리디렉션 3xx)이면 그 코드를 그대로 쓴다.
+ *  2) 그냥 통과시킨 요청은 여기서 최종 코드를 알 수 없다. 그래서 주소로 판단한다 —
+ *     이 앱에 없는 주소면 404, 있는 주소면 200으로 적는다.
+ *  3) 있는 줄 알았는데 없는 경우(없는 글 주소 등)는 404 화면이 그려질 때 고쳐 보낸다.
+ *
+ * 예전에는 `result?.status ?? ...`로 적었는데, 통과 응답도 status가 200이라
+ * 뒤쪽 판단이 한 번도 실행되지 않았다. 자동 스캐너 요청이 전부 200으로 남던 원인이다.
  */
 export async function middleware(request: NextRequest, event: NextFetchEvent) {
   const startedAt = Date.now()
   const result = await handle(request)
-  const hit = sendHit(request, result?.status ?? 200, Date.now() - startedAt)
+  const code = result?.status ?? 200
+  const redirected = code >= 300 && code < 400
+  const status = redirected ? code : looksMissing(request.nextUrl.pathname) ? 404 : 200
+  const hit = sendHit(request, status, Date.now() - startedAt)
   if (hit) event.waitUntil(hit)
   return result
 }

@@ -21,6 +21,8 @@ export async function POST(request: Request) {
     /* 본문이 없으면 기본값(500)으로 본다 */
   }
   if (!ALLOWED.has(status)) return NextResponse.json({ ok: false }, { status: 400 })
+  // 경로 없이 보내면 대시보드가 엉뚱한 줄을 고칠 수 있어 아예 넘기지 않는다.
+  if (!path) return NextResponse.json({ ok: false, skipped: 'no-path' })
 
   await reportStatus(status, path)
   return NextResponse.json({ ok: true })

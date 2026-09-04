@@ -20,6 +20,34 @@ const SITE = 'me'
 const SKIP = /^\/(api|admin|poc|_next|images)(\/|$)/
 const SKIP_EXT = /\.(ico|png|jpe?g|gif|webp|avif|svg|css|js|mjs|map|woff2?|ttf|otf|mp4|webm|mp3)$/i
 
+/**
+ * 이 앱에 실제로 있는 주소.
+ *
+ * 미들웨어는 화면을 그리기 전 단계라 최종 코드를 모른다. 그래서 주소만 보고 판단한다.
+ * 실제 404의 대부분은 자동 스캐너가 /wp-login.php · /.env 같은 없는 주소를 두드려 보는
+ * 것이고, 그런 요청은 아래 어디에도 걸리지 않는다. 목록에 없으면 404로 적는다.
+ *
+ * 목록에 있어도 404가 날 수 있다(없는 글 주소 등). 그건 여기서 알 수 없으므로 200으로
+ * 두고, 404 화면이 그려질 때 브라우저가 고쳐 보낸다(components/NotFoundBeacon).
+ *
+ * 실제 라우트: src/app/page.tsx · [locale]/page.tsx · [locale]/portfolio/[slug]/page.tsx
+ *             portfolio/[slug]/page.tsx · poc/page.tsx · robots.txt · sitemap.xml
+ */
+const LOC = 'ko|en'
+const KNOWN_PATHS: RegExp[] = [
+  /^\/$/,                                                    // 루트 — next-intl이 /ko로 넘긴다
+  new RegExp(`^/(${LOC})/?$`),                                // 언어별 첫 화면
+  new RegExp(`^/((${LOC})/)?portfolio/[^/]+/?$`),             // 포트폴리오 글 한 편
+  /^\/poc\/?$/,
+  /^\/(robots\.txt|sitemap\.xml|favicon\.ico|manifest\.webmanifest)$/,
+  /^\/(opengraph-image|twitter-image|icon|apple-icon)/,      // 이미지 라우트(뒤에 해시가 붙는다)
+  /^\/(api|admin)(\/|$)/,                                    // 기록에서 빠지지만 만약을 위해
+]
+
+export function looksMissing(pathname: string): boolean {
+  return !KNOWN_PATHS.some((re) => re.test(pathname))
+}
+
 export function shouldRecord(pathname: string): boolean {
   return !SKIP.test(pathname) && !SKIP_EXT.test(pathname)
 }

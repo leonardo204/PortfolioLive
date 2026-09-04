@@ -1,12 +1,11 @@
 import Link from 'next/link'
-import { reportStatus } from '@/lib/hit'
+import NotFoundBeacon from '@/components/NotFoundBeacon'
 
-export default async function NotFound() {
-  // 미들웨어는 통과 여부만 알아서 200으로 남긴다. 여기서 404로 고쳐 보낸다.
-  await reportStatus(404)
+export default function NotFound() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] flex items-center justify-center p-4">
+      <NotFoundBeacon />
       <div className="text-center max-w-md">
         <div className="text-8xl font-bold text-gray-200 mb-4 select-none">404</div>
         <h1 className="text-xl font-semibold text-gray-800 mb-2">
