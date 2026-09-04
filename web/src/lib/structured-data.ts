@@ -9,7 +9,7 @@
  * Person 하나만으로는 구글이 검색 결과를 따로 꾸며 주지 않는다.
  * 개인 소개 페이지에 맞는 타입은 ProfilePage다.
  */
-import { SITE_URL, PERSON, metaFor } from './site'
+import { SITE_URL, PERSON, metaFor, resolvedMetaFor } from './site'
 import type { CareerWithProjects } from './queries/career'
 
 const WEBSITE_ID = `${SITE_URL}/#website`
@@ -43,9 +43,13 @@ function toRole(career: CareerWithProjects, locale: string) {
   }
 }
 
-export function personSchema(careers: CareerWithProjects[], locale: string) {
+export function personSchema(
+  careers: CareerWithProjects[],
+  locale: string,
+  appCount?: number,
+) {
   const isEn = locale === 'en'
-  const meta = metaFor(locale)
+  const meta = resolvedMetaFor(locale, appCount)
   const current = careers.find((c) => c.isCurrent) ?? careers[0]
 
   return {
@@ -102,9 +106,13 @@ export function personSchema(careers: CareerWithProjects[], locale: string) {
 }
 
 /** 홈 화면에 넣는 그래프 — 사이트, 프로필, 사람을 한 덩어리로 묶는다. */
-export function homeGraph(careers: CareerWithProjects[], locale: string) {
-  const meta = metaFor(locale)
-  const person = personSchema(careers, locale)
+export function homeGraph(
+  careers: CareerWithProjects[],
+  locale: string,
+  appCount?: number,
+) {
+  const meta = resolvedMetaFor(locale, appCount)
+  const person = personSchema(careers, locale, appCount)
 
   return {
     '@context': 'https://schema.org',
@@ -140,6 +148,7 @@ interface ProjectForSchema {
   technologies: string[]
   githubUrl: string | null
   liveUrl: string | null
+  appStoreUrl?: string | null
   year: string | null
   updatedAt: Date
 }
@@ -185,6 +194,8 @@ export function projectGraph(project: ProjectForSchema, locale: string) {
         url: pageUrl,
         codeRepository: project.githubUrl || undefined,
         programmingLanguage: project.technologies,
+        // 내려받아 쓸 수 있는 곳이 있으면 함께 알린다.
+        downloadUrl: project.appStoreUrl || undefined,
         dateModified: new Date(project.updatedAt).toISOString(),
         author: { '@id': PERSON_ID },
         isPartOf: { '@id': WEBSITE_ID },

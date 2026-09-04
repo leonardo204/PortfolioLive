@@ -239,7 +239,7 @@ async function main() {
     {
       key: 'hero_description',
       value:
-        '5,000만 대+ 디바이스에 미들웨어를 공급하며 시스템 설계 역량을 쌓았고, 최근에는 Agentic AI 기반 제품 개발에 깊이 빠져 있습니다. 개인 프로젝트로 만든 앱 5개를 App Store에 출시하기도 했습니다.',
+        '5,000만 대+ 디바이스에 미들웨어를 공급하며 시스템 설계 역량을 쌓았고, 최근에는 Agentic AI 기반 제품 개발에 깊이 빠져 있습니다. 개인 프로젝트로 만든 앱 {appCount}개를 App Store에 출시하기도 했습니다.',
       isPublic: true,
     },
     {

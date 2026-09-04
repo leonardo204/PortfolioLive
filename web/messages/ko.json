@@ -1,9 +1,12 @@
 {
-  "nav": { "career": "경력", "portfolio": "포트폴리오" },
+  "nav": {
+    "career": "경력",
+    "portfolio": "포트폴리오"
+  },
   "hero": {
     "defaultTitle": "AI Software\\nEngineer",
     "defaultSubtitle": "Agentic AI · Full-Stack · Embedded Systems",
-    "defaultDescription": "5,000만 대+ 디바이스에 미들웨어를 공급하며 시스템 설계 역량을 쌓았고, 최근에는 Agentic AI 기반 제품 개발에 깊이 빠져 있습니다. 개인 프로젝트로 만든 앱 5개를 App Store에 출시하기도 했습니다."
+    "defaultDescription": "5,000만 대+ 디바이스에 미들웨어를 공급하며 시스템 설계 역량을 쌓았고, 최근에는 Agentic AI 기반 제품 개발에 깊이 빠져 있습니다. 개인 프로젝트로 만든 앱 {appCount}개를 App Store에 출시하기도 했습니다."
   },
   "career": {
     "sectionTitle": "Career",
@@ -20,9 +23,14 @@
     "sideProjects": "Side Projects",
     "loading": "포트폴리오 데이터를 불러오는 중입니다.",
     "back": "돌아가기",
-    "preparing": "상세 정보를 준비 중입니다."
+    "preparing": "상세 정보를 준비 중입니다.",
+    "featured": "대표 프로젝트",
+    "apps": "App Store 출시",
+    "allProjects": "전체 프로젝트"
   },
-  "footer": { "copyright": "© 2026 Yongsub Lee" },
+  "footer": {
+    "copyright": "© 2026 Yongsub Lee"
+  },
   "chat": {
     "trigger": "궁금한 점이 있으신가요?",
     "title": "Chat",

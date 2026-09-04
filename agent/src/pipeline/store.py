@@ -38,10 +38,10 @@ class PipelineStore:
             INSERT INTO portfolio_projects (
                 slug, title, description, category, technologies,
                 year, github_url, readme_raw, readme_raw_en,
-                description_en, title_en, last_synced_at, updated_at
+                description_en, title_en, app_store_url, last_synced_at, updated_at
             ) VALUES (
                 $1, $2, $3, $4, $5::text[],
-                $6, $7, $8, $9, $10, $11, NOW(), NOW()
+                $6, $7, $8, $9, $10, $11, NULLIF($12, ''), NOW(), NOW()
             )
             ON CONFLICT (slug) DO UPDATE SET
                 title          = EXCLUDED.title,
@@ -55,9 +55,12 @@ class PipelineStore:
                 -- 영문 메인 README 파싱이 비면(해당 프로젝트 누락 등) 기존값 보존
                 description_en = COALESCE(NULLIF(EXCLUDED.description_en, ''), portfolio_projects.description_en),
                 title_en       = COALESCE(NULLIF(EXCLUDED.title_en, ''), portfolio_projects.title_en),
+                -- App Store 주소는 관리 화면에서 넣은 값을 먼저 쓰고,
+                -- 비어 있을 때만 README에서 찾은 주소로 채운다.
+                app_store_url  = COALESCE(portfolio_projects.app_store_url, EXCLUDED.app_store_url),
                 last_synced_at = NOW(),
                 updated_at     = NOW()
-                -- NOTE: tags, live_url은 sync에서 건드리지 않음 (seed/admin이 소스 오브 트루스)
+                -- NOTE: tags, live_url, featured는 sync에서 건드리지 않음 (seed/admin이 소스 오브 트루스)
             RETURNING id
             """,
             project.get("slug", ""),
@@ -71,6 +74,7 @@ class PipelineStore:
             project.get("readme_raw_en", None),
             project.get("description_en", None),
             project.get("title_en", None),
+            project.get("app_store_url", "") or "",
         )
         return row["id"]
 

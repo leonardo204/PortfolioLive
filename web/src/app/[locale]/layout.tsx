@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { routing } from '@/i18n/routing'
 import { notFound } from 'next/navigation'
-import { SITE_URL, metaFor, alternatesFor, PERSON } from '@/lib/site'
+import { SITE_URL, resolvedMetaFor, alternatesFor, PERSON } from '@/lib/site'
+import { getAppStoreCount } from '@/lib/queries/portfolio'
 
 interface Props {
   children: React.ReactNode
@@ -14,7 +15,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
-  const meta = metaFor(locale)
+  // 소개 문구의 앱 개수는 등록된 앱을 세어 채운다.
+  const appCount = await getAppStoreCount()
+  const meta = resolvedMetaFor(locale, appCount)
   const languages = alternatesFor('/')
 
   return {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Fragment } from 'react'
-import { FolderKanban, RefreshCw, Pencil, Check, X, GitFork, Clock } from 'lucide-react'
+import { FolderKanban, RefreshCw, Pencil, Check, X, GitFork, Clock, Star } from 'lucide-react'
 
 type Project = {
   id: number
@@ -14,6 +14,9 @@ type Project = {
   year: string | null
   githubUrl: string | null
   liveUrl: string | null
+  appStoreUrl: string | null
+  featured: boolean
+  featuredOrder: number
   lastSyncedAt: string | null
   updatedAt: string
 }
@@ -47,6 +50,9 @@ export default function AdminProjectsPage() {
   const [editCategory, setEditCategory] = useState<string>('')
   const [editLiveUrl, setEditLiveUrl] = useState<string>('')
   const [editIsLive, setEditIsLive] = useState<boolean>(false)
+  const [editAppStoreUrl, setEditAppStoreUrl] = useState<string>('')
+  const [editFeatured, setEditFeatured] = useState<boolean>(false)
+  const [editFeaturedOrder, setEditFeaturedOrder] = useState<string>('0')
   const [savingId, setSavingId] = useState<number | null>(null)
   const [error, setError] = useState<string>('')
   const [syncMessage, setSyncMessage] = useState<string>('')
@@ -114,6 +120,9 @@ export default function AdminProjectsPage() {
           description: editDesc,
           category: editCategory,
           liveUrl: editLiveUrl.trim() || null,
+          appStoreUrl: editAppStoreUrl.trim() || null,
+          featured: editFeatured,
+          featuredOrder: Number(editFeaturedOrder) || 0,
           tags: newTags,
         }),
       })
@@ -132,6 +141,9 @@ export default function AdminProjectsPage() {
                 description: editDesc,
                 category: editCategory || null,
                 liveUrl: editLiveUrl || null,
+                appStoreUrl: editAppStoreUrl || null,
+                featured: editFeatured,
+                featuredOrder: Number(editFeaturedOrder) || 0,
                 tags: newTags,
               }
             : p
@@ -151,6 +163,9 @@ export default function AdminProjectsPage() {
     setEditCategory(project.category ?? '')
     setEditLiveUrl(project.liveUrl ?? '')
     setEditIsLive((project.tags ?? []).includes('live'))
+    setEditAppStoreUrl(project.appStoreUrl ?? '')
+    setEditFeatured(project.featured)
+    setEditFeaturedOrder(String(project.featuredOrder ?? 0))
   }
 
   function cancelEdit() {
@@ -159,6 +174,9 @@ export default function AdminProjectsPage() {
     setEditCategory('')
     setEditLiveUrl('')
     setEditIsLive(false)
+    setEditAppStoreUrl('')
+    setEditFeatured(false)
+    setEditFeaturedOrder('0')
   }
 
   // 카테고리 목록 (DB에 있는 것 + 기본값)
@@ -297,8 +315,20 @@ export default function AdminProjectsPage() {
                     <td className="px-4 py-4">
                       <div className="flex items-start gap-2">
                         <div>
-                          <p className="text-sm font-medium text-[#2b3438]">
+                          <p className="text-sm font-medium text-[#2b3438] flex items-center gap-1.5">
+                            {project.featured && (
+                              <Star
+                                size={13}
+                                className="text-[#0053db] fill-[#0053db] shrink-0"
+                                aria-label={`대표 프로젝트 ${project.featuredOrder}번`}
+                              />
+                            )}
                             {project.title}
+                            {project.appStoreUrl && (
+                              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-[#dbe1ff] text-[#0048bf] rounded shrink-0">
+                                App Store
+                              </span>
+                            )}
                           </p>
                           {editingId !== project.id && project.description && (
                             <p className="text-xs text-[#586065] mt-0.5 line-clamp-2">
@@ -416,6 +446,60 @@ export default function AdminProjectsPage() {
                               />
                             </div>
                           </div>
+
+                          <div>
+                            <label className="block text-xs font-medium text-[#586065] mb-1 uppercase tracking-wider">
+                              App Store 주소
+                            </label>
+                            <input
+                              type="text"
+                              value={editAppStoreUrl}
+                              onChange={(e) => setEditAppStoreUrl(e.target.value)}
+                              placeholder="https://apps.apple.com/kr/app/..."
+                              className="w-full px-3 py-2 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] placeholder-[#abb3b9] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
+                            />
+                            <p className="text-[11px] text-[#abb3b9] mt-1">
+                              주소를 넣으면 첫 화면 &lsquo;App Store 출시&rsquo; 묶음에 나오고, 소개 문구의 앱 개수도 함께 늘어납니다.
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-3 py-3 bg-white rounded-md border border-[#eaeef2]">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                id={`featured-${project.id}`}
+                                checked={editFeatured}
+                                onChange={(e) => setEditFeatured(e.target.checked)}
+                                className="w-4 h-4 rounded border-[#eaeef2] text-[#0053db] focus:ring-[#0053db]"
+                              />
+                              <label
+                                htmlFor={`featured-${project.id}`}
+                                className="text-xs font-medium text-[#586065] uppercase tracking-wider cursor-pointer select-none"
+                              >
+                                대표 프로젝트 (첫 화면 맨 위에 크게 노출)
+                              </label>
+                            </div>
+                            {editFeatured && (
+                              <div className="flex items-center gap-2">
+                                <label
+                                  htmlFor={`featured-order-${project.id}`}
+                                  className="text-xs font-medium text-[#586065] uppercase tracking-wider"
+                                >
+                                  노출 순서
+                                </label>
+                                <input
+                                  id={`featured-order-${project.id}`}
+                                  type="number"
+                                  min={0}
+                                  max={999}
+                                  value={editFeaturedOrder}
+                                  onChange={(e) => setEditFeaturedOrder(e.target.value)}
+                                  className="w-20 px-2 py-1.5 bg-[#f8f9fb] border border-[#eaeef2] rounded-md text-sm text-[#2b3438] focus:outline-none focus:ring-1 focus:ring-[#0053db]"
+                                />
+                                <span className="text-[11px] text-[#abb3b9]">작은 값이 먼저</span>
+                              </div>
+                            )}
+                          </div>
+
                           <div className="flex items-center gap-2">
                             <input
                               type="checkbox"

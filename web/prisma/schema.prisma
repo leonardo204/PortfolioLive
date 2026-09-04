@@ -56,8 +56,13 @@ model PortfolioProject {
   year          String?
   githubUrl     String?   @map("github_url")
   liveUrl       String?   @map("live_url")
+  // App Store 출시작 — 동기화할 때 README에서 자동으로 찾아 채운다.
+  appStoreUrl   String?   @map("app_store_url")
   readmeRaw     String?   @map("readme_raw")
   sortOrder     Int       @default(0) @map("sort_order")
+  // 대표작 — 첫 화면 맨 위에 크게 보여줄 프로젝트. 관리 화면에서 켜고 끈다.
+  featured      Boolean   @default(false)
+  featuredOrder Int       @default(0) @map("featured_order")
   lastSyncedAt  DateTime? @map("last_synced_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
   // EN fields

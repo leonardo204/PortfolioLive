@@ -1,4 +1,5 @@
 import base64
+import re
 import asyncio
 import httpx
 from typing import Any
@@ -119,6 +120,7 @@ class GitHubFetcher:
             "description_en": en_meta.get("description", ""),
             "title_en": en_meta.get("title", ""),
             "github_url": f"https://github.com/{REPO_OWNER}/{MAIN_REPO}/tree/main/{PROJECTS_DIR}/{dir_name}",
+            "app_store_url": _find_app_store_url(readme) or _find_app_store_url(readme_en),
         }
 
     async def _fetch_file_content(
@@ -220,3 +222,18 @@ class GitHubFetcher:
                 }
 
         return meta_map
+
+
+def _find_app_store_url(readme: str) -> str:
+    """README 본문에서 App Store 제품 페이지 주소를 찾는다.
+
+    출시한 앱은 README에 스토어 링크를 적어 두므로, 동기화할 때 그대로 가져와
+    첫 화면의 'App Store 출시' 묶음과 소개 문구의 앱 개수에 반영한다.
+    주소가 여러 개면 맨 앞의 것을 쓴다.
+    """
+    if not readme:
+        return ""
+    m = re.search(r"https://apps\.apple\.com/[^\s)\]\"'<>]+", readme)
+    if not m:
+        return ""
+    return m.group(0).rstrip(".,;")

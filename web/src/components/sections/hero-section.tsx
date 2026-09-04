@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { getTranslations } from 'next-intl/server'
-import { PERSON } from '@/lib/site'
+import { PERSON, fillCounts } from '@/lib/site'
+import { getAppStoreCount } from '@/lib/queries/portfolio'
 
 const HERO_KEYS = ['hero_title', 'hero_subtitle', 'hero_description'] as const
 
@@ -33,6 +34,11 @@ export async function HeroSection({ locale }: Props) {
   } catch {
     // DB unavailable, use defaults
   }
+
+  // 소개 문구에 {appCount}를 써 두면 등록된 앱 개수로 바뀐다.
+  // 앱을 추가해도 문구의 숫자를 따로 고칠 필요가 없다.
+  const appCount = await getAppStoreCount()
+  settings.hero_description = fillCounts(settings.hero_description, { appCount })
 
   const titleParts = settings.hero_title.replace('\\n', '\n').split('\n')
 

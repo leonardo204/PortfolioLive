@@ -97,6 +97,8 @@ async def _run_sync_pipeline() -> SyncResult:
                 "readme_raw_en": project_data.get("readme_en", "") or None,
                 "description_en": project_data.get("description_en", "") or None,
                 "title_en": project_data.get("title_en", "") or None,
+                # README에 스토어 링크가 있으면 함께 넘긴다(관리 화면 값이 있으면 그쪽이 우선).
+                "app_store_url": project_data.get("app_store_url", "") or "",
             }
             project_id = await store.upsert_portfolio_project(project_record)
 

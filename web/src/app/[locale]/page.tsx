@@ -6,6 +6,7 @@ import { PortfolioSection } from '@/components/sections/portfolio-section'
 import { ChatWrapper } from '@/components/chat/chat-wrapper'
 import { JsonLd } from '@/components/seo/json-ld'
 import { getCareers } from '@/lib/queries/career'
+import { getAppStoreCount } from '@/lib/queries/portfolio'
 import { homeGraph } from '@/lib/structured-data'
 
 // next-intl이 요청 정보를 읽어야 해서 화면을 미리 만들어 둘 수 없다.
@@ -18,11 +19,14 @@ interface Props {
 
 export default async function Home({ params }: Props) {
   const { locale } = await params
-  const careers = await getCareers(locale)
+  const [careers, appCount] = await Promise.all([
+    getCareers(locale),
+    getAppStoreCount(),
+  ])
 
   return (
     <>
-      <JsonLd data={homeGraph(careers, locale)} />
+      <JsonLd data={homeGraph(careers, locale, appCount)} />
       <Header />
       <main className="pt-16 pb-16 bg-[#f8f9fb]">
         <HeroSection locale={locale} />

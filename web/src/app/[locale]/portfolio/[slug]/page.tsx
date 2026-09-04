@@ -205,14 +205,28 @@ export default async function PortfolioDetailPage({ params }: Props) {
                 GitHub
               </a>
             )}
+            {project.appStoreUrl && (
+              <a
+                href={project.appStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0053db] hover:bg-[#0048bf] text-white text-xs font-bold uppercase tracking-widest rounded-full transition-colors"
+              >
+                App Store
+              </a>
+            )}
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0053db] hover:bg-[#0048bf] text-white text-xs font-bold uppercase tracking-widest rounded-full transition-colors"
+                className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-full transition-colors ${
+                  project.appStoreUrl
+                    ? 'bg-[#dbe1ff] hover:bg-[#c7d3ff] text-[#0048bf]'
+                    : 'bg-[#0053db] hover:bg-[#0048bf] text-white'
+                }`}
               >
-                Visit Live Site
+                {locale === 'en' ? 'Visit Live Site' : '서비스 바로가기'}
               </a>
             )}
           </div>

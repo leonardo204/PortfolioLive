@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const projects = await prisma.portfolioProject.findMany({
       where: category ? { category } : undefined,
-      orderBy: [{ year: 'desc' }, { title: 'asc' }],
+      orderBy: [{ featured: 'desc' }, { featuredOrder: 'asc' }, { year: 'desc' }, { title: 'asc' }],
       select: {
         id: true,
         slug: true,
@@ -24,6 +24,9 @@ export async function GET(request: NextRequest) {
         year: true,
         githubUrl: true,
         liveUrl: true,
+        appStoreUrl: true,
+        featured: true,
+        featuredOrder: true,
         lastSyncedAt: true,
         updatedAt: true,
       },
@@ -44,11 +47,13 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { id, description, category, tags } = body as {
+    const { id, description, category, tags, featured, featuredOrder } = body as {
       id: number
       description?: string
       category?: string
       tags?: string[]
+      featured?: boolean
+      featuredOrder?: number
     }
 
     if (!id) {
@@ -68,32 +73,48 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // liveUrl 검증 및 sanitize
-    let liveUrlValue: string | null | undefined = undefined
-    if ('liveUrl' in body) {
-      const raw = (body as { liveUrl?: unknown }).liveUrl
-      if (raw === null) {
-        liveUrlValue = null
-      } else if (typeof raw !== 'string') {
-        return NextResponse.json({ error: 'liveUrl은 문자열이어야 합니다.' }, { status: 400 })
-      } else {
-        const trimmed = raw.trim()
-        if (trimmed === '') {
-          liveUrlValue = null
-        } else if (trimmed.length > 2048) {
-          return NextResponse.json({ error: 'liveUrl이 너무 깁니다 (최대 2048자).' }, { status: 400 })
-        } else {
-          try {
-            const u = new URL(trimmed)
-            if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-              return NextResponse.json({ error: 'liveUrl은 http(s) 스키마만 허용됩니다.' }, { status: 400 })
-            }
-            liveUrlValue = trimmed
-          } catch {
-            return NextResponse.json({ error: '유효한 URL 형식이 아닙니다.' }, { status: 400 })
-          }
+    // 주소 입력값 검사 — liveUrl과 appStoreUrl이 같은 규칙을 쓴다.
+    // 빈 칸으로 저장하면 지운 것으로 본다.
+    type UrlResult = { ok: true; value: string | null } | { ok: false; message: string }
+    const readUrl = (field: 'liveUrl' | 'appStoreUrl'): UrlResult | undefined => {
+      if (!(field in body)) return undefined
+      const raw = (body as Record<string, unknown>)[field]
+      if (raw === null) return { ok: true, value: null }
+      if (typeof raw !== 'string') return { ok: false, message: `${field}은 문자열이어야 합니다.` }
+      const trimmed = raw.trim()
+      if (trimmed === '') return { ok: true, value: null }
+      if (trimmed.length > 2048) return { ok: false, message: `${field}이 너무 깁니다 (최대 2048자).` }
+      try {
+        const u = new URL(trimmed)
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+          return { ok: false, message: `${field}은 http(s) 주소만 넣을 수 있습니다.` }
         }
+        return { ok: true, value: trimmed }
+      } catch {
+        return { ok: false, message: '주소 형식이 올바르지 않습니다.' }
       }
+    }
+
+    const liveResult = readUrl('liveUrl')
+    if (liveResult && !liveResult.ok) {
+      return NextResponse.json({ error: liveResult.message }, { status: 400 })
+    }
+    const appStoreResult = readUrl('appStoreUrl')
+    if (appStoreResult && !appStoreResult.ok) {
+      return NextResponse.json({ error: appStoreResult.message }, { status: 400 })
+    }
+
+    if (featured !== undefined && typeof featured !== 'boolean') {
+      return NextResponse.json({ error: 'featured는 true/false여야 합니다.' }, { status: 400 })
+    }
+    if (
+      featuredOrder !== undefined &&
+      (!Number.isInteger(featuredOrder) || featuredOrder < 0 || featuredOrder > 999)
+    ) {
+      return NextResponse.json(
+        { error: 'featuredOrder는 0~999 사이의 정수여야 합니다.' },
+        { status: 400 }
+      )
     }
 
     const project = await prisma.portfolioProject.update({
@@ -101,7 +122,10 @@ export async function PUT(request: NextRequest) {
       data: {
         ...(description !== undefined && { description }),
         ...(category !== undefined && { category }),
-        ...(liveUrlValue !== undefined && { liveUrl: liveUrlValue }),
+        ...(liveResult?.ok && { liveUrl: liveResult.value }),
+        ...(appStoreResult?.ok && { appStoreUrl: appStoreResult.value }),
+        ...(featured !== undefined && { featured }),
+        ...(featuredOrder !== undefined && { featuredOrder }),
         ...(tags !== undefined && { tags }),
       },
     })
