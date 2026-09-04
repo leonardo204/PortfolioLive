@@ -20,7 +20,6 @@ interface Props {
 export function ProjectList({ projects, locale }: Props) {
   const t = useTranslations('portfolio')
   const [activeFilter, setActiveFilter] = useState('')
-  const [liveOnly, setLiveOnly] = useState(false)
 
   const en = locale === 'en'
 
@@ -33,11 +32,8 @@ export function ProjectList({ projects, locale }: Props) {
 
   const filtered = projects.filter((p) => {
     if (activeFilter && !p.category?.includes(activeFilter)) return false
-    if (liveOnly && !p.liveUrl) return false
     return true
   })
-
-  const liveCount = projects.filter((p) => p.liveUrl).length
 
   return (
     <div>
@@ -59,23 +55,6 @@ export function ProjectList({ projects, locale }: Props) {
             </button>
           )
         })}
-
-        {liveCount > 0 && (
-          <>
-            <span className="w-px h-4 bg-[#abb3b9]/25 mx-1 self-center" aria-hidden="true" />
-            <button
-              onClick={() => setLiveOnly((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
-                liveOnly
-                  ? 'bg-[#dbe1ff] text-[#0048bf]'
-                  : 'text-[#586065] hover:bg-[#eaeef2]'
-              }`}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0053db]" aria-hidden="true" />
-              {en ? 'Live' : '운영 중'}
-            </button>
-          </>
-        )}
 
         <span className="ml-auto text-xs font-mono text-[#abb3b9] tabular-nums">
           {en
@@ -107,11 +86,6 @@ export function ProjectList({ projects, locale }: Props) {
                     <h4 className="text-base font-bold text-[#2b3438] group-hover:text-[#0053db] transition-colors leading-tight">
                       {project.title}
                     </h4>
-                    {project.liveUrl && (
-                      <StatusBadge tone="accent" dot>
-                        {en ? 'Live' : '운영 중'}
-                      </StatusBadge>
-                    )}
                     {project.appStoreUrl && (
                       <StatusBadge tone="accent">App Store</StatusBadge>
                     )}

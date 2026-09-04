@@ -16,8 +16,6 @@ interface Props {
 export function FeaturedProjects({ projects, locale }: Props) {
   if (projects.length === 0) return null
 
-  const en = locale === 'en'
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
       {projects.map((project) => (
@@ -40,11 +38,6 @@ export function FeaturedProjects({ projects, locale }: Props) {
                 {project.title}
               </h4>
               <div className="flex flex-wrap items-center gap-2 mt-2.5">
-                {project.liveUrl && (
-                  <StatusBadge tone="accent" dot>
-                    {en ? 'Live' : '운영 중'}
-                  </StatusBadge>
-                )}
                 {project.appStoreUrl && (
                   <StatusBadge tone="accent">App Store</StatusBadge>
                 )}
