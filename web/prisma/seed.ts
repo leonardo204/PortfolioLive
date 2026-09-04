@@ -17,8 +17,8 @@ async function main() {
     data: {
       company: '케이티알티미디어',
       companyType: '대기업',
-      department: '제품혁신팀',
-      position: '연구원',
+      department: '사업혁신팀',
+      position: '선임연구원',
       location: '서울',
       startedAt: new Date('2019-12-01'),
       endedAt: null,
@@ -28,8 +28,8 @@ async function main() {
       sortOrder: 1,
       // EN
       companyEn: 'KT Altimedia',
-      departmentEn: 'Product Innovation Team',
-      positionEn: 'Researcher',
+      departmentEn: 'Business Innovation Team',
+      positionEn: 'Senior Researcher',
       locationEn: 'Seoul',
       techTransitionEn: 'STB Cloud → Cross-platform Players → AI Agents',
       summaryEn: 'Alticast spun off Altimedia via demerger (2019) → joined KT Group, renamed to KT Altimedia (2025). STB cloud, cross-platform player, and AI agent development',

@@ -120,7 +120,7 @@ JSON은 한 줄로 쓰고, 큰따옴표와 대괄호·중괄호 짝을 반드시
 <!--a2ui:tech-stack-table-->{{"headers":["분야","기술"],"rows":[["AI/ML","LangGraph, Gemini, RAG"],["Backend","FastAPI, Node.js"]]}}<!--/a2ui-->
 
 3. career-timeline — 경력 타임라인
-<!--a2ui:career-timeline-->[{{"company":"케이티알티미디어","period":"2019.12-현재","role":"연구원","highlight":"AI Agent 개발"}}]<!--/a2ui-->
+<!--a2ui:career-timeline-->[{{"company":"케이티알티미디어","period":"2019.12-현재","role":"선임연구원","highlight":"AI Agent 개발"}}]<!--/a2ui-->
 
 4. comparison-table — 범용 비교
 <!--a2ui:comparison-table-->{{"title":"기술 비교","headers":["항목","A","B"],"rows":[["성능","높음","중간"]]}}<!--/a2ui-->
@@ -139,7 +139,7 @@ JSON은 한 줄로 쓰고, 큰따옴표와 대괄호·중괄호 짝을 반드시
 <!--a2ui:skill-matrix-->{{"categories":[{{"name":"AI/ML","skills":[{{"name":"LangGraph","level":4}},{{"name":"RAG","level":4}}]}}]}}<!--/a2ui-->
 
 9. timeline-card — 경력 하이라이트 카드 (특정 회사 상세)
-<!--a2ui:timeline-card-->{{"company":"KT 알티미디어","period":"2019.12-현재","role":"연구원","department":"AI연구소","highlights":["AI Agent 개발","STT/TTS 시스템"]}}<!--/a2ui-->
+<!--a2ui:timeline-card-->{{"company":"KT 알티미디어","period":"2019.12-현재","role":"선임연구원","department":"사업혁신팀","highlights":["AI Agent 개발","STT/TTS 시스템"]}}<!--/a2ui-->
 
 ### 타입 선택 규칙 (반드시 준수)
 
@@ -302,7 +302,7 @@ JSON은 한 줄로 쓰고, 큰따옴표와 대괄호·중괄호 짝을 반드시
 <!--a2ui:tech-stack-table-->{{"headers":["분야","기술"],"rows":[["AI/ML","LangGraph, Gemini, RAG"],["Backend","FastAPI, Node.js"]]}}<!--/a2ui-->
 
 3. career-timeline — 경력 타임라인
-<!--a2ui:career-timeline-->[{{"company":"케이티알티미디어","period":"2019.12-현재","role":"연구원","highlight":"AI Agent 개발"}}]<!--/a2ui-->
+<!--a2ui:career-timeline-->[{{"company":"케이티알티미디어","period":"2019.12-현재","role":"선임연구원","highlight":"AI Agent 개발"}}]<!--/a2ui-->
 
 4. comparison-table — 범용 비교
 <!--a2ui:comparison-table-->{{"title":"기술 비교","headers":["항목","A","B"],"rows":[["성능","높음","중간"]]}}<!--/a2ui-->
@@ -321,7 +321,7 @@ JSON은 한 줄로 쓰고, 큰따옴표와 대괄호·중괄호 짝을 반드시
 <!--a2ui:skill-matrix-->{{"categories":[{{"name":"AI/ML","skills":[{{"name":"LangGraph","level":4}},{{"name":"RAG","level":4}}]}}]}}<!--/a2ui-->
 
 9. timeline-card — 경력 하이라이트 카드 (특정 회사 상세)
-<!--a2ui:timeline-card-->{{"company":"KT 알티미디어","period":"2019.12-현재","role":"연구원","department":"AI연구소","highlights":["AI Agent 개발","STT/TTS 시스템"]}}<!--/a2ui-->
+<!--a2ui:timeline-card-->{{"company":"KT 알티미디어","period":"2019.12-현재","role":"선임연구원","department":"사업혁신팀","highlights":["AI Agent 개발","STT/TTS 시스템"]}}<!--/a2ui-->
 
 ### 타입 선택 규칙 (반드시 준수)
 

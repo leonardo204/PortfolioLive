@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { routing } from '@/i18n/routing'
 import { notFound } from 'next/navigation'
+import { SITE_URL, metaFor, alternatesFor, PERSON } from '@/lib/site'
 
 interface Props {
   children: React.ReactNode
@@ -13,15 +14,49 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
-  if (locale === 'en') {
-    return {
-      title: 'Leonardo204 - Portfolio',
-      description: 'Yongsub Lee Portfolio',
-    }
-  }
+  const meta = metaFor(locale)
+  const languages = alternatesFor('/')
+
   return {
-    title: 'Leonardo204',
-    description: '이용섭 포트폴리오',
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: meta.title,
+      template: meta.titleTemplate,
+    },
+    description: meta.description,
+    applicationName: meta.siteName,
+    authors: [{ name: PERSON.nameKo, url: SITE_URL }],
+    creator: PERSON.nameKo,
+    publisher: PERSON.nameKo,
+    alternates: {
+      canonical: `${SITE_URL}/${locale}`,
+      languages,
+    },
+    openGraph: {
+      type: 'profile',
+      url: `${SITE_URL}/${locale}`,
+      siteName: meta.siteName,
+      title: meta.title,
+      description: meta.description,
+      locale: locale === 'en' ? 'en_US' : 'ko_KR',
+      alternateLocale: locale === 'en' ? 'ko_KR' : 'en_US',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: meta.title,
+      description: meta.description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-snippet': -1,
+        'max-image-preview': 'large',
+        'max-video-preview': -1,
+      },
+    },
   }
 }
 

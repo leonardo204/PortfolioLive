@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { getTranslations } from 'next-intl/server'
+import { PERSON } from '@/lib/site'
 
 const HERO_KEYS = ['hero_title', 'hero_subtitle', 'hero_description'] as const
 
@@ -46,6 +47,15 @@ export async function HeroSection({ locale }: Props) {
               {i < titleParts.length - 1 && <br />}
             </span>
           ))}
+          {/*
+            화면에는 보이지 않고 검색엔진과 화면 낭독기만 읽는 부분이다.
+            큰 제목의 디자인은 그대로 두면서 이름과 소속을 함께 알린다.
+          */}
+          <span className="sr-only">
+            {locale === 'en'
+              ? ` — ${PERSON.nameEn} (${PERSON.nameKo}), ${PERSON.positionEn} at ${PERSON.companyEn} ${PERSON.departmentEn}, ${PERSON.locationEn}`
+              : ` — ${PERSON.nameKo} (${PERSON.nameEn}), ${PERSON.companyKo} ${PERSON.departmentKo} ${PERSON.positionKo}, ${PERSON.locationKo}`}
+          </span>
         </h1>
 
         {/* Subtitle */}

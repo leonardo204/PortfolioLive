@@ -32,6 +32,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // 검색엔진·크롤러가 읽는 파일은 언어 경로를 붙이면 안 된다.
+  // next-intl이 가로채면 /ko/robots.txt로 넘어가 404가 난다.
+  const CRAWLER_FILES = [
+    '/robots.txt',
+    '/sitemap.xml',
+    '/opengraph-image',
+    '/twitter-image',
+    '/icon',
+    '/apple-icon',
+    '/favicon.ico',
+  ]
+  if (CRAWLER_FILES.some((f) => pathname === f || pathname.startsWith(f + '/'))) {
+    return NextResponse.next()
+  }
+
   // /api, /poc, /_next, /images 등은 next-intl 제외
   if (
     pathname.startsWith('/api') ||
@@ -44,7 +59,19 @@ export async function middleware(request: NextRequest) {
   }
 
   // 나머지는 next-intl 미들웨어
-  return intlMiddleware(request)
+  const response = intlMiddleware(request)
+
+  // 공개 화면은 누구에게나 같은 내용이라 콘텐츠 전송망이 보관해도 된다.
+  // s-maxage는 전송망에만 적용되고 방문자 브라우저는 매번 새로 받는다.
+  // 한 시간이 지나도 하루 동안은 보관본을 먼저 보여주고 뒤에서 새로 받아 둔다.
+  if (request.method === 'GET') {
+    response.headers.set(
+      'Cache-Control',
+      'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400'
+    )
+  }
+
+  return response
 }
 
 export const config = {

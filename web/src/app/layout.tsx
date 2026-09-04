@@ -4,12 +4,14 @@ import './globals.css'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { PageTracker } from '@/components/layout/page-tracker'
+import { SITE_URL, SITE_META } from '@/lib/site'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Leonardo204',
-  description: '이용섭 포트폴리오',
+  metadataBase: new URL(SITE_URL),
+  title: SITE_META.ko.title,
+  description: SITE_META.ko.description,
 }
 
 export default async function RootLayout({

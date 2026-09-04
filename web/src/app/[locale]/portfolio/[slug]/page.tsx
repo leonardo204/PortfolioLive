@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
@@ -8,8 +9,9 @@ import path from 'path'
 import { prisma } from '@/lib/prisma'
 import { PortfolioContent } from '@/components/portfolio/portfolio-content'
 import { ChatWrapper } from '@/components/chat/chat-wrapper'
-
-export const dynamic = 'force-dynamic'
+import { JsonLd } from '@/components/seo/json-ld'
+import { projectGraph } from '@/lib/structured-data'
+import { SITE_URL, metaFor, alternatesFor } from '@/lib/site'
 
 /**
  * README의 "스크린샷 추가 예정" 플레이스홀더를
@@ -38,7 +40,10 @@ function injectStaticScreenshots(markdown: string, slug: string): string {
   return markdown.replace(/(## 스크린샷\s*\n)/, `$1\n${imagesMd}\n\n`)
 }
 
-export const revalidate = 3600
+// 이 화면은 요청이 올 때마다 서버에서 만든다.
+// next-intl이 요청 정보를 읽기 때문에 미리 만들어 둘 수 없다.
+// 대신 아래 unstable_cache가 데이터베이스 조회 결과를 한 시간 동안 다시 쓴다.
+export const dynamic = 'force-dynamic'
 
 const getProject = unstable_cache(
   async (slug: string) => {
@@ -63,22 +68,59 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params
+  const meta = metaFor(locale)
+  const pagePath = `/portfolio/${slug}`
+  const canonical = `${SITE_URL}/${locale}${pagePath}`
+
   try {
     const project = await prisma.portfolioProject.findUnique({
       where: { slug },
       select: { title: true, titleEn: true, description: true, descriptionEn: true },
     })
     if (!project) return { title: 'Not Found' }
-    const title = locale === 'en' ? (project.titleEn || project.title) : project.title
-    const description = locale === 'en' ? (project.descriptionEn || project.description) : project.description
+
+    const title = locale === 'en' ? project.titleEn || project.title : project.title
+    const description =
+      (locale === 'en' ? project.descriptionEn || project.description : project.description) ||
+      meta.description
+    // 위 폴더의 제목 서식(%s | 이용섭)이 자동으로 붙으므로 여기서는 이름을 다시 적지 않는다.
+    const fullTitle = `${title} | ${meta.siteName}`
+
     return {
-      title: `${title} | ${locale === 'en' ? 'Yongsub Lee Portfolio' : '이용섭 포트폴리오'}`,
+      metadataBase: new URL(SITE_URL),
+      title,
       description,
+      alternates: {
+        canonical,
+        languages: alternatesFor(pagePath),
+      },
+      openGraph: {
+        type: 'article',
+        url: canonical,
+        siteName: meta.siteName,
+        title: fullTitle,
+        description,
+        locale: locale === 'en' ? 'en_US' : 'ko_KR',
+        images: [
+          {
+            url: '/opengraph-image',
+            width: 1200,
+            height: 630,
+            alt: meta.ogAlt,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: fullTitle,
+        description,
+        images: ['/opengraph-image'],
+      },
     }
   } catch {
-    return { title: 'Portfolio' }
+    return { title: meta.siteName }
   }
 }
 
@@ -101,6 +143,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
 
   return (
     <>
+    <JsonLd data={projectGraph({ ...project, title, description }, locale)} />
     <main className="min-h-screen bg-[#f8f9fb]">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-[#f8f9fb]/80 backdrop-blur-md border-b border-[#abb3b9]/10">
