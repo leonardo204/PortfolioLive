@@ -55,9 +55,13 @@ class PipelineStore:
                 -- 영문 메인 README 파싱이 비면(해당 프로젝트 누락 등) 기존값 보존
                 description_en = COALESCE(NULLIF(EXCLUDED.description_en, ''), portfolio_projects.description_en),
                 title_en       = COALESCE(NULLIF(EXCLUDED.title_en, ''), portfolio_projects.title_en),
-                -- App Store 주소는 관리 화면에서 넣은 값을 먼저 쓰고,
-                -- 비어 있을 때만 README에서 찾은 주소로 채운다.
-                app_store_url  = COALESCE(portfolio_projects.app_store_url, EXCLUDED.app_store_url),
+                -- App Store 주소는 관리 화면에서 넣은 값을 먼저 쓰고, 비어 있을 때만
+                -- README에서 찾은 주소로 채운다. 빈 문자열도 '없음'으로 본다
+                -- (빈 값이 한 번 들어가면 다시는 안 채워지는 것을 막는다).
+                app_store_url  = COALESCE(
+                    NULLIF(portfolio_projects.app_store_url, ''),
+                    NULLIF(EXCLUDED.app_store_url, '')
+                ),
                 last_synced_at = NOW(),
                 updated_at     = NOW()
                 -- NOTE: tags, live_url, featured는 sync에서 건드리지 않음 (seed/admin이 소스 오브 트루스)
@@ -74,7 +78,7 @@ class PipelineStore:
             project.get("readme_raw_en", None),
             project.get("description_en", None),
             project.get("title_en", None),
-            project.get("app_store_url", "") or "",
+            project.get("app_store_url") or None,
         )
         return row["id"]
 

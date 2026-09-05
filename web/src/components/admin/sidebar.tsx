@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Mail,
   Settings,
+  ShieldBan,
   LogOut,
   ExternalLink,
 } from 'lucide-react'
@@ -55,6 +56,12 @@ const menuItems = [
     href: '/admin/settings',
     icon: Settings,
     label: '설정',
+    active: true,
+  },
+  {
+    href: '/admin/security',
+    icon: ShieldBan,
+    label: '보안',
     active: true,
   },
 ]

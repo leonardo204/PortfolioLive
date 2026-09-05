@@ -2,6 +2,7 @@
 
 import { useState, useEffect, FormEvent } from 'react'
 import { Check, RefreshCw } from 'lucide-react'
+import PasskeySection from '@/components/admin/passkey-section'
 
 type Setting = {
   key: string
@@ -114,7 +115,7 @@ export default function AdminSettingsPage() {
           <div>
             <h1 className="text-2xl font-semibold text-[#2b3438]">사이트 설정</h1>
             <p className="text-sm text-[#586065] mt-1">
-              히어로 섹션 텍스트를 수정합니다. 저장 즉시 사이트에 반영됩니다.
+              메인 화면 문구와 관리자 로그인 수단을 관리합니다.
             </p>
           </div>
           <button
@@ -192,6 +193,9 @@ export default function AdminSettingsPage() {
           ))}
         </div>
       </div>
+
+      {/* 패스키 — 로그인 수단 관리 */}
+      <PasskeySection />
     </div>
   )
 }

@@ -1,5 +1,7 @@
 FROM node:20-alpine AS base
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# pnpm 버전을 고정한다. latest로 두면 새 pnpm이 나올 때마다 빌드가 깨진다.
+# (pnpm 11은 Node 20에서 돌지 않는다.) 로컬에서 잠금 파일을 만든 버전과 맞춘다.
+RUN corepack enable && corepack prepare pnpm@10.6.4 --activate
 WORKDIR /app
 
 FROM base AS deps

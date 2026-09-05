@@ -156,10 +156,44 @@ model AdminSetting {
   @@map("admin_settings")
 }
 
+/// 관리자 패스키(생체 인증 기기) 등록 정보.
+/// 비밀번호를 대신하는 로그인 수단이라 기기 여러 대를 등록해 둘 수 있다.
+/// publicKey는 공개키라 유출돼도 로그인에 쓰이지 않는다(서명은 기기 안 개인키가 한다).
+model AdminCredential {
+  id         String   @id                       // 기기가 준 자격 증명 ID (base64url)
+  publicKey  Bytes    @map("public_key")
+  counter    BigInt   @default(0)               // 재사용 공격 탐지용 서명 횟수
+  transports String[] @default([])              // usb, nfc, ble, internal, hybrid
+  deviceType String   @default("") @map("device_type")   // singleDevice | multiDevice
+  backedUp   Boolean  @default(false) @map("backed_up")  // 기기 간 동기화 여부
+  label      String                             // 목록에서 알아볼 이름 (예: 맥북 Touch ID)
+  createdAt  DateTime @default(now()) @map("created_at")
+  lastUsedAt DateTime? @map("last_used_at")
+
+  @@map("admin_credentials")
+}
+
 model CacheStore {
   key       String    @id
   value     Json
   expiresAt DateTime? @map("expires_at")
 
   @@map("cache_store")
+}
+
+/// 관리자 로그인 실패 기록과 차단 목록.
+/// 비밀번호를 연달아 틀린 주소를 막는다. 패스키 로그인은 여기에 걸리지 않으므로
+/// 본인이 오타로 잠겨도 등록해 둔 기기로 들어와 풀 수 있다.
+model AdminLoginBlock {
+  ip            String    @id
+  failedCount   Int       @default(0) @map("failed_count")
+  blocked       Boolean   @default(false)
+  firstFailedAt DateTime  @default(now()) @map("first_failed_at")
+  lastFailedAt  DateTime  @default(now()) @map("last_failed_at")
+  blockedAt     DateTime? @map("blocked_at")
+  lastUserAgent String?   @map("last_user_agent")
+  note          String?
+
+  @@index([blocked, lastFailedAt])
+  @@map("admin_login_blocks")
 }
