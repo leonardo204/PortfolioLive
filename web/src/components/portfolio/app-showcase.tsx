@@ -56,16 +56,32 @@ export function AppShowcase({ projects, locale }: Props) {
               </p>
             )}
 
-            {/* 스토어로 바로 가는 길. 카드 링크 위에 얹어 따로 눌리게 한다. */}
-            <a
-              href={project.appStoreUrl ?? '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative z-10 mt-auto inline-flex items-center gap-1.5 self-start text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1.5 rounded bg-[#dbe1ff] text-[#0048bf] hover:bg-[#c7d3ff] transition-colors"
-            >
-              {en ? 'View on App Store' : 'App Store에서 보기'}
-              <span aria-hidden="true">↗</span>
-            </a>
+            {/* 스토어와 소개 페이지로 바로 가는 길. 카드 링크 위에 얹어 따로 눌리게 한다. */}
+            <div className="relative z-10 mt-auto flex flex-wrap items-center gap-1.5">
+              <a
+                href={project.appStoreUrl ?? '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1.5 rounded bg-[#dbe1ff] text-[#0048bf] hover:bg-[#c7d3ff] transition-colors"
+              >
+                {en ? 'View on App Store' : 'App Store에서 보기'}
+                <span aria-hidden="true">↗</span>
+              </a>
+              {/*
+                소개 페이지는 같은 도메인 식구다(*.zerolive.co.kr). 서로 걸어 두지 않으면
+                검색 엔진에게는 각자 외딴 섬이라, robots.txt 만 확인하고 돌아간다.
+                같은 창에서 연다 — 우리 집 안에서 옮겨 다니는 것이고, 그래야
+                어디서 왔는지(Referer)가 남아 트래픽 화면에서 유입 경로를 셀 수 있다.
+              */}
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  className="inline-flex items-center text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1.5 rounded border border-[#dbe1ff] text-[#586065] hover:text-[#0048bf] hover:border-[#c7d3ff] transition-colors"
+                >
+                  {en ? 'Website' : '소개 페이지'}
+                </a>
+              )}
+            </div>
           </div>
         )
       })}

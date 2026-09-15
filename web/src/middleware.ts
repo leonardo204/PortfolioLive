@@ -59,6 +59,21 @@ async function handle(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // 루트는 늘 기본 언어(/ko)로 간다. next-intl 이 내주는 307(임시)을 308(영구)로 바꾼다.
+  //
+  // 307 은 "이번에는 여기로"라는 뜻이라, 검색 엔진이 / 를 색인 대상에서 빼면서도
+  // 계속 다시 확인한다(실제로 Googlebot 이 / 를 여섯 번 다시 받아 갔다).
+  // 308 이면 한 번 보고 /ko 로 신호를 몰아 준다.
+  //
+  // 언어에 따라 갈라 보내지 않는다. 지금도 Accept-Language 와 상관없이 늘 /ko 로 가고
+  // (전송망이 Vary 없이 보관한다), 그 상태에서 응답만 영구로 바꾸면 말과 행동이 맞는다.
+  // 영어로 오는 길은 hreflang 과 사이트맵의 /en 이 따로 알려 준다.
+  if (pathname === '/') {
+    const to = request.nextUrl.clone()
+    to.pathname = '/ko'
+    return NextResponse.redirect(to, 308)
+  }
+
   // 나머지는 next-intl 미들웨어
   const response = intlMiddleware(request)
 
@@ -78,21 +93,20 @@ async function handle(request: NextRequest) {
 /**
  * 바깥 껍데기 — 실제 처리를 끝낸 뒤에 방문 기록을 보낸다.
  *
- * 상태 코드를 정하는 순서.
- *  1) 미들웨어가 스스로 만든 응답(리디렉션 3xx)이면 그 코드를 그대로 쓴다.
- *  2) 그냥 통과시킨 요청은 여기서 최종 코드를 알 수 없다. 그래서 주소로 판단한다 —
- *     이 앱에 없는 주소면 404, 있는 주소면 200으로 적는다.
- *  3) 있는 줄 알았는데 없는 경우(없는 글 주소 등)는 404 화면이 그려질 때 고쳐 보낸다.
- *
- * 예전에는 `result?.status ?? ...`로 적었는데, 통과 응답도 status가 200이라
- * 뒤쪽 판단이 한 번도 실행되지 않았다. 자동 스캐너 요청이 전부 200으로 남던 원인이다.
+ * 상태 코드를 정하는 순서. 주소 판단이 먼저다.
+ *  1) 이 앱에 없는 주소면 404로 적는다. next-intl이 언어 경로를 붙이려고 /ko/... 로
+ *     되돌려 보내기 때문에 없는 주소도 307로 끝나는데, 스캐너는 그걸 따라가지 않는다.
+ *     리디렉션 코드를 그대로 쓰면 없는 주소 요청이 통계에서 통째로 빠진다.
+ *  2) 있는 주소인데 미들웨어가 되돌려 보냈으면(예: / → /ko) 그 코드를 쓴다.
+ *  3) 그 밖에는 200으로 적고, 있는 줄 알았는데 없는 경우(없는 글 주소 등)는
+ *     404 화면이 그려질 때 고쳐 보낸다.
  */
 export async function middleware(request: NextRequest, event: NextFetchEvent) {
   const startedAt = Date.now()
   const result = await handle(request)
   const code = result?.status ?? 200
   const redirected = code >= 300 && code < 400
-  const status = redirected ? code : looksMissing(request.nextUrl.pathname) ? 404 : 200
+  const status = looksMissing(request.nextUrl.pathname) ? 404 : redirected ? code : 200
   const hit = sendHit(request, status, Date.now() - startedAt)
   if (hit) event.waitUntil(hit)
   return result
