@@ -52,6 +52,41 @@ export function shouldRecord(pathname: string): boolean {
   return !SKIP.test(pathname) && !SKIP_EXT.test(pathname)
 }
 
+/**
+ * 화면을 그리지 않고 뒤에서 가져가는 요청인가.
+ *
+ * Next.js 는 화면에 보이는 <Link> 를 미리 당겨 둔다. 첫 화면을 한 번 열면 포트폴리오
+ * 상세 링크 수십 개가 1~2초 안에 함께 요청된다. 사람이 그 화면들을 본 것이 아닌데도
+ * 방문으로 세면 숫자가 통째로 어긋난다(실제로 me 의 사람 방문 중 41%가 이것이었다).
+ *
+ * Next.js 가 붙이는 표식으로는 가릴 수 없다. next-router-prefetch·rsc 헤더도,
+ * 주소에 붙는 _rsc 도 미들웨어로 넘기기 전에 지워진다(둘 다 붙여 불러 봤더니 그대로
+ * 기록됐다). 그래서 브라우저가 붙이고 Next.js 가 건드리지 않는 Sec-Fetch-Dest 를 본다.
+ *
+ *   document  주소창·링크로 화면을 통째로 연 것          → 센다
+ *   empty     fetch 로 뒤에서 가져간 것(프리페치·화면 전환) → 세지 않는다
+ *   (없음)     크롤러·curl 처럼 이 헤더를 안 붙이는 쪽       → 센다
+ *
+ * 화면 전환(링크 클릭)도 함께 빠진다. 프리페치와 구분할 방법이 서버에 남아 있지 않고,
+ * 프리페치가 잘 되면 눌렀을 때 요청 자체가 가지 않아 어느 쪽이든 '사람이 본 화면 수'와
+ * 맞지 않는다. 그래서 여기서는 '들어온 횟수'만 세고, 화면 단위 조회수는 브라우저에서
+ * 도는 PageTracker 가 이 앱의 page_views 표에 따로 센다.
+ */
+export function isBackgroundFetch(request: NextRequest): boolean {
+  const h = request.headers
+  const dest = (h.get('sec-fetch-dest') || '').toLowerCase()
+  if (dest && dest !== 'document') return true
+  // 아래 표식들은 지금은 미들웨어까지 오지 않지만, 앞에 무엇이 끼거나 Next.js 가
+  // 동작을 바꾸면 여기서 걸린다. 오면 확실한 근거라 그대로 쓴다.
+  if (request.nextUrl.searchParams.has('_rsc')) return true
+  if ((h.get('sec-purpose') || '').toLowerCase().includes('prefetch')) return true
+  if ((h.get('purpose') || '').toLowerCase() === 'prefetch') return true
+  if ((h.get('x-moz') || '').toLowerCase() === 'prefetch') return true
+  if (h.get('next-router-prefetch')) return true
+  if (h.get('next-router-segment-prefetch')) return true
+  return false
+}
+
 function post(body: unknown): Promise<unknown> | null {
   const token = process.env.TRAFFIC_TOKEN
   if (!token) return null
@@ -88,6 +123,7 @@ export function sendHit(
   latencyMs: number | null = null
 ): Promise<unknown> | null {
   if (!shouldRecord(request.nextUrl.pathname)) return null
+  if (isBackgroundFetch(request)) return null
   return post(hitPayload(request, status, latencyMs))
 }
 
