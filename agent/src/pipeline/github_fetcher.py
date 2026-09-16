@@ -108,6 +108,9 @@ class GitHubFetcher:
         meta = meta_map.get(dir_name, {})
         en_meta = (en_meta_map or {}).get(dir_name, {})
 
+        # 출시한 앱이면 README에 스토어 주소가 있다. 있으면 어느 기기용인지도 함께 확인한다.
+        app_store_url = _find_app_store_url(readme) or _find_app_store_url(readme_en)
+
         return {
             "repo": dir_name,
             "slug": dir_name,
@@ -120,7 +123,8 @@ class GitHubFetcher:
             "description_en": en_meta.get("description", ""),
             "title_en": en_meta.get("title", ""),
             "github_url": f"https://github.com/{REPO_OWNER}/{MAIN_REPO}/tree/main/{PROJECTS_DIR}/{dir_name}",
-            "app_store_url": _find_app_store_url(readme) or _find_app_store_url(readme_en),
+            "app_store_url": app_store_url,
+            "app_platforms": await _fetch_app_platforms(app_store_url),
         }
 
     async def _fetch_file_content(
@@ -237,3 +241,69 @@ def _find_app_store_url(readme: str) -> str:
     if not m:
         return ""
     return m.group(0).rstrip(".,;")
+
+
+APPSTORE_LOOKUP = "https://itunes.apple.com/lookup"
+
+# 스토어가 돌려주는 기기 이름 → 화면에 쓸 이름. 표시 순서도 이 순서를 따른다.
+_PLATFORM_ORDER = ["Mac", "iPhone", "iPad", "Apple Watch", "Apple TV", "Apple Vision"]
+
+
+def _app_store_id(url: str) -> str:
+    """App Store 주소에서 앱 번호를 뽑는다. .../id6806743562?mt=12 → 6806743562"""
+    m = re.search(r"/id(\d+)", url or "")
+    return m.group(1) if m else ""
+
+
+def _platforms_from_item(item: dict) -> list[str]:
+    """조회 결과 한 건에서 지원 기기 목록을 뽑는다."""
+    # 맥 전용 앱은 지원 기기 목록이 비어 있고 종류로만 구분된다.
+    if item.get("kind") == "mac-software":
+        return ["Mac"]
+
+    found: set[str] = set()
+    for device in item.get("supportedDevices") or []:
+        name = str(device).lower()
+        if name.startswith("iphone"):
+            found.add("iPhone")
+        elif name.startswith("ipad"):
+            found.add("iPad")
+        elif name.startswith("mac"):
+            found.add("Mac")
+        elif "watch" in name:
+            found.add("Apple Watch")
+        elif "appletv" in name or "apple tv" in name:
+            found.add("Apple TV")
+        elif "vision" in name:
+            found.add("Apple Vision")
+
+    return [p for p in _PLATFORM_ORDER if p in found]
+
+
+async def _fetch_app_platforms(app_store_url: str) -> list[str]:
+    """App Store에 물어 이 앱이 어느 기기용인지 확인한다.
+
+    README에 적힌 태그(ios 등)는 저장소 분류용이라 실제와 어긋날 수 있어,
+    스토어가 알려주는 값을 따로 받아 둔다. 조회에 실패하면 빈 목록을 돌려주고,
+    저장할 때 기존 값을 그대로 둔다.
+    """
+    app_id = _app_store_id(app_store_url)
+    if not app_id:
+        return []
+
+    for country in ("kr", "us"):
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(
+                    APPSTORE_LOOKUP, params={"id": app_id, "country": country}
+                )
+                resp.raise_for_status()
+                results = resp.json().get("results") or []
+            if results:
+                platforms = _platforms_from_item(results[0])
+                if platforms:
+                    return platforms
+        except Exception as e:
+            print(f"[GitHubFetcher] App Store 조회 실패({country}, {app_id}): {e}")
+
+    return []

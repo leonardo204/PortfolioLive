@@ -38,10 +38,12 @@ class PipelineStore:
             INSERT INTO portfolio_projects (
                 slug, title, description, category, technologies,
                 year, github_url, readme_raw, readme_raw_en,
-                description_en, title_en, app_store_url, last_synced_at, updated_at
+                description_en, title_en, app_store_url, app_platforms,
+                last_synced_at, updated_at
             ) VALUES (
                 $1, $2, $3, $4, $5::text[],
-                $6, $7, $8, $9, $10, $11, NULLIF($12, ''), NOW(), NOW()
+                $6, $7, $8, $9, $10, $11, NULLIF($12, ''), $13::text[],
+                NOW(), NOW()
             )
             ON CONFLICT (slug) DO UPDATE SET
                 title          = EXCLUDED.title,
@@ -62,6 +64,12 @@ class PipelineStore:
                     NULLIF(portfolio_projects.app_store_url, ''),
                     NULLIF(EXCLUDED.app_store_url, '')
                 ),
+                -- 어느 기기용인지는 스토어가 알려준 값이 정확하다.
+                -- 조회에 실패해 빈 값이 오면 기존 값을 그대로 둔다.
+                app_platforms  = CASE
+                    WHEN cardinality(EXCLUDED.app_platforms) > 0 THEN EXCLUDED.app_platforms
+                    ELSE portfolio_projects.app_platforms
+                END,
                 last_synced_at = NOW(),
                 updated_at     = NOW()
                 -- NOTE: tags, live_url, featured는 sync에서 건드리지 않음 (seed/admin이 소스 오브 트루스)
@@ -79,6 +87,7 @@ class PipelineStore:
             project.get("description_en", None),
             project.get("title_en", None),
             project.get("app_store_url") or None,
+            project.get("app_platforms") or [],
         )
         return row["id"]
 

@@ -58,6 +58,9 @@ model PortfolioProject {
   liveUrl       String?   @map("live_url")
   // App Store 출시작 — 동기화할 때 README에서 자동으로 찾아 채운다.
   appStoreUrl   String?   @map("app_store_url")
+  // 어느 기기용인지 — 동기화할 때 App Store 에 물어 받는다.
+  // README 태그는 저장소 분류용이라 실제와 어긋날 때가 있어 따로 둔다.
+  appPlatforms  String[]  @default([]) @map("app_platforms")
   readmeRaw     String?   @map("readme_raw")
   sortOrder     Int       @default(0) @map("sort_order")
   // 대표작 — 첫 화면 맨 위에 크게 보여줄 프로젝트. 관리 화면에서 켜고 끈다.
