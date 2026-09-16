@@ -41,6 +41,28 @@ const PLATFORM_LABELS: Record<string, string> = {
   cloud: 'Cloud',
 }
 
+/**
+ * App Store 앱이 어느 기기용인지 고른다.
+ *
+ * 스토어에서 받아 둔 값이 있으면 그것을 쓴다. 저장소 태그(ios 등)는 분류용이라
+ * 맥 전용 앱에도 붙어 있는 경우가 있어 실제 기기와 어긋난다.
+ * 아이폰과 아이패드를 함께 지원하는 앱은 아이폰만 적는다 — 대부분이 그렇고,
+ * 둘 다 적으면 카드가 넘친다.
+ *
+ * 스토어 값이 없으면(조회 실패·미출시) 예전처럼 태그로 돌아간다.
+ */
+export function appPlatformsOf(
+  appPlatforms: string[] | null | undefined,
+  tags: string[] | null | undefined
+): string[] {
+  if (!appPlatforms?.length) return platformsOf(tags)
+
+  const list = appPlatforms.filter(
+    (p) => !(p === 'iPad' && appPlatforms.includes('iPhone'))
+  )
+  return list.slice(0, 3)
+}
+
 export function platformsOf(tags: string[] | null | undefined): string[] {
   if (!tags?.length) return []
   const found = tags

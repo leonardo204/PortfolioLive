@@ -16,6 +16,7 @@ const LIST_FIELDS = {
   githubUrl: true,
   liveUrl: true,
   appStoreUrl: true,
+  appPlatforms: true,
   featured: true,
   featuredOrder: true,
   sortOrder: true,

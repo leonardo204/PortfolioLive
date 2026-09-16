@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { initialsOf, platformsOf } from '@/lib/project-visual'
+import { initialsOf, appPlatformsOf } from '@/lib/project-visual'
 import type { PortfolioListItem } from '@/lib/queries/portfolio'
 
 interface Props {
@@ -21,7 +21,7 @@ export function AppShowcase({ projects, locale }: Props) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {projects.map((project) => {
-        const platforms = platformsOf(project.tags)
+        const platforms = appPlatformsOf(project.appPlatforms, project.tags)
         return (
           <div
             key={project.id}
