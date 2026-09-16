@@ -83,7 +83,12 @@ function build(): string {
     '# ai-train : AI 모델을 학습시키는 것 — 거부',
     '',
     'User-agent: *',
-    'Content-Signal: search=yes,ai-input=yes,ai-train=no',
+    // Content-Signal 은 표준 robots 지시어가 아니라 구글이 모르는 줄로 읽는다.
+    // 그래서 무시하면서 서치 콘솔 robots.txt 보고서에 경고를 남긴다. 크롤링에는
+    // 영향이 없지만, 경고가 남아 있으면 진짜 문제가 생겼을 때 묻힌다.
+    // 주석으로 내려 둔다 — 실제로 학습 수집을 막는 것은 아래 봇별 Disallow 목록이고,
+    // 그쪽은 그대로다. 되살리려면 이 줄의 주석만 벗기면 된다.
+    '# Content-Signal: search=yes,ai-input=yes,ai-train=no',
     'Allow: /',
     'Disallow: /admin',
     'Disallow: /api/',

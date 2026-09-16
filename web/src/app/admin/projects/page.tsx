@@ -119,8 +119,15 @@ export default function AdminProjectsPage() {
           id: project.id,
           description: editDesc,
           category: editCategory,
-          liveUrl: editLiveUrl.trim() || null,
-          appStoreUrl: editAppStoreUrl.trim() || null,
+          // 주소 칸은 값이 실제로 바뀐 경우에만 보낸다.
+          // 화면을 열어 둔 사이에 다른 곳에서 채워진 값을 저장 한 번으로
+          // 지워 버리는 일을 막는다.
+          ...(editLiveUrl.trim() !== (project.liveUrl ?? '') && {
+            liveUrl: editLiveUrl.trim() || null,
+          }),
+          ...(editAppStoreUrl.trim() !== (project.appStoreUrl ?? '') && {
+            appStoreUrl: editAppStoreUrl.trim() || null,
+          }),
           featured: editFeatured,
           featuredOrder: Number(editFeaturedOrder) || 0,
           tags: newTags,
