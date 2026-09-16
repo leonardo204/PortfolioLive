@@ -39,7 +39,7 @@ const KNOWN_PATHS: RegExp[] = [
   new RegExp(`^/(${LOC})/?$`),                                // 언어별 첫 화면
   new RegExp(`^/((${LOC})/)?portfolio/[^/]+/?$`),             // 포트폴리오 글 한 편
   /^\/poc\/?$/,
-  /^\/(robots\.txt|sitemap\.xml|favicon\.ico|manifest\.webmanifest)$/,
+  /^\/(robots\.txt|sitemap\.xml|llms\.txt|favicon\.ico|manifest\.webmanifest)$/,
   /^\/(opengraph-image|twitter-image|icon|apple-icon)/,      // 이미지 라우트(뒤에 해시가 붙는다)
   /^\/(api|admin)(\/|$)/,                                    // 기록에서 빠지지만 만약을 위해
 ]

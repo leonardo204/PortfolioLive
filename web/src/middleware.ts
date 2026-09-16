@@ -37,6 +37,7 @@ async function handle(request: NextRequest) {
   // next-intl이 가로채면 /ko/robots.txt로 넘어가 404가 난다.
   const CRAWLER_FILES = [
     '/robots.txt',
+    '/llms.txt',
     '/sitemap.xml',
     '/opengraph-image',
     '/twitter-image',
