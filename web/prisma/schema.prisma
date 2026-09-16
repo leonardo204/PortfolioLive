@@ -73,6 +73,9 @@ model PortfolioProject {
   descriptionEn String?   @map("description_en")
   readmeRawEn   String?   @map("readme_raw_en") @db.Text
 
+  // 대표작만 빠르게 뽑는 인덱스. 20260904 마이그레이션이 만들어 둔 것을
+  // 여기에도 적어 둔다 — 선언이 없으면 prisma 가 DB 에 없는 인덱스로 보고 지우려 든다.
+  @@index([featured, featuredOrder], map: "idx_portfolio_featured")
   @@map("portfolio_projects")
 }
 
@@ -200,3 +203,15 @@ model AdminLoginBlock {
   @@index([blocked, lastFailedAt])
   @@map("admin_login_blocks")
 }
+
+// ─────────────────────────────────────────────────────────────
+// prisma 가 모르는 표 — embeddings · embeddings_fallback · embeddings_backup_pre_proxy
+//
+// 셋 다 pgvector 의 vector(768) 칸을 쓴다. prisma 가 다루지 못하는 형이라
+// 여기에 적지 않고, deploy.sh 의 CREATE TABLE 과 agent 쪽 store.py 가 맡는다.
+// 넣고 빼는 것도 agent 만 한다(웹은 이 표를 읽지 않는다).
+//
+// 주의: 이 파일에 없으므로 prisma migrate dev 를 돌리면 세 표를 지우라고 제안한다.
+// 배포는 migrate deploy 만 쓰므로 그 경로에서는 지워지지 않는다. 로컬에서 dev 를
+// 쓸 일이 생기면 제안에 나온 DROP TABLE 세 줄을 지우고 적용한다.
+// ─────────────────────────────────────────────────────────────
