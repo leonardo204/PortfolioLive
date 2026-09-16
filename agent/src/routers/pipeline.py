@@ -126,7 +126,7 @@ async def _run_sync_pipeline() -> SyncResult:
 
             # 5~7. 색인 두 벌을 각각 다시 만든다.
             #  - 주 색인: 평소 검색에 쓴다.
-            #  - 예비 색인: 주 모델이 상류 쿼터로 막혔을 때만 쓴다.
+            #  - 예비 색인: 주 모델이 상류에서 막혔을 때만 쓴다(쿼터·인증 오류 등).
             # 예비 색인이 실패해도 동기화 자체는 성공으로 둔다(검색은 주 색인으로 된다).
             texts = [c["content"] for c in chunks]
             saved = 0
@@ -136,11 +136,11 @@ async def _run_sync_pipeline() -> SyncResult:
                 (fallback_embedder, FALLBACK_TABLE, False),
             ):
                 try:
-                    await store.delete_embeddings_for_source(
-                        "portfolio_project", project_id, table=table
-                    )
+                    # 벡터를 먼저 만든다. 여기서 실패하면 기존 색인은 그대로 남는다.
                     vectors = await embedder_for_table.embed_texts(texts)
-                    count = await store.save_embeddings(chunks, vectors, table=table)
+                    count = await store.replace_embeddings(
+                        "portfolio_project", project_id, chunks, vectors, table=table
+                    )
                     if required:
                         saved = count
                 except Exception as e:

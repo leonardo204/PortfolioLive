@@ -91,6 +91,60 @@ class PipelineStore:
         )
         return row["id"]
 
+    async def replace_embeddings(
+        self,
+        source_type: str,
+        source_id: int,
+        chunks: list[dict[str, Any]],
+        embeddings: list[list[float]],
+        table: str = PRIMARY_TABLE,
+    ) -> int:
+        """색인을 통째로 갈아끼운다. 지우기와 넣기를 한 덩어리로 묶는다.
+
+        예전에는 지우기부터 하고 벡터를 나중에 만들어서, 임베딩이 실패하면
+        기존 색인만 사라졌다. 실제로 상류 인증 오류 한 번에 색인 전체가
+        비어 버린 적이 있다. 이제는 벡터가 다 만들어진 뒤에야 기존 것을 지우고,
+        중간에 실패하면 아무것도 바뀌지 않는다.
+        """
+        table = _checked_table(table)
+        if len(chunks) != len(embeddings):
+            raise ValueError(
+                f"청크 {len(chunks)}개와 벡터 {len(embeddings)}개의 수가 다릅니다"
+            )
+
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            async with conn.transaction():
+                await conn.execute(
+                    f"DELETE FROM {table} WHERE source_type = $1 AND source_id = $2",
+                    source_type,
+                    source_id,
+                )
+                for chunk, embedding in zip(chunks, embeddings):
+                    # vector 타입을 문자열로 변환 (asyncpg에는 vector 코덱 없음)
+                    vec_str = "[" + ",".join(str(v) for v in embedding) + "]"
+                    await conn.execute(
+                        """
+                        INSERT INTO {table} (
+                            source_type, source_id, section, content,
+                            embedding, metadata, chunk_index, total_chunks
+                        ) VALUES (
+                            $1, $2, $3, $4,
+                            $5::vector, $6::jsonb, $7, $8
+                        )
+                        """.format(table=table),
+                        chunk["source_type"],
+                        chunk["source_id"],
+                        chunk.get("section", ""),
+                        chunk["content"],
+                        vec_str,
+                        json.dumps(chunk.get("metadata", {})),
+                        chunk.get("chunk_index", 0),
+                        chunk.get("total_chunks", 1),
+                    )
+
+        return len(chunks)
+
     async def delete_embeddings_for_source(
         self, source_type: str, source_id: int, table: str = PRIMARY_TABLE
     ) -> None:
