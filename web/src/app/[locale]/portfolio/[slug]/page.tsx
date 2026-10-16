@@ -53,6 +53,22 @@ const getProject = unstable_cache(
   { revalidate: 3600 }
 )
 
+// README 안의 '../<저장소>/' 링크를 우리 프로젝트 페이지로 잇기 위한 표 (저장소 이름 소문자 → slug)
+const getRepoSlugs = unstable_cache(
+  async () => {
+    const rows = await prisma.portfolioProject.findMany({ select: { slug: true, githubUrl: true } })
+    const map: Record<string, string> = {}
+    for (const r of rows) {
+      const name = r.githubUrl?.match(/github\.com\/[^/]+\/([^/#?]+)/i)?.[1]?.replace(/\.git$/, '')
+      if (name) map[name.toLowerCase()] = r.slug
+      map[r.slug.toLowerCase()] ??= r.slug
+    }
+    return map
+  },
+  ['portfolio-repo-slugs'],
+  { revalidate: 3600 }
+)
+
 interface Props {
   params: Promise<{ locale: string; slug: string }>
 }
@@ -140,6 +156,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
   const title = locale === 'en' ? (project.titleEn || project.title) : project.title
   const description = locale === 'en' ? (project.descriptionEn || project.description) : project.description
   const readmeRaw = locale === 'en' ? (project.readmeRawEn || project.readmeRaw) : project.readmeRaw
+  const repoSlugs = await getRepoSlugs().catch(() => ({} as Record<string, string>))
 
   return (
     <>
@@ -237,6 +254,9 @@ export default async function PortfolioDetailPage({ params }: Props) {
           <PortfolioContent
             markdown={injectStaticScreenshots(readmeRaw, project.slug)}
             slug={project.slug}
+            locale={locale}
+            githubUrl={project.githubUrl}
+            repoSlugs={repoSlugs}
           />
         ) : (
           <div className="text-center py-20 text-[#abb3b9]">

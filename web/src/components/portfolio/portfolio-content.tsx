@@ -8,6 +8,52 @@ import { MermaidDiagram } from './mermaid-diagram'
 interface PortfolioContentProps {
   markdown: string
   slug: string
+  locale: string
+  githubUrl?: string | null
+  repoSlugs?: Record<string, string>
+}
+
+/**
+ * README 속 링크를 우리 사이트에서 눌러도 맞는 곳으로 가게 고친다.
+ * GitHub 에서는 상대 링크가 저장소 기준으로 풀리지만, 여기서는 페이지 주소 기준으로 풀려 404 가 난다.
+ * (예: summa2-tauri 의 '../summa-electron/' → /ko/summa-electron 404)
+ *  - '../<저장소>/' : 우리 포트폴리오에 있는 저장소면 그 프로젝트 페이지, 없으면 GitHub 의 그 저장소
+ *  - 그 밖의 상대 경로 : 이 저장소의 GitHub 파일
+ *  - 절대 주소·'#앵커'·mailto 등은 그대로
+ * 돌려줄 주소가 없으면(githubUrl 없음) null — 링크 없이 글자만 남긴다.
+ */
+export function resolveReadmeHref(
+  href: string,
+  opts: { locale: string; githubUrl?: string | null; repoSlugs?: Record<string, string> }
+): { href: string; internal: boolean } | null {
+  if (!href) return null
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('#') || href.startsWith('//')) {
+    return { href, internal: false }
+  }
+  const repo = opts.githubUrl?.match(/^(https?:\/\/github\.com\/[^/]+)\/([^/#?]+)/i)
+  const owner = repo?.[1]
+  const repoUrl = repo ? `${repo[1]}/${repo[2].replace(/\.git$/, '')}` : null
+
+  const hashAt = href.indexOf('#')
+  const hash = hashAt >= 0 ? href.slice(hashAt) : ''
+  let path = hashAt >= 0 ? href.slice(0, hashAt) : href
+
+  // GitHub 에서 '/x' 는 github.com/x 로 풀린다
+  if (path.startsWith('/')) return { href: `https://github.com${path}${hash}`, internal: false }
+
+  path = path.replace(/^(\.\/)+/, '')
+  if (path.startsWith('../')) {
+    const [name, ...rest] = path.replace(/^(\.\.\/)+/, '').split('/')
+    const restPath = rest.filter(Boolean).join('/')
+    const target = name ? opts.repoSlugs?.[name.toLowerCase()] : undefined
+    if (target && (!restPath || /^readme(\.[a-z]+)?\.md$/i.test(restPath))) {
+      return { href: `/${opts.locale}/portfolio/${target}${hash}`, internal: true }
+    }
+    if (!owner || !name) return null
+    return { href: `${owner}/${name}${restPath ? `/blob/HEAD/${restPath}` : ''}${hash}`, internal: false }
+  }
+  if (!repoUrl) return null
+  return { href: `${repoUrl}/blob/HEAD/${path}${hash}`, internal: false }
 }
 
 function resolveImageSrc(src: string, slug: string, width?: number): string | null {
@@ -34,7 +80,7 @@ function extractMermaidBlocks(md: string): { cleaned: string; blocks: string[] }
   return { cleaned, blocks }
 }
 
-export function PortfolioContent({ markdown, slug }: PortfolioContentProps) {
+export function PortfolioContent({ markdown, slug, locale, githubUrl, repoSlugs }: PortfolioContentProps) {
   // README 전처리
   const preprocessed = markdown
     .replace(/^#\s+.+\n/m, '') // 첫 번째 H1 제거
@@ -115,16 +161,22 @@ export function PortfolioContent({ markdown, slug }: PortfolioContentProps) {
           strong: ({ children }) => (
             <strong className="font-bold text-[#2b3438]">{children}</strong>
           ),
-          a: ({ href, children }) => (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#0053db] hover:underline"
-            >
-              {children}
-            </a>
-          ),
+          a: ({ href, children }) => {
+            const link = resolveReadmeHref(typeof href === 'string' ? href : '', { locale, githubUrl, repoSlugs })
+            if (!link) return <>{children}</>
+            if (link.href.startsWith('#')) {
+              return <a href={link.href} className="text-[#0053db] hover:underline">{children}</a>
+            }
+            return (
+              <a
+                href={link.href}
+                {...(link.internal ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+                className="text-[#0053db] hover:underline"
+              >
+                {children}
+              </a>
+            )
+          },
           code: ({ children, className }) => {
             const text = String(children).replace(/\n$/, '')
             const isBlock = className?.includes('language-')
